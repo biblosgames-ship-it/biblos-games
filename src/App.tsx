@@ -123,7 +123,7 @@ export default function App() {
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
-      <div className="fixed inset-0 bg-black text-white z-50 flex flex-col items-center justify-center p-8 overflow-hidden">
+      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] transition-all duration-300">
         <button 
           onClick={toggleProjection}
           className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
