@@ -209,7 +209,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-stone-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <header className="bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-[#0070f3] rounded-2xl flex items-center justify-center shadow-md overflow-hidden border border-white/20 shrink-0">
@@ -563,7 +563,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="bg-white parchment-shadow rounded-[2rem] overflow-hidden border border-stone-200 shadow-2xl">
+            <div className="bg-[#F1E6CF] text-[#2B2B2B] rounded-[2rem] overflow-hidden border border-[#C2B280] shadow-2xl">
               <div className={`p-6 text-white flex justify-between items-center ${PERIOD_COLORS[currentQuestion.period]}`}>
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{PERIOD_ICONS[currentQuestion.period]}</span>
