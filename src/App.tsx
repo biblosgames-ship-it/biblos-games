@@ -453,10 +453,10 @@ export default function App() {
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-slate-900">Principiante</h3>
+                  <h3 className="text-xl font-bold text-amber-200">Principiante</h3>
                   <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-md">Fácil</span>
                 </div>
-                <p className="text-sm text-stone-500">Preguntas sencillas y directas. Ideal para niños o quienes recién comienzan.</p>
+                <p className="text-sm text-stone-400">Preguntas sencillas y directas. Ideal para niños o quienes recién comienzan.</p>
               </button>
 
               <button
@@ -464,10 +464,10 @@ export default function App() {
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-slate-900">Intermedio</h3>
+                  <h3 className="text-xl font-bold text-amber-200">Intermedio</h3>
                   <span className="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase rounded-md">Medio</span>
                 </div>
-                <p className="text-sm text-stone-500">Mezcla de preguntas fáciles y de complejidad media para un desafío equilibrado.</p>
+                <p className="text-sm text-stone-400">Mezcla de preguntas fáciles y de complejidad media para un desafío equilibrado.</p>
               </button>
 
               <button
@@ -475,10 +475,10 @@ export default function App() {
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-slate-900">Avanzado</h3>
+                  <h3 className="text-xl font-bold text-amber-200">Avanzado</h3>
                   <span className="px-2 py-1 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded-md">Difícil</span>
                 </div>
-                <p className="text-sm text-stone-500">Preguntas de complejidad media y difíciles. Para expertos en la Palabra.</p>
+                <p className="text-sm text-stone-400">Preguntas de complejidad media y difíciles. Para expertos en la Palabra.</p>
               </button>
             </div>
           </motion.div>
@@ -487,7 +487,7 @@ export default function App() {
             <div className="flex items-center justify-between">
               <button 
                 onClick={() => setGameLevel(null)}
-                className="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors font-medium text-sm"
+                className="flex items-center gap-2 text-stone-400 hover:text-stone-800 transition-colors font-medium text-sm"
               >
                 <ChevronLeft size={16} />
                 Cambiar Nivel
