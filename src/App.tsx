@@ -124,7 +124,7 @@ export default function App() {
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
-      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] transition-all duration-300">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center px-8 transition-all duration-500">
         <button 
           onClick={toggleProjection}
           className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
@@ -145,7 +145,7 @@ export default function App() {
             <span className="text-bible-gold font-serif italic text-2xl tracking-widest uppercase">
               {currentQuestion.period}
             </span>
-            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-tight text-balance">
+            <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">
               {currentQuestion.question}
             </h1>
           </div>
@@ -235,7 +235,11 @@ if (showWelcome) {
   );
 }
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={`min-h-screen flex flex-col transition-all duration-500 ${
+      isProjectionMode 
+        ? "bg-black text-white" 
+        : "bg-[#1B1A17]"
+    }`}>
       {/* Header */}
       <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
