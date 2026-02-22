@@ -34,11 +34,24 @@ export default function App() {
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(new Set());
   const [showWelcome, setShowWelcome] = useState(true);
 
-  const playSound = (src: string) => {
-    const audio = new Audio(src);
-    audio.volume = 0.6;
-    audio.play();
-  };
+  // 🔊 Precargar sonidos una sola vez
+const sounds = {
+  select: new Audio("/sounds/select.mp3"),
+  correct: new Audio("/sounds/correct.mp3"),
+  wrong: new Audio("/sounds/wrong.mp3"),
+  projection: new Audio("/sounds/projection.mp3"),
+};
+
+// Ajustar volumen
+Object.values(sounds).forEach((sound) => {
+  sound.volume = 0.6;
+});
+
+const playSound = (type: keyof typeof sounds) => {
+  const sound = sounds[type];
+  sound.currentTime = 0; // reinicia para que suene inmediato
+  sound.play();
+};
 
   const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
@@ -231,7 +244,7 @@ if (showWelcome) {
 
         <button
           onClick={() => {
-            playSound("/sounds/select.mp3");
+            playSound("select");
             setShowWelcome(false);
           }}
           className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
