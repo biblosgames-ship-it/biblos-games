@@ -239,18 +239,12 @@ if (showWelcome) {
       {/* Header */}
       <header className="bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#0070f3] rounded-2xl flex items-center justify-center shadow-md overflow-hidden border border-white/20 shrink-0">
-            <span className="text-3xl font-bold text-amber-300 font-serif drop-shadow-md">β</span>
-          </div>
-          <div className="flex flex-col items-start">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-[0.1em] text-amber-300 font-['Cinzel'] uppercase leading-tight drop-shadow-md">
-              Biblos Games
-            </h1>
-            <p className="text-[9px] sm:text-[10px] text-amber-400 font-serif italic uppercase tracking-[0.2em] sm:tracking-[0.3em] font-semibold">
-              El Juego de la Biblia
-            </p>
-          </div>
+        <div className="flex items-center">
+          <img
+            src="/logo-header.png"
+            alt="Biblos Games"
+            className="h-14 md:h-16 w-auto object-contain drop-shadow-lg"
+          />
         </div>
         
         {/* Right: Actions */}
