@@ -246,8 +246,8 @@ if (showWelcome) {
             className="h-14 md:h-16 w-auto object-contain drop-shadow-lg"
           />
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <p className="text-white text-xs tracking-widest uppercase font-light">
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2">
+          <p className="text-white text-[10px] tracking-[0.3em] uppercase font-light">
             El Juego de la Biblia
           </p>
         </div>
