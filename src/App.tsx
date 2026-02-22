@@ -126,19 +126,27 @@ const playSound = (type: keyof typeof sounds) => {
     setIsProjectionMode(!isProjectionMode);
   };
 
-  const handleAnswerClick = (index: number) => {
-    if (showAnswer) return;
-    
-    setShowAnswer(true);
-    if (index === currentQuestion?.correctAnswer) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#A52A2A', '#C2B280', '#556B2F', '#26619C']
-      });
-    }
-  };
+const handleAnswerClick = (index: number) => {
+  if (showAnswer) return;
+
+  const isCorrect = index === currentQuestion?.correctAnswer;
+
+  if (isCorrect) {
+    playSound("correct");  // ✅ sonido correcto
+
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#A52A2A', '#C2B280', '#556B2F', '#26619C']
+    });
+
+  } else {
+    playSound("wrong");   // ❌ sonido incorrecto
+  }
+
+  setShowAnswer(true);
+};
 
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
