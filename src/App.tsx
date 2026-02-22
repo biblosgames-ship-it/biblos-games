@@ -132,7 +132,6 @@ export default function App() {
           <ChevronLeft size={32} />
         </button>
 
-        <div className="absolute bottom-8 right-8 flex flex-col items-end opacity-30">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-red-600 font-serif">β</span>
             <span className="text-lg font-bold tracking-tight">Biblos Games</span>
