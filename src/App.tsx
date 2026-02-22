@@ -215,15 +215,13 @@ if (showWelcome) {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center px-6">
+      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
 
-        <h1 className="text-4xl md:text-6xl font-bold text-amber-300 font-['Cinzel'] uppercase drop-shadow-lg">
-          Biblos Games
-        </h1>
-
-        <p className="mt-3 text-amber-200 tracking-widest uppercase text-sm md:text-base">
-          El Juego de la Biblia
-        </p>
+        <img
+          src="/logo-biblos.png"
+          alt="Biblos Games"
+          className="w-72 md:w-[500px] drop-shadow-2xl"
+        />
 
         <button
           onClick={() => setShowWelcome(false)}
