@@ -435,7 +435,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8">
+      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
         {!gameLevel ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -443,14 +443,14 @@ export default function App() {
             className="space-y-8 py-8"
           >
             <div className="text-center space-y-3">
-              <h2 className="text-4xl font-serif font-bold text-slate-900">Modo de Juego</h2>
-              <p className="text-stone-500 italic">Selecciona el nivel de complejidad para tu partida</p>
+              <h2 className="text-4xl font-serif font-bold text-amber-200">Modo de Juego</h2>
+              <p className="text-stone-400 italic">Selecciona el nivel de complejidad para tu partida</p>
             </div>
 
             <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
               <button
                 onClick={() => setGameLevel('PRINCIPIANTE')}
-                className="group p-6 bg-white rounded-2xl border-2 border-stone-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left shadow-sm hover:shadow-md"
+                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xl font-bold text-slate-900">Principiante</h3>
@@ -461,7 +461,7 @@ export default function App() {
 
               <button
                 onClick={() => setGameLevel('INTERMEDIO')}
-                className="group p-6 bg-white rounded-2xl border-2 border-stone-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-left shadow-sm hover:shadow-md"
+                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xl font-bold text-slate-900">Intermedio</h3>
@@ -472,7 +472,7 @@ export default function App() {
 
               <button
                 onClick={() => setGameLevel('AVANZADO')}
-                className="group p-6 bg-white rounded-2xl border-2 border-stone-200 hover:border-purple-500 hover:bg-purple-50 transition-all text-left shadow-sm hover:shadow-md"
+                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xl font-bold text-slate-900">Avanzado</h3>
