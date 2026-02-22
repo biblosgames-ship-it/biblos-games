@@ -213,13 +213,13 @@ export default function App() {
         {/* Left: Logo & Title */}
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-[#0070f3] rounded-2xl flex items-center justify-center shadow-md overflow-hidden border border-white/20 shrink-0">
-            <span className="text-3xl font-bold text-red-600 font-serif drop-shadow-md">β</span>
+            <span className="text-3xl font-bold text-amber-300 font-serif drop-shadow-md">β</span>
           </div>
           <div className="flex flex-col items-start">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] uppercase leading-tight">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-amber-200 font-serif uppercase leading-tight">
               Biblos Games
             </h1>
-            <p className="text-[9px] sm:text-[10px] text-stone-500 font-serif italic uppercase tracking-[0.2em] sm:tracking-[0.3em] font-semibold">
+            <p className="text-[9px] sm:text-[10px] text-amber-400 font-serif italic uppercase tracking-[0.2em] sm:tracking-[0.3em] font-semibold">
               El Juego de la Biblia
             </p>
           </div>
