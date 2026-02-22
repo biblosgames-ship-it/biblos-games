@@ -232,37 +232,41 @@ export default function App() {
               setShowInstructions(true);
               setShowAbout(false);
             }}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
             title="Instrucciones"
           >
             <BookOpen size={20} />
           </button>
+
           <button 
             onClick={() => {
               setShowAbout(true);
               setShowInstructions(false);
             }}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
             title="Acerca de"
           >
             <Info size={20} />
           </button>
-          <div className="w-px h-6 bg-stone-200 mx-1 hidden sm:block" />
+
+          <div className="w-px h-6 bg-[#3A342C] mx-1 hidden sm:block" />
+
           <button 
             onClick={toggleProjection}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
             title="Modo Proyección"
           >
             <Tv size={20} />
           </button>
-          <button 
-            onClick={resetGame}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
-            title="Reiniciar"
-          >
-            <RotateCcw size={20} />
-          </button>
         </div>
+  <button 
+    onClick={resetGame}
+    className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
+    title="Reiniciar"
+  >
+    <RotateCcw size={20} />
+  </button>
+</div>
       </header>
 
       {/* Instructions Modal */}
