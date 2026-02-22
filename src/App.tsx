@@ -543,14 +543,14 @@ if (showWelcome) {
                   key={period}
                   onClick={() => handleSelectPeriod(period)}
                   className={`
-                    relative overflow-hidden h-44 rounded-2xl p-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    relative overflow-hidden h-36 rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
                   <div className="absolute -right-4 -bottom-4 text-8xl opacity-10 group-hover:scale-110 transition-transform duration-500">
                     {PERIOD_ICONS[period]}
                   </div>
-                  <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div className="relative z-10 flex flex-col justify-between">
                     <span className="text-4xl">{PERIOD_ICONS[period]}</span>
                     <div className="space-y-1">
                       <h3 className="font-serif font-bold text-lg leading-tight">{period}</h3>
