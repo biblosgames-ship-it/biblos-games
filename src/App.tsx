@@ -237,7 +237,7 @@ if (showWelcome) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+      <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
         <div className="flex items-center">
           <img
@@ -246,7 +246,11 @@ if (showWelcome) {
             className="h-14 md:h-16 w-auto object-contain drop-shadow-lg"
           />
         </div>
-        
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <p className="text-white text-xs tracking-widest uppercase font-light">
+            El Juego de la Biblia
+          </p>
+        </div>
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-1 sm:gap-2">
           <button 
