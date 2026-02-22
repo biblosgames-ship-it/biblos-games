@@ -32,6 +32,7 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(new Set());
+  const [showWelcome, setShowWelcome] = useState(true);
 
   const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
@@ -205,7 +206,36 @@ export default function App() {
       </div>
     );
   }
+if (showWelcome) {
+  return (
+    <div className="fixed inset-0 w-full h-full">
+      <img
+        src="/fondo-biblos.jpg"
+        alt="Biblos Background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
+      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center px-6">
+
+        <h1 className="text-4xl md:text-6xl font-bold text-amber-300 font-['Cinzel'] uppercase drop-shadow-lg">
+          Biblos Games
+        </h1>
+
+        <p className="mt-3 text-amber-200 tracking-widest uppercase text-sm md:text-base">
+          El Juego de la Biblia
+        </p>
+
+        <button
+          onClick={() => setShowWelcome(false)}
+          className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
+        >
+          Comenzar
+        </button>
+
+      </div>
+    </div>
+  );
+}
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -216,7 +246,7 @@ export default function App() {
             <span className="text-3xl font-bold text-amber-300 font-serif drop-shadow-md">β</span>
           </div>
           <div className="flex flex-col items-start">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-amber-200 font-serif uppercase leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-[0.1em] text-amber-300 font-['Cinzel'] uppercase leading-tight drop-shadow-md">
               Biblos Games
             </h1>
             <p className="text-[9px] sm:text-[10px] text-amber-400 font-serif italic uppercase tracking-[0.2em] sm:tracking-[0.3em] font-semibold">
