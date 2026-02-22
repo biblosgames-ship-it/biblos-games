@@ -1,0 +1,281 @@
+[
+  {
+    "id": "p1",
+    "period": "El Principio",
+    "difficulty": "Básica",
+    "question": "¿Qué día creó Dios el Día y la Noche?",
+    "options": ["El Segundo día", "El Primer día", "El Cuarto día", "El Séptimo día"],
+    "correctAnswer": 1,
+    "reference": "Génesis 1:4-5"
+  },
+  {
+    "id": "p2",
+    "period": "El Principio",
+    "difficulty": "Básica",
+    "question": "¿Qué día creó Dios las aves y los peces?",
+    "options": ["El día tercero", "El día cuarto", "El día quinto", "El día sexto"],
+    "correctAnswer": 2,
+    "reference": "Génesis 1:20-21"
+  },
+  {
+    "id": "p9",
+    "period": "El Principio",
+    "difficulty": "Intermedia",
+    "question": "El cuarto día Dios creó:",
+    "options": ["La luz", "El sol", "El mar", "Las plantas"],
+    "correctAnswer": 1,
+    "reference": "Génesis 1:14-19"
+  },
+  {
+    "id": "p11",
+    "period": "El Principio",
+    "difficulty": "Avanzada",
+    "question": "¿Cuántos años vivió Matusalén?",
+    "options": ["969 años", "979 años", "999 años", "850 años"],
+    "correctAnswer": 0,
+    "reference": "Génesis 5:27"
+  },
+  {
+    "id": "p13",
+    "period": "El Principio",
+    "difficulty": "Intermedia",
+    "question": "¿Por quién entró el pecado en el mundo?",
+    "options": ["Eva", "Caín", "Adán", "Satanás"],
+    "correctAnswer": 2,
+    "reference": "Romanos 5:12"
+  },
+  {
+    "id": "p74",
+    "period": "El Principio",
+    "difficulty": "Básica",
+    "question": "¿Qué mandó Dios construir a Noé?",
+    "options": ["Un templo", "Una torre", "Un arca", "Un altar"],
+    "correctAnswer": 2,
+    "reference": "Génesis 6:14"
+  },
+  {
+    "id": "l1",
+    "period": "El Pueblo de Dios y La Ley",
+    "difficulty": "Básica",
+    "question": "¿Qué mandamiento es: Santificarás el día de reposo?",
+    "options": ["1er Mandamiento", "4to Mandamiento", "5to Mandamiento", "10mo Mandamiento"],
+    "correctAnswer": 1,
+    "reference": "Éxodo 20:8"
+  },
+  {
+    "id": "l10",
+    "period": "El Pueblo de Dios y La Ley",
+    "difficulty": "Intermedia",
+    "question": "¿Cuál fue la primera de las 10 plagas de Egipto?",
+    "options": ["Las ranas", "La muerte de primogénitos", "La sangre", "Las moscas"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 7:17"
+  },
+  {
+    "id": "l13",
+    "period": "El Pueblo de Dios y La Ley",
+    "difficulty": "Básica",
+    "question": "¿Cuántos espías envió Josué a la tierra de Jericó?",
+    "options": ["Dos", "Doce", "Siete", "Tres"],
+    "correctAnswer": 0,
+    "reference": "Josué 2:2"
+  },
+  {
+    "id": "l19",
+    "period": "El Pueblo de Dios y La Ley",
+    "difficulty": "Intermedia",
+    "question": "¿Cómo se conocen los 5 primeros libros de la Biblia?",
+    "options": ["La Thora", "El Pentagrama", "El Tetragrama", "Los Salmos"],
+    "correctAnswer": 0,
+    "reference": "Pentateuco"
+  },
+  {
+    "id": "l88",
+    "period": "El Pueblo de Dios y La Ley",
+    "difficulty": "Básica",
+    "question": "¿Quién fue la primera jueza de Israel?",
+    "options": ["Rut", "Ester", "Débora", "Jael"],
+    "correctAnswer": 2,
+    "reference": "Jueces 4:4"
+  },
+  {
+    "id": "r1",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "Básica",
+    "question": "¿En qué valle David enfrentó a Goliat?",
+    "options": ["Valle de Josafat", "Valle de Ela", "Valle de Sidim", "Valle de Beraca"],
+    "correctAnswer": 1,
+    "reference": "1 Samuel 17:2"
+  },
+  {
+    "id": "r2",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "Intermedia",
+    "question": "¿Qué rey construyó el primer templo de Israel?",
+    "options": ["David", "Saúl", "Salomón", "Ezequías"],
+    "correctAnswer": 2,
+    "reference": "1 Reyes 6:1"
+  },
+  {
+    "id": "r4",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "Básica",
+    "question": "¿A qué lugar huyó Jonás cuando debía ir a Nínive?",
+    "options": ["Jope", "Tarsis", "Egipto", "Babilonia"],
+    "correctAnswer": 1,
+    "reference": "Jonás 1:2"
+  },
+  {
+    "id": "r31",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "Intermedia",
+    "question": "¿Cuántos Salmos tiene la Biblia?",
+    "options": ["150 Salmos", "119 Salmos", "169 Salmos", "100 Salmos"],
+    "correctAnswer": 0,
+    "reference": "Libro de Salmos"
+  },
+  {
+    "id": "r78",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "Básica",
+    "question": "¿Qué profeta vio un valle de huesos secos?",
+    "options": ["Isaías", "Jeremías", "Ezequiel", "Daniel"],
+    "correctAnswer": 2,
+    "reference": "Ezequiel 37"
+  },
+  {
+    "id": "j1",
+    "period": "Jesús y la Redención",
+    "difficulty": "Básica",
+    "question": "¿Qué personaje habló con Zacarías a la derecha del altar del incienso?",
+    "options": ["Moisés", "Ángel Gabriel", "Elías", "Un profeta"],
+    "correctAnswer": 1,
+    "reference": "Lucas 1:19"
+  },
+  {
+    "id": "j9",
+    "period": "Jesús y la Redención",
+    "difficulty": "Intermedia",
+    "question": "Lo primero que Jesús hizo con el paralítico que bajaron por el techo fue:",
+    "options": ["Sanar su enfermedad", "Perdonar sus pecados", "Escupir en sus ojos", "Darle de comer"],
+    "correctAnswer": 1,
+    "reference": "Marcos 2:5"
+  },
+  {
+    "id": "j15",
+    "period": "Jesús y la Redención",
+    "difficulty": "Básica",
+    "question": "¿Cuál es la paga del pecado?",
+    "options": ["El infierno", "La muerte", "El juicio", "La soledad"],
+    "correctAnswer": 1,
+    "reference": "Romanos 6:23"
+  },
+  {
+    "id": "j33",
+    "period": "Jesús y la Redención",
+    "difficulty": "Básica",
+    "question": "¿En qué ciudad nació Jesús según la profecía de Miqueas?",
+    "options": ["Nazaret", "Jerusalén", "Belén", "Egipto"],
+    "correctAnswer": 2,
+    "reference": "Miqueas 5:2"
+  },
+  {
+    "id": "j52",
+    "period": "Jesús y la Redención",
+    "difficulty": "Intermedia",
+    "question": "¿Quién dijo: \"He aquí el Cordero de Dios\"?",
+    "options": ["Pedro", "Juan el Bautista", "Andrés", "Mateo"],
+    "correctAnswer": 1,
+    "reference": "Juan 1:36"
+  },
+  {
+    "id": "i1",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "Básica",
+    "question": "Pablo enseña que el celo de Israel por Dios no era conforme a:",
+    "options": ["La ley", "La gracia", "La ciencia", "La fe"],
+    "correctAnswer": 2,
+    "reference": "Romanos 10:2"
+  },
+  {
+    "id": "i10",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "Intermedia",
+    "question": "El libro de Romanos fue escrito por:",
+    "options": ["Lucas", "Pedro", "Pablo", "Juan"],
+    "correctAnswer": 2,
+    "reference": "Romanos 1:1"
+  },
+  {
+    "id": "i20",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "Básica",
+    "question": "¿Quién murió por mentir al Espíritu Santo al llevar su ofrenda?",
+    "options": ["Ananías", "Safira", "Simón el mago", "Diótrefes"],
+    "correctAnswer": 0,
+    "reference": "Hechos 5:1"
+  },
+  {
+    "id": "i61",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "Básica",
+    "question": "¿Quién fue el primer mártir cristiano?",
+    "options": ["Pedro", "Santiago", "Esteban", "Pablo"],
+    "correctAnswer": 2,
+    "reference": "Hechos 7:59"
+  },
+  {
+    "id": "i84",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "Intermedia",
+    "question": "¿En qué ciudad se llamó cristianos por primera vez a los discípulos?",
+    "options": ["Jerusalén", "Antioquía", "Roma", "Éfeso"],
+    "correctAnswer": 1,
+    "reference": "Hechos 11:26"
+  },
+  {
+    "id": "f1",
+    "period": "Tiempos Finales",
+    "difficulty": "Básica",
+    "question": "¿Qué será con los creyentes que hayan quedado cuando Jesús regrese a la tierra?",
+    "options": ["Serán juzgados", "Serán arrebatados", "Serán olvidados", "Permanecerán aquí"],
+    "correctAnswer": 1,
+    "reference": "1 Tesalonicenses 4:17"
+  },
+  {
+    "id": "f4",
+    "period": "Tiempos Finales",
+    "difficulty": "Básica",
+    "question": "¿Qué cosas no habrá en el Cielo Nuevo y la Tierra Nueva?",
+    "options": ["Luz", "Mar", "Muerte", "Ángeles"],
+    "correctAnswer": 2,
+    "reference": "Apocalipsis 21:4"
+  },
+  {
+    "id": "f15",
+    "period": "Tiempos Finales",
+    "difficulty": "Intermedia",
+    "question": "La cuarta bestia de Daniel tenía:",
+    "options": ["Siete cabezas", "Diez cuernos", "Alas de águila", "Dientes de hierro"],
+    "correctAnswer": 1,
+    "reference": "Daniel 7:7"
+  },
+  {
+    "id": "f31",
+    "period": "Tiempos Finales",
+    "difficulty": "Intermedia",
+    "question": "Zacarías profetizó que Jehová afirmará sus pies en:",
+    "options": ["El monte de los Olivos", "El monte Sinaí", "El monte Carmelo", "El monte de la Transfiguración"],
+    "correctAnswer": 0,
+    "reference": "Zacarías 14:4"
+  },
+  {
+    "id": "f55",
+    "period": "Tiempos Finales",
+    "difficulty": "Básica",
+    "question": "¿Para quién fue preparado el lago de fuego?",
+    "options": ["Para los pecadores", "Para el diablo", "Para los incrédulos", "Para los ángeles caídos"],
+    "correctAnswer": 1,
+    "reference": "Apocalipsis 20:10"
+  }
+]
