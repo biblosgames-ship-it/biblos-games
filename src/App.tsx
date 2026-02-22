@@ -714,13 +714,6 @@ if (showWelcome) {
                         </button>
                         <div className="flex gap-2">
                           <button 
-                            onClick={toggleProjection}
-                            className="flex-1 sm:flex-none px-8 py-5 bg-stone-100 text-stone-600 rounded-2xl font-bold hover:bg-stone-200 transition-colors flex items-center justify-center"
-                            title="Modo Proyección"
-                          >
-                            <Tv size={24} />
-                          </button>
-                          <button 
                             onClick={() => setCurrentQuestion(null)}
                             className="flex-1 sm:flex-none px-8 py-5 bg-stone-100 text-stone-600 rounded-2xl font-bold hover:bg-stone-200 transition-colors flex items-center justify-center"
                             title="Cerrar"
