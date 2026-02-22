@@ -7,7 +7,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
-  Tv, 
   RotateCcw, 
   ChevronLeft, 
   Eye, 
@@ -15,7 +14,9 @@ import {
   Sparkles,
   Info,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
@@ -34,6 +35,8 @@ export default function App() {
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(new Set());
   const [showWelcome, setShowWelcome] = useState(true);
 
+  const [isSoundOn, setIsSoundOn] = useState(true);
+
   // 🔊 Precargar sonidos una sola vez
 const sounds = {
   select: new Audio("/sounds/select.mp3"),
@@ -48,8 +51,10 @@ Object.values(sounds).forEach((sound) => {
 });
 
 const playSound = (type: keyof typeof sounds) => {
+  if (!isSoundOn) return; // 🔇 si está silenciado, no suena
+
   const sound = sounds[type];
-  sound.currentTime = 0; // reinicia para que suene inmediato
+  sound.currentTime = 0;
   sound.play();
 };
 
