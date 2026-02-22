@@ -235,7 +235,7 @@ export default function App() {
             className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
             title="Instrucciones"
           >
-            <BookOpen size={20} />
+            <BookOpen size={22} strokeWidth={2.5} />
           </button>
           <button 
             onClick={() => {
