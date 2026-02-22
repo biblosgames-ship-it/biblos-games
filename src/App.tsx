@@ -34,6 +34,12 @@ export default function App() {
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(new Set());
   const [showWelcome, setShowWelcome] = useState(true);
 
+  const playSound = (src: string) => {
+    const audio = new Audio(src);
+    audio.volume = 0.6;
+    audio.play();
+  };
+
   const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
     
@@ -224,7 +230,10 @@ if (showWelcome) {
         />
 
         <button
-          onClick={() => setShowWelcome(false)}
+          onClick={() => {
+            playSound("/sounds/select.mp3");
+            setShowWelcome(false);
+          }}
           className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
         >
           Comenzar
