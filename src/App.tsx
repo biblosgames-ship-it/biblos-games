@@ -232,7 +232,7 @@ export default function App() {
               setShowInstructions(true);
               setShowAbout(false);
             }}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-stone-100 text-amber-200 transition-colors"
             title="Instrucciones"
           >
             <BookOpen size={22} strokeWidth={2.5} />
