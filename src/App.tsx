@@ -509,7 +509,10 @@ if (showWelcome) {
 
             <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
               <button
-                onClick={() => setGameLevel('PRINCIPIANTE')}
+                onClick={() => {
+                  playSound("select");
+                  setGameLevel('PRINCIPIANTE');
+                }}
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
@@ -520,7 +523,10 @@ if (showWelcome) {
               </button>
 
               <button
-                onClick={() => setGameLevel('INTERMEDIO')}
+                onClick={() => {
+                  playSound("select");
+                  setGameLevel('INTERMEDIO');
+                }}
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
@@ -531,7 +537,10 @@ if (showWelcome) {
               </button>
 
               <button
-                onClick={() => setGameLevel('AVANZADO')}
+                onClick={() => {
+                  playSound("select");
+                  setGameLevel('AVANZADO');
+                }}
                 className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
               >
                 <div className="flex justify-between items-center mb-2">
@@ -571,7 +580,10 @@ if (showWelcome) {
               {Object.values(Period).map((period) => (
                 <button
                   key={period}
-                  onClick={() => handleSelectPeriod(period)}
+                  onClick={() => {
+                    playSound("select");
+                    handleSelectPeriod(period);
+                  }}
                   className={`
                     relative overflow-hidden h-36 rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
