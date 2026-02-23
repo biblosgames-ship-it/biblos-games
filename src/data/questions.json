@@ -3,7 +3,7 @@
   {
     "id": "ep001",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Qué creó Dios el primer día?",
     "options": ["Las plantas", "El sol", "La luz", "Los animales"],
     "correctAnswer": 2,
@@ -12,7 +12,7 @@
   {
     "id": "ep002",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Cómo llamó Dios a la luz y a las tinieblas?",
     "options": ["Brillo y Oscuridad", "Claridad y Opacidad", "Día y Noche", "Sol y Luna"],
     "correctAnswer": 2,
@@ -21,7 +21,7 @@
   {
     "id": "ep003",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿De qué material formó Dios al hombre?",
     "options": ["De madera de gofer", "Del polvo de la tierra", "De una piedra preciosa", "De las nubes"],
     "correctAnswer": 1,
@@ -30,7 +30,7 @@
   {
     "id": "ep004",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Dónde colocó Dios al hombre después de crearlo?",
     "options": ["En una montaña", "En una ciudad", "En el huerto de Edén", "En una cueva"],
     "correctAnswer": 2,
@@ -39,7 +39,7 @@
   {
     "id": "ep005",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Qué animal engañó a Eva en el huerto?",
     "options": ["Un león", "Un águila", "La serpiente", "Un lobo"],
     "correctAnswer": 2,
@@ -48,7 +48,7 @@
   {
     "id": "ep006",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Quién fue el primer hijo de Adán y Eva?",
     "options": ["Caín", "Abel", "Set", "Enoc"],
     "correctAnswer": 0,
@@ -57,7 +57,7 @@
   {
     "id": "ep007",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Qué mandó Dios construir a Noé para salvarse del diluvio?",
     "options": ["Un templo", "Un arca", "Una torre", "Una balsa"],
     "correctAnswer": 1,
@@ -66,7 +66,7 @@
   {
     "id": "ep008",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Cuántas personas sobrevivieron al diluvio dentro del arca?",
     "options": ["Dos", "Cuatro", "Ocho", "Doce"],
     "correctAnswer": 2,
@@ -75,7 +75,7 @@
   {
     "id": "ep009",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Cuál fue la señal del pacto de Dios después del diluvio?",
     "options": ["Una paloma", "El arco iris", "Una nube de fuego", "Una estrella brillante"],
     "correctAnswer": 1,
@@ -84,7 +84,7 @@
   {
     "id": "ep010",
     "period": "El Principio",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Qué ave regresó con una hoja de olivo al arca?",
     "options": ["Un cuervo", "Un águila", "Una paloma", "Un halcón"],
     "correctAnswer": 2,
@@ -94,7 +94,7 @@
   {
     "id": "ep011",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué día creó Dios la expansión (cielos)?",
     "options": ["Primer día", "Segundo día", "Tercer día", "Cuarto día"],
     "correctAnswer": 1,
@@ -103,7 +103,7 @@
   {
     "id": "ep012",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué creó Dios el tercer día?",
     "options": ["Los animales", "Las plantas y la tierra seca", "El sol y la luna", "Las aves"],
     "correctAnswer": 1,
@@ -112,7 +112,7 @@
   {
     "id": "ep013",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué creó Dios el cuarto día?",
     "options": ["Los peces", "El hombre", "El sol, la luna y las estrellas", "Los árboles"],
     "correctAnswer": 2,
@@ -121,7 +121,7 @@
   {
     "id": "ep014",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué creó Dios el quinto día?",
     "options": ["Los animales terrestres", "Las aves y los peces", "El hombre", "Las plantas"],
     "correctAnswer": 1,
@@ -130,7 +130,7 @@
   {
     "id": "ep015",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué creó Dios el sexto día?",
     "options": ["El hombre y los animales terrestres", "Los peces", "La luz", "El firmamento"],
     "correctAnswer": 0,
@@ -139,7 +139,7 @@
   {
     "id": "ep016",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué día reposó Dios de toda su obra?",
     "options": ["El quinto día", "El sexto día", "El séptimo día", "El primer día"],
     "correctAnswer": 2,
@@ -148,7 +148,7 @@
   {
     "id": "ep017",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué árbol estaba en medio del huerto junto al árbol de la vida?",
     "options": ["Árbol de cedro", "Árbol del conocimiento del bien y del mal", "Árbol de olivo", "Árbol de higuera"],
     "correctAnswer": 1,
@@ -157,7 +157,7 @@
   {
     "id": "ep018",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué nombre puso Adán a su mujer?",
     "options": ["Sara", "Eva", "Rebeca", "María"],
     "correctAnswer": 1,
@@ -166,7 +166,7 @@
   {
     "id": "ep019",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué ofrecía Abel a Dios?",
     "options": ["Frutos de la tierra", "Oro", "Primogénitos de sus ovejas", "Pan"],
     "correctAnswer": 2,
@@ -175,7 +175,7 @@
   {
     "id": "ep020",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos días y noches llovió durante el diluvio?",
     "options": ["7 días", "30 días", "40 días y 40 noches", "100 días"],
     "correctAnswer": 2,
@@ -185,7 +185,7 @@
   {
     "id": "ep021",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos años tenía Noé cuando comenzó el diluvio?",
     "options": ["500 años", "550 años", "600 años", "700 años"],
     "correctAnswer": 2,
@@ -194,7 +194,7 @@
   {
     "id": "ep022",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hizo el cuervo que Noé soltó primero?",
     "options": ["Regresó con una hoja", "No volvió", "Iba y venía hasta que se secaron las aguas", "Murió en el vuelo"],
     "correctAnswer": 2,
@@ -203,7 +203,7 @@
   {
     "id": "ep023",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Sobre qué montes reposó el arca?",
     "options": ["Monte Sinaí", "Monte Carmelo", "Montes de Ararat", "Monte Horeb"],
     "correctAnswer": 2,
@@ -212,7 +212,7 @@
   {
     "id": "ep024",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué significa el nombre 'Caín' según Eva?",
     "options": ["Dolor", "Adquirido", "Fortaleza", "Vida"],
     "correctAnswer": 1,
@@ -221,7 +221,7 @@
   {
     "id": "ep025",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo se llamó la tierra donde habitó Caín después de matar a Abel?",
     "options": ["Edom", "Nod", "Babel", "Sinar"],
     "correctAnswer": 1,
@@ -230,7 +230,7 @@
   {
     "id": "ep026",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hombre caminó con Dios y desapareció porque Dios se lo llevó?",
     "options": ["Set", "Enoc", "Lamec", "Matusalén"],
     "correctAnswer": 1,
@@ -239,7 +239,7 @@
   {
     "id": "ep027",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos años vivió Matusalén?",
     "options": ["900 años", "969 años", "950 años", "888 años"],
     "correctAnswer": 1,
@@ -248,7 +248,7 @@
   {
     "id": "ep028",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿De qué madera debía ser construida el arca?",
     "options": ["Cedro", "Roble", "Gofer", "Olivo"],
     "correctAnswer": 2,
@@ -257,7 +257,7 @@
   {
     "id": "ep029",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos pisos tenía el arca?",
     "options": ["Uno", "Dos", "Tres", "Cuatro"],
     "correctAnswer": 2,
@@ -266,7 +266,7 @@
   {
     "id": "ep030",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos animales limpios debía llevar Noé por especie?",
     "options": ["Dos", "Tres", "Siete parejas", "Cinco"],
     "correctAnswer": 2,
@@ -275,7 +275,7 @@
   {
     "id": "ep031",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos días prevalecieron las aguas sobre la tierra?",
     "options": ["40 días", "100 días", "150 días", "365 días"],
     "correctAnswer": 2,
@@ -284,7 +284,7 @@
   {
     "id": "ep032",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandó Dios al hombre que no comiera del árbol?",
     "options": ["Por castigo inmediato", "Porque era venenoso", "Porque moriría", "Porque era sagrado"],
     "correctAnswer": 2,
@@ -293,7 +293,7 @@
   {
     "id": "ep033",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué usaron Adán y Eva para cubrirse después de pecar?",
     "options": ["Pieles", "Hojas de higuera", "Lana", "Telas"],
     "correctAnswer": 1,
@@ -302,7 +302,7 @@
   {
     "id": "ep034",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué puso Dios al oriente del huerto para guardar el camino del árbol de la vida?",
     "options": ["Ángeles", "Querubines y espada encendida", "Un muro de fuego", "Un río"],
     "correctAnswer": 1,
@@ -311,7 +311,7 @@
   {
     "id": "ep035",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué ciudad edificó Caín?",
     "options": ["Nínive", "Babel", "Enoc", "Jericó"],
     "correctAnswer": 2,
@@ -320,7 +320,7 @@
   {
     "id": "ep036",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo se llamó el hijo que nació a Adán en lugar de Abel?",
     "options": ["Set", "Enoc", "Lamec", "Noé"],
     "correctAnswer": 0,
@@ -329,7 +329,7 @@
   {
     "id": "ep037",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandó Dios como señal de que no volvería a destruir la tierra con agua?",
     "options": ["Una estrella", "Un arco iris", "Una nube blanca", "Un altar"],
     "correctAnswer": 1,
@@ -338,7 +338,7 @@
   {
     "id": "ep038",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo se llamaban los tres hijos de Noé?",
     "options": ["Sem, Cam y Jafet", "Isaac, Jacob y Esaú", "Dan, Neftalí y Gad", "Rubén, Simeón y Leví"],
     "correctAnswer": 0,
@@ -347,7 +347,7 @@
   {
     "id": "ep039",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué nieto de Noé fue poderoso cazador delante del Señor?",
     "options": ["Cus", "Nimrod", "Sem", "Arfaxad"],
     "correctAnswer": 1,
@@ -356,7 +356,7 @@
   {
     "id": "ep040",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿En qué tierra se edificó la torre de Babel?",
     "options": ["Canaán", "Egipto", "Sinar", "Ararat"],
     "correctAnswer": 2,
@@ -366,7 +366,7 @@
   {
     "id": "ep041",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué quiso hacer la humanidad al construir la torre de Babel?",
     "options": ["Adorar a Dios", "Hacerse un nombre y evitar ser dispersados", "Refugiarse del diluvio", "Construir un templo"],
     "correctAnswer": 1,
@@ -375,7 +375,7 @@
   {
     "id": "ep042",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hizo Dios para detener la construcción de la torre de Babel?",
     "options": ["Destruyó la torre", "Envió fuego", "Confundió las lenguas", "Envió un diluvio"],
     "correctAnswer": 2,
@@ -384,7 +384,7 @@
   {
     "id": "ep043",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo se llamaba el padre de Abram?",
     "options": ["Nacor", "Taré", "Arfaxad", "Lot"],
     "correctAnswer": 1,
@@ -393,7 +393,7 @@
   {
     "id": "ep044",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿De qué ciudad salió Abram cuando Dios lo llamó?",
     "options": ["Harán", "Ur de los caldeos", "Babel", "Damasco"],
     "correctAnswer": 1,
@@ -402,7 +402,7 @@
   {
     "id": "ep045",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿A qué tierra prometió Dios llevar a Abram?",
     "options": ["Egipto", "Canaán", "Sinar", "Aram"],
     "correctAnswer": 1,
@@ -411,7 +411,7 @@
   {
     "id": "ep046",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué nombre nuevo le dio Dios a Abram?",
     "options": ["Israel", "Isaac", "Abraham", "Jacob"],
     "correctAnswer": 2,
@@ -420,7 +420,7 @@
   {
     "id": "ep047",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué nombre nuevo recibió Sarai?",
     "options": ["Rebeca", "Sara", "Lea", "Raquel"],
     "correctAnswer": 1,
@@ -429,7 +429,7 @@
   {
     "id": "ep048",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién fue el hijo que Abraham tuvo con Agar?",
     "options": ["Isaac", "Ismael", "Esaú", "Jacob"],
     "correctAnswer": 1,
@@ -438,7 +438,7 @@
   {
     "id": "ep049",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué ciudad fue destruida junto con Sodoma?",
     "options": ["Jericó", "Gomorra", "Babel", "Nínive"],
     "correctAnswer": 1,
@@ -447,7 +447,7 @@
   {
     "id": "ep050",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿En qué se convirtió la esposa de Lot?",
     "options": ["En estatua de sal", "En polvo", "En piedra", "En ceniza"],
     "correctAnswer": 0,
@@ -456,7 +456,7 @@
   {
     "id": "ep051",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos justos necesitaba Abraham para que Dios no destruyera Sodoma?",
     "options": ["100", "50", "20", "10"],
     "correctAnswer": 3,
@@ -465,7 +465,7 @@
   {
     "id": "ep052",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamó el hijo prometido de Abraham y Sara?",
     "options": ["Ismael", "Isaac", "Jacob", "Esaú"],
     "correctAnswer": 1,
@@ -474,7 +474,7 @@
   {
     "id": "ep053",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué edad tenía Abraham cuando nació Isaac?",
     "options": ["75 años", "90 años", "99 años", "100 años"],
     "correctAnswer": 3,
@@ -483,7 +483,7 @@
   {
     "id": "ep054",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿En qué monte ofreció Abraham a Isaac?",
     "options": ["Monte Sinaí", "Monte Carmelo", "Monte Moriah", "Monte Horeb"],
     "correctAnswer": 2,
@@ -492,7 +492,7 @@
   {
     "id": "ep055",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué proveyó Dios en lugar de Isaac para el sacrificio?",
     "options": ["Un cordero", "Un carnero", "Una paloma", "Un toro"],
     "correctAnswer": 1,
@@ -501,7 +501,7 @@
   {
     "id": "ep056",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo se llamó el siervo que fue a buscar esposa para Isaac? (según tradición bíblica)",
     "options": ["Eliezer", "Lot", "Nacor", "Abner"],
     "correctAnswer": 0,
@@ -510,7 +510,7 @@
   {
     "id": "ep057",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamó la esposa de Isaac?",
     "options": ["Sara", "Rebeca", "Raquel", "Lea"],
     "correctAnswer": 1,
@@ -519,7 +519,7 @@
   {
     "id": "ep058",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamaban los hijos gemelos de Isaac?",
     "options": ["Dan y Neftalí", "Jacob y Esaú", "José y Benjamín", "Rubén y Simeón"],
     "correctAnswer": 1,
@@ -528,7 +528,7 @@
   {
     "id": "ep059",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Por qué Esaú vendió su primogenitura?",
     "options": ["Por oro", "Por un plato de lentejas", "Por tierras", "Por ganado"],
     "correctAnswer": 1,
@@ -537,7 +537,7 @@
   {
     "id": "ep060",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hizo Jacob para obtener la bendición de Isaac?",
     "options": ["Pidió permiso", "Engañó a su padre haciéndose pasar por Esaú", "Esperó su turno", "Pagó dinero"],
     "correctAnswer": 1,
@@ -546,7 +546,7 @@
   {
     "id": "ep061",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué vio Jacob en su sueño cuando huía de Esaú?",
     "options": ["Un río de fuego", "Una escalera que llegaba al cielo", "Un ejército celestial", "Un trono de oro"],
     "correctAnswer": 1,
@@ -555,7 +555,7 @@
   {
     "id": "ep062",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo llamó Jacob al lugar donde soñó con la escalera?",
     "options": ["Hebrón", "Betel", "Siquem", "Moriah"],
     "correctAnswer": 1,
@@ -564,7 +564,7 @@
   {
     "id": "ep063",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamaban las dos hijas de Labán que se casaron con Jacob?",
     "options": ["Sara y Rebeca", "Lea y Raquel", "Marta y María", "Noemí y Rut"],
     "correctAnswer": 1,
@@ -573,7 +573,7 @@
   {
     "id": "ep064",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos años trabajó Jacob en total por Raquel?",
     "options": ["7 años", "10 años", "14 años", "20 años"],
     "correctAnswer": 2,
@@ -582,7 +582,7 @@
   {
     "id": "ep065",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Con quién luchó Jacob durante la noche antes de encontrarse con Esaú?",
     "options": ["Un soldado", "Un ángel / varón", "Esaú", "Labán"],
     "correctAnswer": 1,
@@ -591,7 +591,7 @@
   {
     "id": "ep066",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué nuevo nombre recibió Jacob después de luchar?",
     "options": ["Judá", "Israel", "Benjamín", "Leví"],
     "correctAnswer": 1,
@@ -600,7 +600,7 @@
   {
     "id": "ep067",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién era el hijo favorito de Jacob?",
     "options": ["Judá", "Rubén", "José", "Benjamín"],
     "correctAnswer": 2,
@@ -609,7 +609,7 @@
   {
     "id": "ep068",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué prenda especial hizo Jacob para José?",
     "options": ["Un manto real", "Una túnica de colores", "Una capa de lino", "Un cinturón bordado"],
     "correctAnswer": 1,
@@ -618,7 +618,7 @@
   {
     "id": "ep069",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Por cuánto vendieron los hermanos a José?",
     "options": ["10 piezas de plata", "15 piezas de oro", "20 piezas de plata", "30 piezas de plata"],
     "correctAnswer": 2,
@@ -627,7 +627,7 @@
   {
     "id": "ep070",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿A quién fue vendido José en Egipto?",
     "options": ["Faraón", "Potifar", "Un sacerdote", "Un general asirio"],
     "correctAnswer": 1,
@@ -636,7 +636,7 @@
   {
     "id": "ep071",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué cargo tenía Potifar?",
     "options": ["Sacerdote", "Copero", "Capitán de la guardia", "Gobernador"],
     "correctAnswer": 2,
@@ -645,7 +645,7 @@
   {
     "id": "ep072",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Por qué fue encarcelado José?",
     "options": ["Robó dinero", "Fue acusado falsamente por la esposa de Potifar", "Intentó huir", "Desobedeció al faraón"],
     "correctAnswer": 1,
@@ -654,7 +654,7 @@
   {
     "id": "ep073",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué don tenía José que lo hizo destacar en la cárcel?",
     "options": ["Sanar enfermos", "Interpretar sueños", "Cantar salmos", "Escribir leyes"],
     "correctAnswer": 1,
@@ -663,7 +663,7 @@
   {
     "id": "ep074",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué soñó el faraón que José interpretó?",
     "options": ["Siete vacas gordas y siete flacas", "Una torre en llamas", "Un río seco", "Un ejército invencible"],
     "correctAnswer": 0,
@@ -672,7 +672,7 @@
   {
     "id": "ep075",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos años de abundancia y hambre anunció José?",
     "options": ["5 y 5", "7 y 7", "10 y 10", "3 y 3"],
     "correctAnswer": 1,
@@ -681,7 +681,7 @@
   {
     "id": "ep076",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué cargo recibió José en Egipto?",
     "options": ["Sacerdote", "General", "Gobernador sobre todo Egipto", "Esclavo principal"],
     "correctAnswer": 2,
@@ -690,7 +690,7 @@
   {
     "id": "ep077",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamó el primer hijo de José?",
     "options": ["Efraín", "Manasés", "Judá", "Benjamín"],
     "correctAnswer": 1,
@@ -699,7 +699,7 @@
   {
     "id": "ep078",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamó el segundo hijo de José?",
     "options": ["Manasés", "Rubén", "Efraín", "Leví"],
     "correctAnswer": 2,
@@ -708,7 +708,7 @@
   {
     "id": "ep079",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿A qué hijo pidió José que llevaran como prueba cuando sus hermanos regresaron por comida?",
     "options": ["Judá", "Rubén", "Benjamín", "Leví"],
     "correctAnswer": 2,
@@ -717,7 +717,7 @@
   {
     "id": "ep080",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué dijo José a sus hermanos cuando se dio a conocer?",
     "options": ["Ustedes me arruinaron", "Dios me envió delante de ustedes para preservación", "Los castigaré", "No los conozco"],
     "correctAnswer": 1,
@@ -726,7 +726,7 @@
   {
     "id": "ep081",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántas personas de la familia de Jacob descendieron a Egipto?",
     "options": ["50", "66", "70", "75"],
     "correctAnswer": 2,
@@ -735,7 +735,7 @@
   {
     "id": "ep082",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿En qué región de Egipto se estableció la familia de Jacob?",
     "options": ["Gosén", "Menfis", "Heliópolis", "Tebas"],
     "correctAnswer": 0,
@@ -744,7 +744,7 @@
   {
     "id": "ep083",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos años vivió Jacob?",
     "options": ["120 años", "130 años", "147 años", "150 años"],
     "correctAnswer": 2,
@@ -753,7 +753,7 @@
   {
     "id": "ep084",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Dónde pidió Jacob que lo enterraran?",
     "options": ["Egipto", "Monte Sinaí", "Cueva de Macpela", "Siquem"],
     "correctAnswer": 2,
@@ -762,7 +762,7 @@
   {
     "id": "ep085",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué tribu recibiría el cetro según la bendición de Jacob?",
     "options": ["Leví", "Judá", "Rubén", "José"],
     "correctAnswer": 1,
@@ -771,7 +771,7 @@
   {
     "id": "ep086",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué hijo de Jacob fue descrito como 'rama fructífera junto a una fuente'?",
     "options": ["Judá", "Benjamín", "José", "Dan"],
     "correctAnswer": 2,
@@ -780,7 +780,7 @@
   {
     "id": "ep087",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos años vivió José?",
     "options": ["100 años", "110 años", "120 años", "130 años"],
     "correctAnswer": 1,
@@ -789,7 +789,7 @@
   {
     "id": "ep088",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué pidió José que hicieran con sus huesos?",
     "options": ["Que los enterraran en Egipto", "Que los quemaran", "Que los llevaran a la tierra prometida", "Que los dejaran en el palacio"],
     "correctAnswer": 2,
@@ -798,7 +798,7 @@
   {
     "id": "ep089",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué instrumento utilizó Dios para vestir a Adán y Eva después de pecar?",
     "options": ["Hojas", "Pieles de animales", "Lino", "Lana"],
     "correctAnswer": 1,
@@ -807,7 +807,7 @@
   {
     "id": "ep090",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué patriarca fue llamado 'amigo de Dios' posteriormente en la Escritura?",
     "options": ["Isaac", "Jacob", "Abraham", "José"],
     "correctAnswer": 2,
@@ -816,7 +816,7 @@
   {
     "id": "ep091",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué prometió Dios a Abraham acerca de su descendencia?",
     "options": ["Sería pequeña", "Sería como las estrellas del cielo", "Desaparecería", "Sería solo un hijo"],
     "correctAnswer": 1,
@@ -825,7 +825,7 @@
   {
     "id": "ep092",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué señal del pacto dio Dios a Abraham?",
     "options": ["El arco iris", "La circuncisión", "Una nube", "Un altar"],
     "correctAnswer": 1,
@@ -834,7 +834,7 @@
   {
     "id": "ep093",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién intercedió ante Dios por Sodoma?",
     "options": ["Lot", "Isaac", "Abraham", "Jacob"],
     "correctAnswer": 2,
@@ -843,7 +843,7 @@
   {
     "id": "ep094",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué rey y sacerdote bendijo a Abraham?",
     "options": ["Faraón", "Melquisedec", "Abimelec", "Nimrod"],
     "correctAnswer": 1,
@@ -852,7 +852,7 @@
   {
     "id": "ep095",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cómo se llamó la madre de Ismael?",
     "options": ["Sara", "Rebeca", "Agar", "Lea"],
     "correctAnswer": 2,
@@ -861,7 +861,7 @@
   {
     "id": "ep096",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué ciudad fue asociada con Nimrod como centro de su reino?",
     "options": ["Jericó", "Babel", "Hebrón", "Betel"],
     "correctAnswer": 1,
@@ -870,7 +870,7 @@
   {
     "id": "ep097",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hijo menor de Jacob fue especialmente protegido por él?",
     "options": ["José", "Judá", "Benjamín", "Rubén"],
     "correctAnswer": 2,
@@ -879,7 +879,7 @@
   {
     "id": "ep098",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué nombre le dio Dios al lugar donde Abraham casi sacrificó a Isaac?",
     "options": ["Jehová-Jireh", "Betel", "Sinar", "Hebrón"],
     "correctAnswer": 0,
@@ -888,7 +888,7 @@
   {
     "id": "ep099",
     "period": "El Principio",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién encontró a Rebeca junto al pozo?",
     "options": ["Isaac", "Jacob", "El siervo de Abraham", "Lot"],
     "correctAnswer": 2,
@@ -897,7 +897,7 @@
   {
     "id": "ep100",
     "period": "El Principio",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué dijo José a sus hermanos respecto a lo que ellos pensaron para mal?",
     "options": ["Dios lo encaminó a bien", "Será castigado", "Olvidemos el pasado", "No tiene importancia"],
     "correctAnswer": 0,
@@ -906,7 +906,7 @@
   {
     "id": "ex001",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Cómo se llamó el libertador que Dios levantó para sacar a Israel de Egipto?",
     "options": ["Josué", "Moisés", "Aarón", "Caleb"],
     "correctAnswer": 1,
@@ -915,7 +915,7 @@
   {
     "id": "ex002",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿En qué río fue colocado Moisés cuando era bebé?",
     "options": ["Éufrates", "Jordán", "Nilo", "Tigris"],
     "correctAnswer": 2,
@@ -924,7 +924,7 @@
   {
     "id": "ex003",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién encontró a Moisés en el río?",
     "options": ["Una esclava hebrea", "La hija del faraón", "La esposa del faraón", "Un soldado egipcio"],
     "correctAnswer": 1,
@@ -933,7 +933,7 @@
   {
     "id": "ex004",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué vio Moisés que lo llevó a huir de Egipto?",
     "options": ["Un templo pagano", "Un egipcio golpeando a un hebreo", "Una rebelión", "Un incendio"],
     "correctAnswer": 1,
@@ -942,7 +942,7 @@
   {
     "id": "ex005",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿En qué monte habló Dios a Moisés desde la zarza ardiente?",
     "options": ["Monte Carmelo", "Monte Horeb", "Monte Sion", "Monte Ararat"],
     "correctAnswer": 1,
@@ -951,7 +951,7 @@
   {
     "id": "ex006",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué señal realizó Dios cuando Moisés arrojó su vara al suelo?",
     "options": ["Se convirtió en fuego", "Se convirtió en serpiente", "Se partió en dos", "Desapareció"],
     "correctAnswer": 1,
@@ -960,7 +960,7 @@
   {
     "id": "ex007",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién fue portavoz de Moisés ante el faraón?",
     "options": ["Josué", "Aarón", "Caleb", "Miriam"],
     "correctAnswer": 1,
@@ -969,7 +969,7 @@
   {
     "id": "ex008",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuál fue la primera plaga enviada sobre Egipto?",
     "options": ["Ranas", "Moscas", "Agua convertida en sangre", "Tinieblas"],
     "correctAnswer": 2,
@@ -978,7 +978,7 @@
   {
     "id": "ex009",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuál fue la última plaga que cayó sobre Egipto?",
     "options": ["Granizo", "Langostas", "Tinieblas", "Muerte de los primogénitos"],
     "correctAnswer": 3,
@@ -987,7 +987,7 @@
   {
     "id": "ex010",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿Qué debían poner los israelitas en los postes de sus puertas durante la Pascua?",
     "options": ["Aceite", "Agua", "Sangre del cordero", "Harina"],
     "correctAnswer": 2,
@@ -996,7 +996,7 @@
   {
     "id": "ex011",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mar cruzaron los israelitas al salir de Egipto?",
     "options": ["Mar Mediterráneo", "Mar Rojo", "Mar Muerto", "Mar Negro"],
     "correctAnswer": 1,
@@ -1005,7 +1005,7 @@
   {
     "id": "ex012",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué sucedió con el ejército del faraón en el mar?",
     "options": ["Escaparon", "Se rindieron", "Fueron cubiertos por las aguas", "Se unieron a Israel"],
     "correctAnswer": 2,
@@ -1014,7 +1014,7 @@
   {
     "id": "ex013",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué descendía del cielo para alimentar al pueblo en el desierto?",
     "options": ["Pan y miel", "Maná", "Trigo", "Codornices solamente"],
     "correctAnswer": 1,
@@ -1023,7 +1023,7 @@
   {
     "id": "ex014",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos días descendía el maná cada semana?",
     "options": ["5 días", "6 días", "7 días", "4 días"],
     "correctAnswer": 1,
@@ -1032,7 +1032,7 @@
   {
     "id": "ex015",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿De dónde salió agua cuando Moisés golpeó la roca?",
     "options": ["Del cielo", "Del suelo", "De la roca", "Del mar"],
     "correctAnswer": 2,
@@ -1041,7 +1041,7 @@
   {
     "id": "ex016",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué sucedía cuando Moisés levantaba sus manos en la batalla contra Amalec?",
     "options": ["Perdían", "Ganaban", "Se detenía la batalla", "Llovía"],
     "correctAnswer": 1,
@@ -1050,7 +1050,7 @@
   {
     "id": "ex017",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Básica",
+    "difficulty": "BASIC",
     "question": "¿En qué monte recibió Moisés los Diez Mandamientos?",
     "options": ["Monte Sinaí", "Monte Carmelo", "Monte Sion", "Monte Tabor"],
     "correctAnswer": 0,
@@ -1059,7 +1059,7 @@
   {
     "id": "ex018",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos mandamientos recibió Moisés?",
     "options": ["5", "7", "10", "12"],
     "correctAnswer": 2,
@@ -1068,7 +1068,7 @@
   {
     "id": "ex019",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué ídolo construyó el pueblo mientras Moisés estaba en el monte?",
     "options": ["Una serpiente", "Un becerro de oro", "Una estatua de piedra", "Un altar"],
     "correctAnswer": 1,
@@ -1077,7 +1077,7 @@
   {
     "id": "ex020",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Quién ayudó a sostener los brazos de Moisés durante la batalla?",
     "options": ["Josué y Caleb", "Aarón y Hur", "Nadab y Abiú", "Eleazar y Itamar"],
     "correctAnswer": 1,
@@ -1086,7 +1086,7 @@
   {
     "id": "ex021",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué escribió Dios en las tablas de piedra?",
     "options": ["Las leyes civiles", "Los Diez Mandamientos", "Los Salmos", "Las genealogías"],
     "correctAnswer": 1,
@@ -1095,7 +1095,7 @@
   {
     "id": "ex022",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué tribu fue apartada para el servicio del tabernáculo?",
     "options": ["Judá", "Benjamín", "Leví", "Efraín"],
     "correctAnswer": 2,
@@ -1104,7 +1104,7 @@
   {
     "id": "ex023",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué cubría el tabernáculo durante el día para guiar al pueblo?",
     "options": ["Una estrella", "Una nube", "Un arco iris", "Fuego continuo"],
     "correctAnswer": 1,
@@ -1113,7 +1113,7 @@
   {
     "id": "ex024",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué aparecía sobre el tabernáculo durante la noche?",
     "options": ["Relámpagos", "Una nube oscura", "Fuego", "Viento fuerte"],
     "correctAnswer": 2,
@@ -1122,7 +1122,7 @@
   {
     "id": "ex025",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos espías fueron enviados a reconocer la tierra prometida?",
     "options": ["10", "11", "12", "14"],
     "correctAnswer": 2,
@@ -1131,7 +1131,7 @@
   {
     "id": "ex026",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué dos espías confiaron en que Dios les daría la tierra?",
     "options": ["Aarón y Hur", "Moisés y Aarón", "Josué y Caleb", "Nadab y Abiú"],
     "correctAnswer": 2,
@@ -1140,7 +1140,7 @@
   {
     "id": "ex027",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cuántos años vagó Israel en el desierto?",
     "options": ["20 años", "30 años", "40 años", "50 años"],
     "correctAnswer": 2,
@@ -1149,7 +1149,7 @@
   {
     "id": "ex028",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué ocurrió cuando el pueblo murmuró y fue mordido por serpientes?",
     "options": ["Murieron todos", "Moisés hizo una serpiente de bronce", "Descendió fuego del cielo", "Se abrió la tierra"],
     "correctAnswer": 1,
@@ -1158,7 +1158,7 @@
   {
     "id": "ex029",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía hacer el pueblo para ser sanado al ser mordido por serpientes?",
     "options": ["Beber agua especial", "Mirar la serpiente de bronce", "Ofrecer sacrificio", "Ayunar"],
     "correctAnswer": 1,
@@ -1167,7 +1167,7 @@
   {
     "id": "ex030",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Por qué no entró Moisés a la tierra prometida?",
     "options": ["Murió antes", "Desobedeció golpeando la roca", "Renunció al liderazgo", "Fue expulsado"],
     "correctAnswer": 1,
@@ -1176,7 +1176,7 @@
   {
     "id": "ex031",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Desde qué monte vio Moisés la tierra prometida antes de morir?",
     "options": ["Sinaí", "Nebo", "Carmelo", "Horeb"],
     "correctAnswer": 1,
@@ -1185,7 +1185,7 @@
   {
     "id": "ex032",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién fue el sucesor de Moisés?",
     "options": ["Caleb", "Aarón", "Josué", "Eleazar"],
     "correctAnswer": 2,
@@ -1194,7 +1194,7 @@
   {
     "id": "ex033",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué alimento adicional envió Dios junto con el maná en el desierto?",
     "options": ["Peces", "Codornices", "Pan dulce", "Uvas"],
     "correctAnswer": 1,
@@ -1203,7 +1203,7 @@
   {
     "id": "ex034",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué sucedió con Nadab y Abiú por ofrecer fuego extraño?",
     "options": ["Fueron reprendidos", "Fueron desterrados", "Murieron consumidos por fuego", "Perdieron su cargo"],
     "correctAnswer": 2,
@@ -1212,7 +1212,7 @@
   {
     "id": "ex035",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué día debía guardarse como día de reposo?",
     "options": ["Primer día", "Tercer día", "Sexto día", "Séptimo día"],
     "correctAnswer": 3,
@@ -1221,7 +1221,7 @@
   {
     "id": "ex036",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué libro contiene principalmente leyes ceremoniales y sacrificios?",
     "options": ["Génesis", "Levítico", "Josué", "Jueces"],
     "correctAnswer": 1,
@@ -1230,7 +1230,7 @@
   {
     "id": "ex037",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandamiento prohíbe tener otros dioses?",
     "options": ["El segundo", "El tercero", "El primero", "El cuarto"],
     "correctAnswer": 2,
@@ -1239,7 +1239,7 @@
   {
     "id": "ex038",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué construyó el pueblo para la presencia de Dios en el desierto?",
     "options": ["Un templo", "Un palacio", "El tabernáculo", "Una torre"],
     "correctAnswer": 2,
@@ -1248,7 +1248,7 @@
   {
     "id": "ex039",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué objeto estaba dentro del arca del pacto?",
     "options": ["La vara de Aarón", "Las tablas de la ley", "Un libro de salmos", "Una espada"],
     "correctAnswer": 1,
@@ -1257,7 +1257,7 @@
   {
     "id": "ex040",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuál era el propósito principal de la Ley?",
     "options": ["Dar riqueza", "Mostrar la voluntad de Dios", "Organizar el ejército", "Expandir territorio"],
     "correctAnswer": 1,
@@ -1266,7 +1266,7 @@
   {
     "id": "ex041",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué tribu acampaba alrededor del tabernáculo para protegerlo?",
     "options": ["Judá", "Leví", "Benjamín", "Efraín"],
     "correctAnswer": 1,
@@ -1275,7 +1275,7 @@
   {
     "id": "ex042",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Quién era el sumo sacerdote hermano de Moisés?",
     "options": ["Josué", "Caleb", "Aarón", "Eleazar"],
     "correctAnswer": 2,
@@ -1284,7 +1284,7 @@
   {
     "id": "ex043",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué sucedía si alguien tocaba el monte Sinaí cuando Dios descendía?",
     "options": ["Era bendecido", "Moría", "Era expulsado", "Nada ocurría"],
     "correctAnswer": 1,
@@ -1293,7 +1293,7 @@
   {
     "id": "ex044",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Cuántos días estuvo Moisés en el monte cuando recibió la Ley?",
     "options": ["7 días", "30 días", "40 días y 40 noches", "50 días"],
     "correctAnswer": 2,
@@ -1302,7 +1302,7 @@
   {
     "id": "ex045",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué sucedió con el rostro de Moisés después de hablar con Dios?",
     "options": ["Se volvió pálido", "Resplandecía", "Se cubrió de polvo", "Envejeció"],
     "correctAnswer": 1,
@@ -1311,7 +1311,7 @@
   {
     "id": "ex046",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué día se celebraba la Pascua cada año?",
     "options": ["14 del mes primero", "1 del mes séptimo", "10 del mes tercero", "15 del mes sexto"],
     "correctAnswer": 0,
@@ -1320,7 +1320,7 @@
   {
     "id": "ex047",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué instrumento sonaba para convocar a la congregación en el desierto?",
     "options": ["Tambores", "Trompetas de plata", "Arpas", "Cuernos de carnero"],
     "correctAnswer": 1,
@@ -1329,7 +1329,7 @@
   {
     "id": "ex048",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué castigo recibió Coré por rebelarse contra Moisés?",
     "options": ["Destierro", "La tierra lo tragó", "Prisión", "Fue perdonado"],
     "correctAnswer": 1,
@@ -1338,7 +1338,7 @@
   {
     "id": "ex049",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué floreció como señal del sacerdocio escogido?",
     "options": ["La vara de Moisés", "La vara de Aarón", "Un altar", "Un árbol seco"],
     "correctAnswer": 1,
@@ -1347,7 +1347,7 @@
   {
     "id": "ex050",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacer el pueblo antes de entrar en la tierra prometida según Deuteronomio?",
     "options": ["Olvidar la Ley", "Renovar el pacto", "Elegir un rey", "Construir el templo"],
     "correctAnswer": 1,
@@ -1356,7 +1356,7 @@
   {
     "id": "ex051",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandamiento prohíbe dar falso testimonio?",
     "options": ["El octavo", "El noveno", "El sexto", "El quinto"],
     "correctAnswer": 1,
@@ -1365,7 +1365,7 @@
   {
     "id": "ex052",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandamiento ordena honrar a padre y madre?",
     "options": ["El tercero", "El cuarto", "El quinto", "El sexto"],
     "correctAnswer": 2,
@@ -1374,7 +1374,7 @@
   {
     "id": "ex053",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué libro repite y explica nuevamente la Ley antes de entrar en Canaán?",
     "options": ["Levítico", "Números", "Deuteronomio", "Josué"],
     "correctAnswer": 2,
@@ -1383,7 +1383,7 @@
   {
     "id": "ex054",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Quién enterró a Moisés según la Escritura?",
     "options": ["Josué", "Aarón", "Dios", "Caleb"],
     "correctAnswer": 2,
@@ -1392,7 +1392,7 @@
   {
     "id": "ex055",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué rey extranjero intentó maldecir a Israel pero terminó bendiciéndolo?",
     "options": ["Faraón", "Balac", "Senaquerib", "Abimelec"],
     "correctAnswer": 1,
@@ -1401,7 +1401,7 @@
   {
     "id": "ex056",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué profeta fue llamado para maldecir a Israel por encargo de Balac?",
     "options": ["Elías", "Samuel", "Balaam", "Natán"],
     "correctAnswer": 2,
@@ -1410,7 +1410,7 @@
   {
     "id": "ex057",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué animal habló para reprender a Balaam?",
     "options": ["Un caballo", "Un camello", "Un asna", "Una oveja"],
     "correctAnswer": 2,
@@ -1419,7 +1419,7 @@
   {
     "id": "ex058",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía escribirse en las puertas y postes según Deuteronomio 6?",
     "options": ["Las genealogías", "Las bendiciones", "Las palabras de la Ley", "Los nombres de las tribus"],
     "correctAnswer": 2,
@@ -1428,7 +1428,7 @@
   {
     "id": "ex059",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué día especial se celebraba para expiación nacional en Levítico?",
     "options": ["Fiesta de los Tabernáculos", "Día de Expiación", "Pentecostés", "Pascua"],
     "correctAnswer": 1,
@@ -1437,7 +1437,7 @@
   {
     "id": "ex060",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué mandamiento prohíbe codiciar?",
     "options": ["El décimo", "El noveno", "El octavo", "El séptimo"],
     "correctAnswer": 0,
@@ -1446,7 +1446,7 @@
   {
     "id": "ex061",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía encenderse continuamente en el candelabro del tabernáculo?",
     "options": ["Fuego del altar", "Aceite puro de oliva", "Incienso especial", "Carbón del sacrificio"],
     "correctAnswer": 1,
@@ -1455,7 +1455,7 @@
   {
     "id": "ex062",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cada cuántos años se celebraba el Año del Jubileo?",
     "options": ["25 años", "40 años", "50 años", "70 años"],
     "correctAnswer": 2,
@@ -1464,7 +1464,7 @@
   {
     "id": "ex063",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacerse con la tierra durante el año sabático?",
     "options": ["Sembrarla doble", "Dejarla descansar", "Venderla", "Quemarla"],
     "correctAnswer": 1,
@@ -1473,7 +1473,7 @@
   {
     "id": "ex064",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué ciudad servía como refugio para quien mataba accidentalmente?",
     "options": ["Jericó", "Hebrón", "Ciudad de refugio", "Siquem"],
     "correctAnswer": 2,
@@ -1482,7 +1482,7 @@
   {
     "id": "ex065",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debían amar con todo su corazón según Deuteronomio 6:5?",
     "options": ["La Ley", "La tierra prometida", "Al Señor su Dios", "A Moisés"],
     "correctAnswer": 2,
@@ -1491,7 +1491,7 @@
   {
     "id": "ex066",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué sucedería si Israel obedecía la voz de Dios según Deuteronomio 28?",
     "options": ["Serían esclavos", "Recibirían bendiciones", "Serían exiliados", "Perderían la tierra"],
     "correctAnswer": 1,
@@ -1500,7 +1500,7 @@
   {
     "id": "ex067",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué objeto estaba sobre el arca del pacto como lugar de expiación?",
     "options": ["La mesa de oro", "El propiciatorio", "Un altar pequeño", "Una corona"],
     "correctAnswer": 1,
@@ -1509,7 +1509,7 @@
   {
     "id": "ex068",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué llevaba el sumo sacerdote en el pectoral sobre su pecho?",
     "options": ["Doce piedras con los nombres de las tribus", "Una espada ceremonial", "Un rollo de la Ley", "Una vara pequeña"],
     "correctAnswer": 0,
@@ -1518,7 +1518,7 @@
   {
     "id": "ex069",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía quemarse continuamente en el altar de bronce?",
     "options": ["Incienso", "Aceite", "Fuego perpetuo", "Grano"],
     "correctAnswer": 2,
@@ -1527,7 +1527,7 @@
   {
     "id": "ex070",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué tribu no recibió heredad territorial como las demás?",
     "options": ["Judá", "Benjamín", "Leví", "Efraín"],
     "correctAnswer": 2,
@@ -1536,7 +1536,7 @@
   {
     "id": "ex071",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía colocarse sobre el altar como sacrificio diario?",
     "options": ["Un carnero cada semana", "Dos corderos cada día", "Un toro cada mes", "Un ave cada día"],
     "correctAnswer": 1,
@@ -1545,7 +1545,7 @@
   {
     "id": "ex072",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué celebraba la Fiesta de los Tabernáculos?",
     "options": ["La salida de Egipto", "La cosecha y la vida en el desierto", "La entrega de la Ley", "La conquista de Canaán"],
     "correctAnswer": 1,
@@ -1554,7 +1554,7 @@
   {
     "id": "ex073",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía hacer el sumo sacerdote una vez al año en el Lugar Santísimo?",
     "options": ["Encender el candelabro", "Ofrecer incienso diario", "Hacer expiación por el pueblo", "Leer la Ley"],
     "correctAnswer": 2,
@@ -1563,7 +1563,7 @@
   {
     "id": "ex074",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué señal física marcaba el pacto con Abraham que seguía vigente en la Ley?",
     "options": ["El sábado", "La circuncisión", "El diezmo", "El sacrificio diario"],
     "correctAnswer": 1,
@@ -1572,7 +1572,7 @@
   {
     "id": "ex075",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía escribirse en el corazón y enseñarse a los hijos constantemente?",
     "options": ["Las historias de Egipto", "Las palabras de la Ley", "Las batallas", "Los salmos"],
     "correctAnswer": 1,
@@ -1581,7 +1581,7 @@
   {
     "id": "ex076",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué animal era usado comúnmente para sacrificio de expiación?",
     "options": ["Cabra", "Caballo", "Camello", "Perro"],
     "correctAnswer": 0,
@@ -1590,7 +1590,7 @@
   {
     "id": "ex077",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacerse antes de ofrecer sacrificio según la Ley?",
     "options": ["Lavarse las manos y pies", "Ayunar tres días", "Vestirse de blanco", "Subir al monte"],
     "correctAnswer": 0,
@@ -1599,7 +1599,7 @@
   {
     "id": "ex078",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué castigo enfrentaba quien blasfemaba el nombre de Dios según Levítico?",
     "options": ["Multa", "Exilio", "Muerte", "Sacrificio especial"],
     "correctAnswer": 2,
@@ -1608,7 +1608,7 @@
   {
     "id": "ex079",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía recordarse al atar las palabras de la Ley en la mano y entre los ojos?",
     "options": ["Las fiestas", "Los mandamientos", "Las promesas a Abraham", "La salida de Egipto"],
     "correctAnswer": 1,
@@ -1617,7 +1617,7 @@
   {
     "id": "ex080",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué prometió Dios levantar como profeta semejante a Moisés?",
     "options": ["Un rey poderoso", "Un sacerdote eterno", "Un profeta de entre sus hermanos", "Un juez militar"],
     "correctAnswer": 2,
@@ -1626,7 +1626,7 @@
   {
     "id": "ex081",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacer el pueblo al escuchar la lectura pública de la Ley cada siete años?",
     "options": ["Guardar silencio absoluto", "Reunirse para oír y aprender", "Ofrecer sacrificios especiales", "Ayunar todo el día"],
     "correctAnswer": 1,
@@ -1635,7 +1635,7 @@
   {
     "id": "ex082",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué canto enseñó Moisés al pueblo antes de morir?",
     "options": ["El Salmo 23", "El Cántico de Moisés", "El Cántico de Débora", "El Cántico de Ana"],
     "correctAnswer": 1,
@@ -1644,7 +1644,7 @@
   {
     "id": "ex083",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía colocarse en los flecos de los vestidos para recordar los mandamientos?",
     "options": ["Cintas rojas", "Cordón azul", "Campanillas", "Hilos dorados"],
     "correctAnswer": 1,
@@ -1653,7 +1653,7 @@
   {
     "id": "ex084",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué sucedía si un profeta hablaba en nombre de Dios y no se cumplía su palabra?",
     "options": ["Era corregido", "Debía ofrecer sacrificio", "Era considerado falso profeta", "Era desterrado"],
     "correctAnswer": 2,
@@ -1662,7 +1662,7 @@
   {
     "id": "ex085",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacerse con el primogénito de los animales limpios?",
     "options": ["Ofrecerlo al Señor", "Venderlo", "Conservarlo para trabajo", "Intercambiarlo"],
     "correctAnswer": 0,
@@ -1671,7 +1671,7 @@
   {
     "id": "ex086",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía escribirse sobre piedras grandes al cruzar el Jordán según la Ley?",
     "options": ["Los nombres de las tribus", "Las palabras de la Ley", "Las victorias militares", "Las genealogías"],
     "correctAnswer": 1,
@@ -1680,7 +1680,7 @@
   {
     "id": "ex087",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué fiesta celebraba la entrega de la cosecha de trigo?",
     "options": ["Pascua", "Fiesta de las Trompetas", "Pentecostés (Fiesta de las Semanas)", "Día de Expiación"],
     "correctAnswer": 2,
@@ -1689,7 +1689,7 @@
   {
     "id": "ex088",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía hacer el rey de Israel respecto a la Ley según Deuteronomio?",
     "options": ["Ignorarla", "Escribir una copia para sí y leerla", "Delegarla a los sacerdotes", "Memorizar solo los mandamientos"],
     "correctAnswer": 1,
@@ -1698,7 +1698,7 @@
   {
     "id": "ex089",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía ofrecerse cada mañana y cada tarde como sacrificio continuo?",
     "options": ["Un carnero", "Dos corderos", "Una paloma", "Un novillo"],
     "correctAnswer": 1,
@@ -1707,7 +1707,7 @@
   {
     "id": "ex090",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué señal visible recordaba el pacto del sábado?",
     "options": ["El maná", "El descanso del séptimo día", "Una marca en la frente", "Una piedra conmemorativa"],
     "correctAnswer": 1,
@@ -1716,7 +1716,7 @@
   {
     "id": "ex091",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacerse con los diezmos según la Ley?",
     "options": ["Guardarlos en casa", "Entregarlos al levita", "Venderlos siempre", "Enterrarlos"],
     "correctAnswer": 1,
@@ -1725,7 +1725,7 @@
   {
     "id": "ex092",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué bendición sacerdotal pronunciaba Aarón sobre el pueblo?",
     "options": ["El Señor te bendiga y te guarde", "Dios de Abraham te prospere", "Sea fuerte y valiente", "Paz en tus fronteras"],
     "correctAnswer": 0,
@@ -1734,7 +1734,7 @@
   {
     "id": "ex093",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué animal debía usarse para la Pascua?",
     "options": ["Cabra o cordero sin defecto", "Toro joven", "Paloma", "Carnero viejo"],
     "correctAnswer": 0,
@@ -1743,7 +1743,7 @@
   {
     "id": "ex094",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué debía hacerse si alguien encontraba un objeto perdido de su hermano?",
     "options": ["Quedárselo", "Ignorarlo", "Devolverlo", "Venderlo"],
     "correctAnswer": 2,
@@ -1752,7 +1752,7 @@
   {
     "id": "ex095",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía recordar Israel al celebrar la Pascua cada año?",
     "options": ["La entrega de la Ley", "La salida de Egipto", "La conquista de Canaán", "El pacto con Abraham"],
     "correctAnswer": 1,
@@ -1761,7 +1761,7 @@
   {
     "id": "ex096",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué sucedería si Israel se apartaba y servía a otros dioses?",
     "options": ["Nada", "Serían bendecidos", "Vendrían maldiciones", "Serían coronados"],
     "correctAnswer": 2,
@@ -1770,7 +1770,7 @@
   {
     "id": "ex097",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacerse con el extranjero, el huérfano y la viuda?",
     "options": ["Ignorarlos", "Explotarlos", "Ayudarlos y no oprimirlos", "Cobrarles más impuestos"],
     "correctAnswer": 2,
@@ -1779,7 +1779,7 @@
   {
     "id": "ex098",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Qué promesa hizo Dios respecto a la obediencia y la prosperidad en la tierra?",
     "options": ["Serían pocos", "Serían cabeza y no cola", "Serían esclavos", "Perderían sus cosechas"],
     "correctAnswer": 1,
@@ -1788,7 +1788,7 @@
   {
     "id": "ex099",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Intermedia",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué debía hacer el pueblo al entrar en la tierra respecto a los ídolos?",
     "options": ["Conservarlos", "Esconderlos", "Destruirlos", "Venderlos"],
     "correctAnswer": 2,
@@ -1797,12 +1797,10 @@
   {
     "id": "ex100",
     "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "Avanzada",
+    "difficulty": "ADVANCED",
     "question": "¿Cómo describe Deuteronomio la palabra de Dios en relación al pueblo?",
     "options": ["Está lejos en el cielo", "Está muy cerca, en tu boca y corazón", "Es difícil de entender", "Es solo para sacerdotes"],
     "correctAnswer": 1,
     "reference": "Deuteronomio 30:14"
   }
-
-]
 ]
