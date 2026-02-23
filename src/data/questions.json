@@ -1,5 +1,4 @@
 [
-  [
   {
     "id": "ep001",
     "period": "El Principio",
@@ -90,7 +89,6 @@
     "correctAnswer": 2,
     "reference": "Génesis 8:11"
   },
-  ,
   {
     "id": "ep011",
     "period": "El Principio",
@@ -181,7 +179,6 @@
     "correctAnswer": 2,
     "reference": "Génesis 7:12"
   },
-  ,
   {
     "id": "ep021",
     "period": "El Principio",
@@ -362,7 +359,6 @@
     "correctAnswer": 2,
     "reference": "Génesis 11:2"
   },
-  ,
   {
     "id": "ep041",
     "period": "El Principio",
