@@ -1,12 +1,12 @@
 export enum Difficulty {
-  BASIC = 'Básica',
-  INTERMEDIATE = 'Intermedia',
-  ADVANCED = 'Avanzada',
+  BASIC = 'BASIC',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
 }
 
 export enum Period {
   PRINCIPIO = 'El Principio',
-  LEY = 'El Pueblo de Dios y La Ley',
+  LEY = 'El Pueblo de Dios y la Ley',
   REYES_PROFETAS = 'Reyes, Profetas y Poetas',
   REDENCION = 'Jesús y la Redención',
   IGLESIA = 'La Iglesia Cristiana',

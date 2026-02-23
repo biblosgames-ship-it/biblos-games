@@ -67,9 +67,9 @@ const playSound = (type: keyof typeof sounds) => {
     if (activeLevel === 'PRINCIPIANTE') {
       available = available.filter(q => q.difficulty === Difficulty.BASIC);
     } else if (activeLevel === 'INTERMEDIO') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATETE);
+      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
     } else if (activeLevel === 'AVANZADO') {
-      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATETE || q.difficulty === Difficulty.ADVANCED);
+      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
     }
 
     if (period !== 'SURPRISE') {
@@ -83,9 +83,9 @@ const playSound = (type: keyof typeof sounds) => {
       if (activeLevel === 'PRINCIPIANTE') {
         resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
       } else if (activeLevel === 'INTERMEDIO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATETE);
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
       } else if (activeLevel === 'AVANZADO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATETE || q.difficulty === Difficulty.ADVANCED);
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
       }
 
       const newUsed = new Set(usedQuestionIds);
