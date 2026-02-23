@@ -292,6 +292,7 @@ if (showWelcome) {
         </div>
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-1 sm:gap-2">
+
           <button 
             onClick={() => {
               setShowInstructions(true);
@@ -302,6 +303,7 @@ if (showWelcome) {
           >
             <BookOpen size={22} strokeWidth={2.5} />
           </button>
+
           <button 
             onClick={() => {
               setShowAbout(true);
@@ -312,7 +314,18 @@ if (showWelcome) {
           >
             <Info size={20} />
           </button>
+
+          {/* 🔊 NUEVA BOCINA */}
+          <button
+            onClick={() => setIsSoundOn(!isSoundOn)}
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
+            title="Activar / Desactivar sonido"
+          >
+            {isSoundOn ? <Volume2 size={20} /> : <VolumeX size={20} />}
+          </button>
+
           <div className="w-px h-6 bg-stone-200 mx-1 hidden sm:block" />
+
           <button 
             onClick={resetGame}
             className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
@@ -320,7 +333,8 @@ if (showWelcome) {
           >
             <RotateCcw size={20} />
           </button>
-        </div>
+
+          </div>
       </header>
 
       {/* Instructions Modal */}
