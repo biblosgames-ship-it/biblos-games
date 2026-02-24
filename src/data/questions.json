@@ -1798,5 +1798,185 @@
     "options": ["Está lejos en el cielo", "Está muy cerca, en tu boca y corazón", "Es difícil de entender", "Es solo para sacerdotes"],
     "correctAnswer": 1,
     "reference": "Deuteronomio 30:14"
-  }
+  },
+  {
+  "id": "rp001",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el primer rey de Israel?",
+  "options": ["David", "Saúl", "Salomón", "Samuel"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 10:1"
+},
+{
+  "id": "rp002",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién ungió a Saúl como rey?",
+  "options": ["Elí", "Natán", "Samuel", "Gad"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 10:1"
+},
+{
+  "id": "rp003",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién derrotó a Goliat?",
+  "options": ["Saúl", "Jonatán", "David", "Abner"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 17:49"
+},
+{
+  "id": "rp004",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué arma usó David contra Goliat?",
+  "options": ["Espada", "Lanza", "Hacha", "Honda y piedra"],
+  "correctAnswer": 3,
+  "reference": "1 Samuel 17:50"
+},
+{
+  "id": "rp005",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el hijo de David que llegó a ser rey?",
+  "options": ["Absalón", "Salomón", "Amnón", "Adonías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 1:39"
+},
+{
+  "id": "rp006",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué construyó Salomón para el Señor?",
+  "options": ["Un palacio", "Un altar", "El templo", "Una torre"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 6:1"
+},
+{
+  "id": "rp007",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué pidió Salomón a Dios cuando comenzó a reinar?",
+  "options": ["Riquezas", "Sabiduría", "Larga vida", "Victoria en guerras"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 3:9"
+},
+{
+  "id": "rp008",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué reina visitó a Salomón para probar su sabiduría?",
+  "options": ["Reina de Egipto", "Reina de Persia", "Reina de Sabá", "Reina de Asiria"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 10:1"
+},
+{
+  "id": "rp009",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta desafió a los profetas de Baal en el Monte Carmelo?",
+  "options": ["Eliseo", "Isaías", "Elías", "Jeremías"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 18:20-39"
+},
+{
+  "id": "rp010",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuántos profetas de Baal fueron derrotados en el Monte Carmelo?",
+  "options": ["100", "300", "450", "700"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 18:22"
+},
+{
+  "id": "rp011",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué libro es conocido por sus poemas de sabiduría atribuidos a Salomón?",
+  "options": ["Salmos", "Proverbios", "Isaías", "Lamentaciones"],
+  "correctAnswer": 1,
+  "reference": "Proverbios 1:1"
+},
+{
+  "id": "rp012",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién escribió muchos de los Salmos?",
+  "options": ["Isaías", "David", "Elías", "Salomón"],
+  "correctAnswer": 1,
+  "reference": "Salmo 23:1"
+},
+{
+  "id": "rp013",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta fue llevado al cielo en un torbellino?",
+  "options": ["Isaías", "Elías", "Eliseo", "Jeremías"],
+  "correctAnswer": 1,
+  "reference": "2 Reyes 2:11"
+},
+{
+  "id": "rp014",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién sucedió a Elías como profeta?",
+  "options": ["Isaías", "Jeremías", "Eliseo", "Ezequiel"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 2:15"
+},
+{
+  "id": "rp015",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey vio la escritura en la pared interpretada por Daniel?",
+  "options": ["Nabucodonosor", "Belsasar", "Darío", "Ciro"],
+  "correctAnswer": 1,
+  "reference": "Daniel 5:5"
+},
+{
+  "id": "rp016",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta tuvo una visión del valle de los huesos secos?",
+  "options": ["Isaías", "Jeremías", "Ezequiel", "Oseas"],
+  "correctAnswer": 2,
+  "reference": "Ezequiel 37:1-10"
+},
+{
+  "id": "rp017",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey reformó el templo después de hallar el libro de la Ley?",
+  "options": ["Acab", "Manasés", "Josías", "Ezequías"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 22:8-11"
+},
+{
+  "id": "rp018",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció el nacimiento del Mesías en Belén?",
+  "options": ["Isaías", "Miqueas", "Jeremías", "Amós"],
+  "correctAnswer": 1,
+  "reference": "Miqueas 5:2"
+},
+{
+  "id": "rp019",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey enfrentó al profeta Natán por su pecado con Betsabé?",
+  "options": ["Saúl", "David", "Salomón", "Roboam"],
+  "correctAnswer": 1,
+  "reference": "2 Samuel 12:7"
+},
+{
+  "id": "rp020",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta fue tragado por un gran pez?",
+  "options": ["Jonás", "Oseas", "Joel", "Abdías"],
+  "correctAnswer": 0,
+  "reference": "Jonás 1:17"
+}
 ]
