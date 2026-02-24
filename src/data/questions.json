@@ -1978,5 +1978,906 @@
   "options": ["Jonás", "Oseas", "Joel", "Abdías"],
   "correctAnswer": 0,
   "reference": "Jonás 1:17"
-}
+},
+{
+  "id": "rp021",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el padre del rey Salomón?",
+  "options": ["Saúl", "David", "Samuel", "Absalón"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 2:12"
+},
+{
+  "id": "rp022",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién interpretó los sueños del rey Nabucodonosor?",
+  "options": ["Isaías", "Ezequiel", "Daniel", "Jeremías"],
+  "correctAnswer": 2,
+  "reference": "Daniel 2:19"
+},
+{
+  "id": "rp023",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey mandó a Daniel al foso de los leones?",
+  "options": ["Darío", "Daniel", "Ciro", "Belsasar"],
+  "correctAnswer": 1,
+  "reference": "Daniel 6:16"
+},
+{
+  "id": "rp024",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta fue llamado cuando era niño y respondió: 'Habla, Señor, que tu siervo escucha'?",
+  "options": ["Samuel", "Jeremías", "Isaías", "Eliseo"],
+  "correctAnswer": 0,
+  "reference": "1 Samuel 3:10"
+},
+{
+  "id": "rp025",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey construyó un altar al Señor en el Monte Carmelo después del desafío contra los profetas de Baal?",
+  "options": ["Acab", "Salomón", "Elías", "David"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 18:30"
+},
+{
+  "id": "rp026",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Judá enfermó gravemente y Dios le concedió quince años más de vida?",
+  "options": ["Josías", "Ezequías", "Manasés", "Roboam"],
+  "correctAnswer": 1,
+  "reference": "2 Reyes 20:6"
+},
+{
+  "id": "rp027",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta confrontó al rey Acab por el viñedo de Nabot?",
+  "options": ["Eliseo", "Isaías", "Elías", "Miqueas"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 21:17-19"
+},
+{
+  "id": "rp028",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey dividió el reino de Israel después de Salomón?",
+  "options": ["Roboam", "Jeroboam", "Acab", "Ezequías"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 12:16-20"
+},
+{
+  "id": "rp029",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta tuvo la visión del trono de Dios y los serafines diciendo 'Santo, santo, santo'?",
+  "options": ["Jeremías", "Isaías", "Ezequiel", "Daniel"],
+  "correctAnswer": 1,
+  "reference": "Isaías 6:1-3"
+},
+{
+  "id": "rp030",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro poético expresa el sufrimiento y la fidelidad de un hombre justo que lo perdió todo?",
+  "options": ["Proverbios", "Eclesiastés", "Job", "Cantares"],
+  "correctAnswer": 2,
+  "reference": "Job 1:1"
+},
+{
+  "id": "rp031",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el padre del profeta Samuel?",
+  "options": ["Elí", "Elcana", "Isaí", "Aarón"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 1:1"
+},
+{
+  "id": "rp032",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué mujer oró por un hijo y prometió dedicarlo al Señor?",
+  "options": ["Rut", "Ana", "Mical", "Abigail"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 1:11"
+},
+{
+  "id": "rp033",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue el amigo cercano de David, hijo del rey Saúl?",
+  "options": ["Abner", "Jonatán", "Is-boset", "Natán"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 18:1"
+},
+{
+  "id": "rp034",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey intentó matar a David por celos?",
+  "options": ["Salomón", "Saúl", "Roboam", "Acab"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 19:10"
+},
+{
+  "id": "rp035",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta reprendió a David por el censo que realizó?",
+  "options": ["Natán", "Samuel", "Gad", "Elías"],
+  "correctAnswer": 2,
+  "reference": "2 Samuel 24:11-12"
+},
+{
+  "id": "rp036",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey fue llevado cautivo a Babilonia después de la caída de Jerusalén?",
+  "options": ["Sedequías", "Josías", "Ezequías", "Manasés"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 25:7"
+},
+{
+  "id": "rp037",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció el nuevo pacto que Dios haría con su pueblo?",
+  "options": ["Isaías", "Jeremías", "Ezequiel", "Oseas"],
+  "correctAnswer": 1,
+  "reference": "Jeremías 31:31"
+},
+{
+  "id": "rp038",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey fue famoso por su gran riqueza y sabiduría?",
+  "options": ["David", "Saúl", "Salomón", "Roboam"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 10:23"
+},
+{
+  "id": "rp039",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta recibió la orden de casarse con una mujer infiel como símbolo del pueblo de Israel?",
+  "options": ["Amós", "Oseas", "Miqueas", "Joel"],
+  "correctAnswer": 1,
+  "reference": "Oseas 1:2"
+},
+{
+  "id": "rp040",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro contiene lamentaciones por la destrucción de Jerusalén?",
+  "options": ["Isaías", "Jeremías", "Lamentaciones", "Ezequiel"],
+  "correctAnswer": 2,
+  "reference": "Lamentaciones 1:1"
+},
+{
+  "id": "rp041",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el padre del rey David?",
+  "options": ["Isaac", "Jacob", "Isaí", "Samuel"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 16:1"
+},
+{
+  "id": "rp042",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué instrumento tocaba David para calmar a Saúl?",
+  "options": ["Flauta", "Arpa", "Trompeta", "Tambor"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 16:23"
+},
+{
+  "id": "rp043",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey consultó a una adivina en Endor antes de morir?",
+  "options": ["David", "Salomón", "Saúl", "Acab"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 28:7"
+},
+{
+  "id": "rp044",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue la madre del rey Salomón?",
+  "options": ["Mical", "Abigail", "Betsabé", "Ana"],
+  "correctAnswer": 2,
+  "reference": "2 Samuel 12:24"
+},
+{
+  "id": "rp045",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey permitió que el pueblo se volviera a la idolatría después de Salomón?",
+  "options": ["Roboam", "Jeroboam", "Ezequías", "Josías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 12:28-30"
+},
+{
+  "id": "rp046",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta fue alimentado por cuervos en el desierto?",
+  "options": ["Eliseo", "Isaías", "Elías", "Amós"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 17:6"
+},
+{
+  "id": "rp047",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey mandó arrojar al profeta Jeremías a una cisterna?",
+  "options": ["Sedequías", "Joacim", "Manasés", "Josías"],
+  "correctAnswer": 0,
+  "reference": "Jeremías 38:6"
+},
+{
+  "id": "rp048",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta sucedió a Eliseo?",
+  "options": ["Jonás", "Ninguno, Eliseo fue el último en esa línea", "Isaías", "Miqueas"],
+  "correctAnswer": 1,
+  "reference": "2 Reyes 13:20"
+},
+{
+  "id": "rp049",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Babilonia destruyó Jerusalén y el templo?",
+  "options": ["Ciro", "Darío", "Nabucodonosor", "Belsasar"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 25:9"
+},
+{
+  "id": "rp050",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro declara: 'El principio de la sabiduría es el temor del Señor'?",
+  "options": ["Proverbios", "Eclesiastés", "Salmos", "Job"],
+  "correctAnswer": 0,
+  "reference": "Proverbios 1:7"
+},
+{
+  "id": "rp051",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el hijo de Salomón que reinó después de él?",
+  "options": ["Jeroboam", "Roboam", "Abías", "Asa"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 11:43"
+},
+{
+  "id": "rp052",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué profeta fue discípulo y sucesor de Elías?",
+  "options": ["Isaías", "Jeremías", "Eliseo", "Amós"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 2:9-15"
+},
+{
+  "id": "rp053",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey oró a Dios y el sol retrocedió como señal?",
+  "options": ["Josías", "Ezequías", "Manasés", "Acab"],
+  "correctAnswer": 1,
+  "reference": "2 Reyes 20:11"
+},
+{
+  "id": "rp054",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta confrontó al rey David por su pecado con Betsabé?",
+  "options": ["Gad", "Samuel", "Natán", "Ahías"],
+  "correctAnswer": 2,
+  "reference": "2 Samuel 12:7"
+},
+{
+  "id": "rp055",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey fue conocido por hacer lo recto ante los ojos del Señor y reparar el templo?",
+  "options": ["Ezequías", "Manasés", "Acab", "Joacaz"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 18:3-4"
+},
+{
+  "id": "rp056",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta fue llamado 'profeta llorón'?",
+  "options": ["Isaías", "Jeremías", "Ezequiel", "Oseas"],
+  "correctAnswer": 1,
+  "reference": "Jeremías 9:1"
+},
+{
+  "id": "rp057",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey hizo pasar a su hijo por fuego en sacrificio?",
+  "options": ["Ezequías", "Josías", "Manasés", "David"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 21:6"
+},
+{
+  "id": "rp058",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta anunció la destrucción de Nínive?",
+  "options": ["Jonás", "Nahúm", "Miqueas", "Joel"],
+  "correctAnswer": 1,
+  "reference": "Nahúm 1:1"
+},
+{
+  "id": "rp059",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey intentó quemar el rollo escrito por Jeremías?",
+  "options": ["Sedequías", "Joacim", "Josías", "Manasés"],
+  "correctAnswer": 1,
+  "reference": "Jeremías 36:23"
+},
+{
+  "id": "rp060",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro poético dice: 'Todo tiene su tiempo, y todo lo que se quiere debajo del cielo tiene su hora'?",
+  "options": ["Proverbios", "Eclesiastés", "Salmos", "Job"],
+  "correctAnswer": 1,
+  "reference": "Eclesiastés 3:1"
+},
+{
+  "id": "rp061",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué rey fue conocido como 'varón conforme al corazón de Dios'?",
+  "options": ["Saúl", "David", "Salomón", "Ezequías"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 13:14"
+},
+{
+  "id": "rp062",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué profeta fue enviado a ungir a David como rey?",
+  "options": ["Natán", "Elías", "Samuel", "Gad"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 16:13"
+},
+{
+  "id": "rp063",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey tuvo un sueño acerca de una gran estatua interpretado por Daniel?",
+  "options": ["Darío", "Ciro", "Nabucodonosor", "Belsasar"],
+  "correctAnswer": 2,
+  "reference": "Daniel 2:31"
+},
+{
+  "id": "rp064",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta aconsejó al rey Roboam que no escuchara el consejo de los ancianos?",
+  "options": ["Ahías", "Semaías", "Natán", "Eliseo"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 12:22-24"
+},
+{
+  "id": "rp065",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey escribió muchos proverbios además de gobernar Israel?",
+  "options": ["David", "Salomón", "Roboam", "Ezequías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 4:32"
+},
+{
+  "id": "rp066",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta tuvo una visión de cuatro bestias que salían del mar?",
+  "options": ["Isaías", "Daniel", "Ezequiel", "Oseas"],
+  "correctAnswer": 1,
+  "reference": "Daniel 7:3"
+},
+{
+  "id": "rp067",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey reinó cuando Isaías tuvo la visión del Señor en el templo?",
+  "options": ["Uzías", "Acab", "Ezequías", "Manasés"],
+  "correctAnswer": 0,
+  "reference": "Isaías 6:1"
+},
+{
+  "id": "rp068",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta fue llamado desde el vientre de su madre?",
+  "options": ["Jeremías", "Isaías", "Amós", "Joel"],
+  "correctAnswer": 0,
+  "reference": "Jeremías 1:5"
+},
+{
+  "id": "rp069",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey fue derrotado y murió en la batalla de Gilboa?",
+  "options": ["Saúl", "David", "Salomón", "Roboam"],
+  "correctAnswer": 0,
+  "reference": "1 Samuel 31:6"
+},
+{
+  "id": "rp070",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro poético reflexiona sobre la vanidad de la vida y fue escrito por el 'Predicador'?",
+  "options": ["Proverbios", "Eclesiastés", "Salmos", "Job"],
+  "correctAnswer": 1,
+  "reference": "Eclesiastés 1:1-2"
+},
+{
+  "id": "rp071",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué profeta desafió a los profetas de Baal en el Monte Carmelo?",
+  "options": ["Eliseo", "Elías", "Isaías", "Jeremías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 18:20-24"
+},
+{
+  "id": "rp072",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "BASIC",
+  "question": "¿Qué rey fue hijo del rey Acab?",
+  "options": ["Ocozías", "Josías", "Ezequías", "Joás"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 22:40"
+},
+{
+  "id": "rp073",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta multiplicó el aceite de una viuda?",
+  "options": ["Elías", "Isaías", "Eliseo", "Amós"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 4:1-7"
+},
+{
+  "id": "rp074",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey ordenó la muerte de los sacerdotes en Nob?",
+  "options": ["Saúl", "David", "Salomón", "Roboam"],
+  "correctAnswer": 0,
+  "reference": "1 Samuel 22:18"
+},
+{
+  "id": "rp075",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta fue contemporáneo del rey Ezequías?",
+  "options": ["Isaías", "Malaquías", "Joel", "Abdías"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 19:1-7"
+},
+{
+  "id": "rp076",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Israel fue ungido por un discípulo de Eliseo para destruir la casa de Acab?",
+  "options": ["Jehú", "Jeroboam II", "Zimri", "Omri"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 9:6"
+},
+{
+  "id": "rp077",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció que el justo por la fe vivirá?",
+  "options": ["Habacuc", "Sofonías", "Hageo", "Zacarías"],
+  "correctAnswer": 0,
+  "reference": "Habacuc 2:4"
+},
+{
+  "id": "rp078",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey fue niño cuando comenzó a reinar a los ocho años?",
+  "options": ["Josías", "Joás", "Manasés", "Azarías"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 22:1"
+},
+{
+  "id": "rp079",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta tuvo visiones de ruedas llenas de ojos?",
+  "options": ["Daniel", "Isaías", "Ezequiel", "Oseas"],
+  "correctAnswer": 2,
+  "reference": "Ezequiel 1:15-18"
+},
+{
+  "id": "rp080",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey buscó consejo del profeta Miqueas antes de ir a la batalla contra Ramot de Galaad?",
+  "options": ["Acab", "Josafat", "Ezequías", "Joacim"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 22:8"
+},
+{
+  "id": "rp081",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta escribió sobre el 'valle de decisión'?",
+  "options": ["Joel", "Amós", "Nahúm", "Miqueas"],
+  "correctAnswer": 0,
+  "reference": "Joel 3:14"
+},
+{
+  "id": "rp082",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey fue llevado cautivo a Babilonia junto con los utensilios del templo?",
+  "options": ["Joacim", "Sedequías", "Josías", "Ezequías"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 24:13-15"
+},
+{
+  "id": "rp083",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta habló de un 'nuevo corazón' y un 'nuevo espíritu'?",
+  "options": ["Jeremías", "Isaías", "Ezequiel", "Habacuc"],
+  "correctAnswer": 2,
+  "reference": "Ezequiel 36:26"
+},
+{
+  "id": "rp084",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey restauró la celebración de la Pascua después de años de abandono?",
+  "options": ["Ezequías", "Manasés", "Acab", "Omri"],
+  "correctAnswer": 0,
+  "reference": "2 Crónicas 30:1-6"
+},
+{
+  "id": "rp085",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció que el Mesías nacería de una virgen?",
+  "options": ["Miqueas", "Isaías", "Jeremías", "Zacarías"],
+  "correctAnswer": 1,
+  "reference": "Isaías 7:14"
+},
+{
+  "id": "rp086",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey construyó el templo en Jerusalén?",
+  "options": ["David", "Salomón", "Roboam", "Ezequías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 6:1"
+},
+{
+  "id": "rp087",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta fue contemporáneo de Isaías y anunció la caída de Samaria?",
+  "options": ["Miqueas", "Hageo", "Sofonías", "Abdías"],
+  "correctAnswer": 0,
+  "reference": "Miqueas 1:1-6"
+},
+{
+  "id": "rp088",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey hizo lo malo ante los ojos del Señor más que todos los que fueron antes de él?",
+  "options": ["Acab", "Saúl", "Roboam", "Joás"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 16:30"
+},
+{
+  "id": "rp089",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro poético declara: 'Jehová es mi pastor; nada me faltará'?",
+  "options": ["Proverbios", "Salmos", "Job", "Eclesiastés"],
+  "correctAnswer": 1,
+  "reference": "Salmo 23:1"
+},
+{
+  "id": "rp090",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció la destrucción de Jerusalén antes del exilio babilónico?",
+  "options": ["Jeremías", "Daniel", "Hageo", "Zacarías"],
+  "correctAnswer": 0,
+  "reference": "Jeremías 25:8-11"
+},
+{
+  "id": "rp091",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Judá fue llevado cautivo a Babilonia pero luego recibió favor en la corte babilónica?",
+  "options": ["Sedequías", "Joacaz", "Joaquín", "Manasés"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 25:27-30"
+},
+{
+  "id": "rp092",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció la caída de Jerusalén y también escribió Lamentaciones?",
+  "options": ["Isaías", "Jeremías", "Ezequiel", "Daniel"],
+  "correctAnswer": 1,
+  "reference": "Jeremías 1:1-3"
+},
+{
+  "id": "rp093",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué rey reinó solo siete días antes de morir?",
+  "options": ["Zimri", "Omri", "Jeroboam", "Joacaz"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 16:15"
+},
+{
+  "id": "rp094",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció que Ciro sería instrumento de Dios para restaurar a Israel?",
+  "options": ["Jeremías", "Isaías", "Daniel", "Hageo"],
+  "correctAnswer": 1,
+  "reference": "Isaías 45:1"
+},
+{
+  "id": "rp095",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Israel estableció becerros de oro en Betel y Dan?",
+  "options": ["Jeroboam I", "Roboam", "Acab", "Jehú"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 12:28-29"
+},
+{
+  "id": "rp096",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta fue pastor y recolector de higos antes de ser llamado?",
+  "options": ["Amós", "Joel", "Oseas", "Abdías"],
+  "correctAnswer": 0,
+  "reference": "Amós 7:14"
+},
+{
+  "id": "rp097",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Judá fue hijo de la malvada reina Atalía?",
+  "options": ["Joás", "Ocozías", "Azarías", "Ezequías"],
+  "correctAnswer": 1,
+  "reference": "2 Reyes 8:26"
+},
+{
+  "id": "rp098",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta fue arrojado al mar durante una tormenta?",
+  "options": ["Nahúm", "Jonás", "Joel", "Habacuc"],
+  "correctAnswer": 1,
+  "reference": "Jonás 1:15"
+},
+{
+  "id": "rp099",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Judá mostró los tesoros del templo a enviados de Babilonia, provocando una profecía de juicio?",
+  "options": ["Josías", "Manasés", "Ezequías", "Sedequías"],
+  "correctAnswer": 2,
+  "reference": "2 Reyes 20:13-17"
+},
+{
+  "id": "rp100",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta tuvo una visión de un carnero y un macho cabrío?",
+  "options": ["Ezequiel", "Isaías", "Daniel", "Zacarías"],
+  "correctAnswer": 2,
+  "reference": "Daniel 8:3-7"
+},
+{
+  "id": "rp101",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey fue herido de lepra por usurpar funciones sacerdotales?",
+  "options": ["Uzías", "Acab", "Roboam", "Joás"],
+  "correctAnswer": 0,
+  "reference": "2 Crónicas 26:19-21"
+},
+{
+  "id": "rp102",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta vio un rollo volante en una visión?",
+  "options": ["Zacarías", "Hageo", "Malaquías", "Joel"],
+  "correctAnswer": 0,
+  "reference": "Zacarías 5:1-2"
+},
+{
+  "id": "rp103",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey consultó al profeta Hulda tras hallarse el libro de la Ley?",
+  "options": ["Josías", "Ezequías", "Manasés", "Joacim"],
+  "correctAnswer": 0,
+  "reference": "2 Reyes 22:14"
+},
+{
+  "id": "rp104",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta anunció que de Belén saldría el gobernante de Israel?",
+  "options": ["Isaías", "Miqueas", "Jeremías", "Amós"],
+  "correctAnswer": 1,
+  "reference": "Miqueas 5:2"
+},
+{
+  "id": "rp105",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey fue restaurado en su trono después de haber sido llevado cautivo por Asiria?",
+  "options": ["Manasés", "Josías", "Sedequías", "Joacaz"],
+  "correctAnswer": 0,
+  "reference": "2 Crónicas 33:11-13"
+},
+{
+  "id": "rp106",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta habló del 'Día del Señor' con gran énfasis en juicio y restauración?",
+  "options": ["Sofonías", "Joel", "Amós", "Oseas"],
+  "correctAnswer": 1,
+  "reference": "Joel 2:1"
+},
+{
+  "id": "rp107",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey de Israel fue esposo de Jezabel?",
+  "options": ["Acab", "Jehú", "Omri", "Jeroboam"],
+  "correctAnswer": 0,
+  "reference": "1 Reyes 16:31"
+},
+{
+  "id": "rp108",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta recibió visiones durante el reinado de Darío el persa?",
+  "options": ["Zacarías", "Isaías", "Jeremías", "Oseas"],
+  "correctAnswer": 0,
+  "reference": "Zacarías 1:1"
+},
+{
+  "id": "rp109",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué rey murió al ser atravesado por una flecha disparada al azar?",
+  "options": ["Saúl", "Acab", "Josías", "Ocozías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 22:34"
+},
+{
+  "id": "rp110",
+  "period": "Reyes, Profetas y Poetas",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro poético contiene discursos de amigos que intentan explicar el sufrimiento?",
+  "options": ["Salmos", "Proverbios", "Job", "Eclesiastés"],
+  "correctAnswer": 2,
+  "reference": "Job 2:11"
+},
+[
+  {
+    "id": "jr001",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿En qué ciudad nació Jesús, cumpliendo la profecía de Miqueas?",
+    "options": ["Nazaret", "Jerusalén", "Belén", "Jericó"],
+    "correctAnswer": 2,
+    "reference": "Miqueas 5:2; Mateo 2:1"
+  },
+  {
+    "id": "jr002",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Qué profeta anunció que una virgen concebiría y daría a luz un hijo llamado Emanuel?",
+    "options": ["Jeremías", "Isaías", "Ezequiel", "Daniel"],
+    "correctAnswer": 1,
+    "reference": "Isaías 7:14"
+  },
+  {
+    "id": "jr003",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Quién dijo: \"He aquí el Cordero de Dios, que quita el pecado del mundo\"?",
+    "options": ["Pedro", "Juan el Bautista", "Andrés", "Nicodemo"],
+    "correctAnswer": 1,
+    "reference": "Juan 1:29"
+  },
+  {
+    "id": "jr004",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Cómo supieron los magos que no debían regresar a donde Herodes?",
+    "options": ["Por una carta", "Por un ángel visible", "Por revelación en un sueño", "Por una señal en las estrellas"],
+    "correctAnswer": 2,
+    "reference": "Mateo 2:12"
+  },
+  {
+    "id": "jr005",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Qué fue lo primero que Jesús hizo por el paralítico que bajaron por el techo?",
+    "options": ["Le dio dinero", "Perdonó sus pecados", "Le dio de comer", "Sanó sus piernas inmediatamente"],
+    "correctAnswer": 1,
+    "reference": "Marcos 2:5"
+  },
+  {
+    "id": "jr006",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Qué nombre significa \"Dios con nosotros\"?",
+    "options": ["Jesucristo", "Mesías", "Emanuel", "Rabonni"],
+    "correctAnswer": 2,
+    "reference": "Isaías 7:14; Mateo 1:23"
+  },
+  {
+    "id": "jr007",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿A qué edad se quedó Jesús en el templo maravillando a los maestros?",
+    "options": ["8 años", "10 años", "12 años", "30 años"],
+    "correctAnswer": 2,
+    "reference": "Lucas 2:42-47"
+  },
+  {
+    "id": "jr008",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "Completa: \"Jehová es mi pastor; ________\"",
+    "options": ["Nada me detendrá", "Nada me faltará", "Todo lo puedo", "Él me guiará"],
+    "correctAnswer": 1,
+    "reference": "Salmos 23:1"
+  },
+  {
+    "id": "jr009",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Qué instituyó Jesús en la última cena como símbolo de su sacrificio?",
+    "options": ["El lavado de pies", "El pan y el vino", "La oración en Getsemaní", "El canto de himnos"],
+    "correctAnswer": 1,
+    "reference": "Lucas 22:19-20"
+  },
+  {
+    "id": "jr010",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Cuáles fueron las últimas palabras de Jesús según Juan 19:30?",
+    "options": ["Padre, perdónalos", "Tengo sed", "Consumado es", "Dios mío, ¿por qué me has desamparado?"],
+    "correctAnswer": 2,
+    "reference": "Juan 19:30"
+  }
 ]
