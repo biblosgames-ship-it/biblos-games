@@ -514,7 +514,7 @@ if (showWelcome) {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 py-8"
           >
-            <div className="text-center space-y-6">
+            <div className="text-center space-y-2">
 
               <div className="inline-block px-8 py-4 
                               bg-gradient-to-b from-amber-400 to-amber-600 
