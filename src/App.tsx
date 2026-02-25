@@ -514,10 +514,26 @@ if (showWelcome) {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 py-8"
           >
-            <div className="text-center space-y-3">
-              <h2 className="text-4xl font-serif font-bold text-amber-200">Modo de Juego</h2>
-              <p className="text-stone-400 italic">Selecciona el nivel de complejidad para tu partida</p>
+            <div className="text-center space-y-6">
+
+              <div className="inline-block px-8 py-4 
+                              bg-gradient-to-b from-amber-400 to-amber-600 
+                              text-white 
+                              rounded-2xl 
+                              shadow-[0_8px_0_rgb(120,53,15)] 
+                              border-2 border-amber-300
+                              transform transition-all
+                              hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
+                <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-wide">
+                  Modo de Juego
+                </h2>
             </div>
+
+  <p className="text-stone-400 italic">
+    Selecciona el nivel de complejidad para tu partida
+  </p>
+
+</div>
 
             <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
               <button
@@ -755,7 +771,7 @@ if (showWelcome) {
 
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
-        Preguntas en la base de datos: {ALL_QUESTIONS.length}
+        Total de Preguntas: {ALL_QUESTIONS.length}
       </footer>
     </div>
   );
