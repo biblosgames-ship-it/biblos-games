@@ -2878,5 +2878,2615 @@
     "options": ["Padre, perdónalos", "Tengo sed", "Consumado es", "Dios mío, ¿por qué me has desamparado?"],
     "correctAnswer": 2,
     "reference": "Juan 19:30"
-  }
+  },
+  {
+    "id": "jr011",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué personaje celestial habló con Zacarías a la derecha del altar del incienso?",
+    "options": ["El ángel Miguel", "El ángel Gabriel", "Un ser viviente", "El Espíritu Santo"],
+    "correctAnswer": 1,
+    "reference": "Lucas 1:11-19"
+  },
+  {
+    "id": "jr012",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "Según Jesús, ¿qué sucede cuando alguien intenta servir a dos señores?",
+    "options": ["Los amará a ambos", "Los ignorará", "Amará a uno y aborrecerá al otro", "Los servirá por igual"],
+    "correctAnswer": 2,
+    "reference": "Lucas 16:13"
+  },
+  {
+    "id": "jr013",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿A quién dedicó Lucas su Evangelio y el libro de Hechos?",
+    "options": ["Cornelio", "Herodes", "Teófilo", "Bernabé"],
+    "correctAnswer": 2,
+    "reference": "Lucas 1:3"
+  },
+  {
+    "id": "jr014",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿En cuántas partes dividieron los soldados los vestidos de Jesús en la crucifixión?",
+    "options": ["Dos partes", "Tres partes", "Cuatro partes", "No los dividieron"],
+    "correctAnswer": 2,
+    "reference": "Juan 19:23"
+  },
+  {
+    "id": "jr015",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué dijo Jesús a sus discípulos cuando se les apareció después de resucitar?",
+    "options": ["¿Por qué dudaron?", "He vuelto", "Paz a vosotros", "Id por todo el mundo"],
+    "correctAnswer": 2,
+    "reference": "Juan 20:19"
+  },
+  {
+    "id": "jr016",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué sacrificio del Antiguo Testamento prefiguraba la redención por la sangre de Cristo?",
+    "options": ["El sacrificio de Caín", "La ofrenda de harina", "El cordero pascual", "El incienso sagrado"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 12:5-7; 1 Corintios 5:7"
+  },
+  {
+    "id": "jr017",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué profeta anunció que el Mesías entraría a Jerusalén humilde y montado en un pollino?",
+    "options": ["Isaías", "Jeremías", "Zacarías", "Malaquías"],
+    "correctAnswer": 2,
+    "reference": "Zacarías 9:9"
+  },
+  {
+    "id": "jr018",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué oficio tenía Mateo antes de seguir a Jesús?",
+    "options": ["Pescador", "Recaudador de impuestos", "Carpintero", "Médico"],
+    "correctAnswer": 1,
+    "reference": "Mateo 9:9"
+  },
+  {
+    "id": "jr019",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Quién declaró que \"en ningún otro hay salvación\"?",
+    "options": ["Juan", "Pablo", "Pedro", "Santiago"],
+    "correctAnswer": 2,
+    "reference": "Hechos 4:12"
+  },
+  {
+    "id": "jr020",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿En qué libro se describe a Jesús como el \"Cordero inmolado\" digno de tomar el libro?",
+    "options": ["Hebreos", "Romanos", "Apocalipsis", "Efesios"],
+    "correctAnswer": 2,
+    "reference": "Apocalipsis 5:6-9"
+  },
+  {
+    "id": "jr021",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué forma tomó Jesús al despojarse de sí mismo según Filipenses 2:7?",
+    "options": ["Forma de ángel", "Forma de rey", "Forma de siervo", "Forma de espíritu"],
+    "correctAnswer": 2,
+    "reference": "Filipenses 2:7"
+  },
+  {
+    "id": "jr022",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Según Hebreos 4:14, ¿qué deben hacer los creyentes al tener un gran Sumo Sacerdote?",
+    "options": ["Ofrecer sacrificios diarios", "Mantener nuestra profesión de fe", "Temer el juicio", "Guardar la ley de Moisés"],
+    "correctAnswer": 1,
+    "reference": "Hebreos 4:14"
+  },
+  {
+    "id": "jr023",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Cuál es la paga del pecado mencionada en Romanos 6:23?",
+    "options": ["El sufrimiento", "El exilio", "La muerte", "La pobreza"],
+    "correctAnswer": 2,
+    "reference": "Romanos 6:23"
+  },
+  {
+    "id": "jr024",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿A qué orden sacerdotal eterno pertenece Cristo según Hebreos?",
+    "options": ["Orden levítico", "Orden de Aarón", "Orden de Melquisedec", "Orden de Judá"],
+    "correctAnswer": 2,
+    "reference": "Hebreos 5:10; 7:17"
+  },
+  {
+    "id": "jr025",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué profeta anunció el Nuevo Pacto donde Dios pondría su ley en el corazón?",
+    "options": ["Ezequiel", "Jeremías", "Joel", "Amós"],
+    "correctAnswer": 1,
+    "reference": "Jeremías 31:31-33"
+  },
+  {
+    "id": "jr026",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué significa que Jesús es el autor y consumador de la fe?",
+    "options": ["Que escribió la Biblia", "Que inicia, sostiene y perfecciona nuestra fe", "Que observa desde lejos", "Que es juez de la fe"],
+    "correctAnswer": 1,
+    "reference": "Hebreos 12:2"
+  },
+  {
+    "id": "jr027",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué es locura para los que se pierden, pero poder de Dios para los que se salvan?",
+    "options": ["La ley de Moisés", "La palabra de la cruz", "La circuncisión", "El bautismo en agua"],
+    "correctAnswer": 1,
+    "reference": "1 Corintios 1:18"
+  },
+  {
+    "id": "jr028",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué profeta anunció que el Mesías sería herido por nuestras rebeliones?",
+    "options": ["Jeremías", "Miqueas", "Isaías", "Zacarías"],
+    "correctAnswer": 2,
+    "reference": "Isaías 53:5"
+  },
+  {
+    "id": "jr029",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Quién es el mediador de un mejor pacto que entró una vez para siempre con su propia sangre?",
+    "options": ["Moisés", "Aarón", "Jesús", "Abraham"],
+    "correctAnswer": 2,
+    "reference": "Hebreos 9:12-15"
+  },
+  {
+    "id": "jr030",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Cuál es el fruto del Espíritu contra el cual no hay ley?",
+    "options": ["Sabiduría y conocimiento", "Milagros y sanidades", "Amor, gozo, paz, paciencia, entre otros", "Profecía y lenguas"],
+    "correctAnswer": 2,
+    "reference": "Gálatas 5:22-23"
+  },
+  {
+    "id": "jr031",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Mas buscad primeramente el reino de Dios y su ________\".",
+    "options": ["Poder", "Justicia", "Riqueza", "Gloria"],
+    "correctAnswer": 1,
+    "reference": "Mateo 6:33"
+  },
+  {
+    "id": "jr032",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Y se llamará su nombre: Admirable, Consejero, Dios Poderoso, Padre Eterno, ________\".",
+    "options": ["Rey de Reyes", "Señor de Señores", "Príncipe de Paz", "León de Judá"],
+    "correctAnswer": 2,
+    "reference": "Isaías 9:6"
+  },
+  {
+    "id": "jr033",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Justificados, pues, por la fe, tenemos ________ para con Dios\".",
+    "options": ["Gozo", "Paz", "Acceso", "Perdón"],
+    "correctAnswer": 1,
+    "reference": "Romanos 5:1"
+  },
+  {
+    "id": "jr034",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Jehová cargó en Él el ________ de todos nosotros\".",
+    "options": ["Dolor", "Castigo", "Pecado", "Juicio"],
+    "correctAnswer": 2,
+    "reference": "Isaías 53:6"
+  },
+  {
+    "id": "jr035",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"En Cristo tenemos redención por su ________, el perdón de pecados\".",
+    "options": ["Sabiduría", "Sangre", "Vida", "Palabra"],
+    "correctAnswer": 1,
+    "reference": "Efesios 1:7"
+  },
+  {
+    "id": "jr036",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué profeta vio en visión al Hijo del Hombre viniendo con las nubes del cielo?",
+    "options": ["Isaías", "Jeremías", "Ezequiel", "Daniel"],
+    "correctAnswer": 3,
+    "reference": "Daniel 7:13"
+  },
+  {
+    "id": "jr037",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué significa que Cristo es nuestra pascua, que fue sacrificada por nosotros?",
+    "options": ["Que Jesús nació en la pascua", "Que su sacrificio sustituye al cordero pascual", "Que debemos comer hierbas amargas", "Que celebró la pascua muchas veces"],
+    "correctAnswer": 1,
+    "reference": "1 Corintios 5:7"
+  },
+  {
+    "id": "jr038",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Cómo describe el Salmo 118:22 a Jesús respecto a los líderes religiosos?",
+    "options": ["Como el rey esperado", "Como un profeta más", "Como la piedra que desecharon los edificadores", "Como un siervo humilde"],
+    "correctAnswer": 2,
+    "reference": "Salmos 118:22"
+  },
+  {
+    "id": "jr039",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué profeta anunció que el Mesías traería buenas nuevas a los humildes?",
+    "options": ["Amós", "Isaías", "Jonás", "Joel"],
+    "correctAnswer": 1,
+    "reference": "Isaías 61:1"
+  },
+  {
+    "id": "jr040",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué declaración afirma que el Señor no retarda su promesa, sino que es paciente?",
+    "options": ["Que Dios no tiene prisa", "Que el tiempo es ilusión", "Que el Señor es paciente para con nosotros", "Que el fin vendrá mañana"],
+    "correctAnswer": 2,
+    "reference": "2 Pedro 3:9"
+  },
+  {
+    "id": "jr041",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué libro enseña que el justo vivirá por su fe?",
+    "options": ["Sofonías", "Nahúm", "Habacuc", "Malaquías"],
+    "correctAnswer": 2,
+    "reference": "Habacuc 2:4"
+  },
+  {
+    "id": "jr042",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Quién escribió que Cristo padeció una sola vez por los pecados, el justo por los injustos?",
+    "options": ["Pablo", "Pedro", "Juan", "Santiago"],
+    "correctAnswer": 1,
+    "reference": "1 Pedro 3:18"
+  },
+  {
+    "id": "jr043",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué evento del Antiguo Testamento simboliza la redención y salida de la esclavitud?",
+    "options": ["La construcción del templo", "El reinado de Salomón", "La salida de Egipto", "El diluvio"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 12-14"
+  },
+  {
+    "id": "jr044",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué nos enseña 2 Corintios 3:18 sobre la transformación del creyente?",
+    "options": ["Que ocurre por cumplir la ley", "Que somos transformados al contemplar la gloria del Señor", "Que sucede solo después de morir", "Que es un cambio físico visible"],
+    "correctAnswer": 1,
+    "reference": "2 Corintios 3:18"
+  },
+  {
+    "id": "jr045",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué significa que Cristo nos redimió de la maldición de la ley?",
+    "options": ["Que la ley era mala", "Que ya no existen mandamientos", "Que Él se hizo maldición por nosotros al morir en el madero", "Que los judíos fueron castigados"],
+    "correctAnswer": 2,
+    "reference": "Gálatas 3:13"
+  },
+  {
+    "id": "jr046",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué profeta anunció una fuente abierta para la purificación del pecado y de la impureza?",
+    "options": ["Oseas", "Miqueas", "Hageo", "Zacarías"],
+    "correctAnswer": 3,
+    "reference": "Zacarías 13:1"
+  },
+  {
+    "id": "jr047",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Según Efesios 2:22, ¿para qué somos edificados juntamente en Cristo?",
+    "options": ["Para ser famosos en el mundo", "Para ser morada de Dios en el Espíritu", "Para construir templos grandes", "Para ser ángeles en la tierra"],
+    "correctAnswer": 1,
+    "reference": "Efesios 2:22"
+  },
+  {
+    "id": "jr048",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué enseña 1 Corintios 6:19 acerca de nuestros cuerpos?",
+    "options": ["Que no tienen valor espiritual", "Que son temporales solamente", "Que son templo del Espíritu Santo", "Que deben ser castigados"],
+    "correctAnswer": 2,
+    "reference": "1 Corintios 6:19"
+  },
+  {
+    "id": "jr049",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué figura espiritual no tiene ninguna concordancia con Cristo según 2 Corintios 6:15?",
+    "options": ["El mundo", "La carne", "Belial", "Los escribas"],
+    "correctAnswer": 2,
+    "reference": "2 Corintios 6:15"
+  },
+  {
+    "id": "jr050",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué profeta anunció el derramamiento del Espíritu sobre toda carne?",
+    "options": ["Ezequiel", "Joel", "Amós", "Abdías"],
+    "correctAnswer": 1,
+    "reference": "Joel 2:28"
+  },
+  {
+    "id": "jr051",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué asegura el Salmo 103:3 acerca del carácter redentor de Dios?",
+    "options": ["Que castiga cada error", "Que perdona todas nuestras iniquidades", "Que solo ama a los perfectos", "Que el perdón es difícil de obtener"],
+    "correctAnswer": 1,
+    "reference": "Salmos 103:3"
+  },
+  {
+    "id": "jr052",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"El Hijo del Hombre vino a buscar y a _______ lo que se había perdido\".",
+    "options": ["Juzgar", "Condenar", "Salvar", "Ver"],
+    "correctAnswer": 2,
+    "reference": "Lucas 19:10"
+  },
+  {
+    "id": "jr053",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"...el cual por el ________ puesto delante de Él sufrió la cruz\".",
+    "options": ["Premio", "Gozo", "Poder", "Reino"],
+    "correctAnswer": 1,
+    "reference": "Hebreos 12:2"
+  },
+  {
+    "id": "jr054",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"...a la medida de la estatura de la ________ de Cristo\".",
+    "options": ["Sabiduría", "Fuerza", "Plenitud", "Edad"],
+    "correctAnswer": 2,
+    "reference": "Efesios 4:13"
+  },
+  {
+    "id": "jr055",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Sin derramamiento de sangre no hay ________\".",
+    "options": ["Salvación", "Esperanza", "Remisión", "Iglesia"],
+    "correctAnswer": 2,
+    "reference": "Hebreos 9:22"
+  },
+  {
+    "id": "jr056",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Jehová es mi roca y mi _________\".",
+    "options": ["Amigo", "Castillo", "Redentor", "Juez"],
+    "correctAnswer": 2,
+    "reference": "Salmos 19:14"
+  },
+  {
+    "id": "jr057",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"La sangre de Jesucristo su Hijo nos limpia de todo _________\".",
+    "options": ["Mal", "Pecado", "Temor", "Enemigo"],
+    "correctAnswer": 1,
+    "reference": "1 Juan 1:7"
+  },
+  {
+    "id": "jr058",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Cristo padeció una sola vez por los pecados, el justo por los _________\".",
+    "options": ["Malos", "Injustos", "Perdidos", "Gentiles"],
+    "correctAnswer": 1,
+    "reference": "1 Pedro 3:18"
+  },
+  {
+    "id": "jr059",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "Completa: \"Al único y sabio Dios, nuestro Salvador, sea gloria y majestad... por todos los siglos. ______\".",
+    "options": ["Aleluya", "Amén", "Hosanna", "Maranata"],
+    "correctAnswer": 1,
+    "reference": "Judas 1:25"
+  },
+  {
+  "id": "ex060",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿En qué ciudad nació Jesús?",
+  "options": ["Nazaret", "Belén", "Jerusalén", "Capernaum"],
+  "correctAnswer": 1,
+  "reference": "Mateo 2:1"
+},
+{
+  "id": "ex061",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién anunció a María que daría a luz al Mesías?",
+  "options": ["Miguel", "Gabriel", "Rafael", "Uriel"],
+  "correctAnswer": 1,
+  "reference": "Lucas 1:26-31"
+},
+{
+  "id": "ex062",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué señal siguieron los sabios de oriente para encontrar a Jesús?",
+  "options": ["Una nube", "Una estrella", "Un ángel", "Un sueño"],
+  "correctAnswer": 1,
+  "reference": "Mateo 2:2"
+},
+{
+  "id": "ex063",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién intentó matar al niño Jesús al oír de su nacimiento?",
+  "options": ["Herodes", "Pilato", "César", "Anás"],
+  "correctAnswer": 0,
+  "reference": "Mateo 2:16"
+},
+{
+  "id": "ex064",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿En qué lugar creció Jesús?",
+  "options": ["Belén", "Jerusalén", "Nazaret", "Galilea"],
+  "correctAnswer": 2,
+  "reference": "Mateo 2:23"
+},
+{
+  "id": "ex065",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿A qué edad se quedó Jesús en el templo dialogando con los maestros?",
+  "options": ["10 años", "12 años", "15 años", "18 años"],
+  "correctAnswer": 1,
+  "reference": "Lucas 2:42"
+},
+{
+  "id": "ex066",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué proclamó el Padre desde el cielo en el bautismo de Jesús?",
+  "options": ["Este es mi siervo fiel", "Este es mi Hijo amado", "Este es el Mesías prometido", "Escúchenlo todos"],
+  "correctAnswer": 1,
+  "reference": "Mateo 3:17"
+},
+{
+  "id": "ex067",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuál fue el primer milagro registrado de Jesús?",
+  "options": ["Sanar un leproso", "Multiplicar panes", "Convertir agua en vino", "Resucitar a Lázaro"],
+  "correctAnswer": 2,
+  "reference": "Juan 2:11"
+},
+{
+  "id": "ex068",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué hombre bajaron por el techo para que Jesús lo sanara?",
+  "options": ["Un ciego", "Un paralítico", "Un leproso", "Un endemoniado"],
+  "correctAnswer": 1,
+  "reference": "Marcos 2:3-4"
+},
+{
+  "id": "ex069",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué discípulo era recaudador de impuestos antes de seguir a Jesús?",
+  "options": ["Pedro", "Mateo", "Tomás", "Felipe"],
+  "correctAnswer": 1,
+  "reference": "Mateo 9:9"
+},
+{
+  "id": "ex070",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué mujer fue sanada al tocar el manto de Jesús?",
+  "options": ["María Magdalena", "La suegra de Pedro", "Una mujer con flujo de sangre", "Marta"],
+  "correctAnswer": 2,
+  "reference": "Marcos 5:25-34"
+},
+{
+  "id": "ex071",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué amigo de Jesús fue resucitado después de cuatro días en la tumba?",
+  "options": ["Jairo", "Esteban", "Lázaro", "Bartimeo"],
+  "correctAnswer": 2,
+  "reference": "Juan 11:43-44"
+},
+{
+  "id": "ex072",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿En qué ciudad entró Jesús montado en un pollino?",
+  "options": ["Nazaret", "Jericó", "Jerusalén", "Betania"],
+  "correctAnswer": 2,
+  "reference": "Mateo 21:7-10"
+},
+{
+  "id": "ex073",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué hizo Jesús en el templo al ver a los vendedores?",
+  "options": ["Los ignoró", "Los bendijo", "Volcó las mesas", "Predicó en silencio"],
+  "correctAnswer": 2,
+  "reference": "Mateo 21:12"
+},
+{
+  "id": "ex074",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué comida instituyó Jesús como memorial de su sacrificio?",
+  "options": ["La Pascua", "La Cena del Señor", "El ayuno anual", "La fiesta de los Tabernáculos"],
+  "correctAnswer": 1,
+  "reference": "Lucas 22:19-20"
+},
+{
+  "id": "ex075",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Con qué símbolo representó Jesús su sangre en la última cena?",
+  "options": ["Agua", "Aceite", "Vino", "Leche"],
+  "correctAnswer": 2,
+  "reference": "Lucas 22:20"
+},
+{
+  "id": "ex076",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién cortó la oreja del siervo del sumo sacerdote?",
+  "options": ["Juan", "Pedro", "Santiago", "Andrés"],
+  "correctAnswer": 1,
+  "reference": "Juan 18:10"
+},
+{
+  "id": "ex077",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cómo se llamaba el siervo cuya oreja fue cortada?",
+  "options": ["Malco", "Anás", "Caifás", "Cornelio"],
+  "correctAnswer": 0,
+  "reference": "Juan 18:10"
+},
+{
+  "id": "ex078",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué criminal fue liberado en lugar de Jesús?",
+  "options": ["Barrabás", "Simón", "Gestas", "Dimas"],
+  "correctAnswer": 0,
+  "reference": "Mateo 27:26"
+},
+{
+  "id": "ex079",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué señal sobrenatural ocurrió cuando Jesús murió?",
+  "options": ["Cayó fuego del cielo", "El velo del templo se rasgó", "Apareció un arcoíris", "Hubo gran sequía"],
+  "correctAnswer": 1,
+  "reference": "Mateo 27:51"
+},
+{
+  "id": "ex080",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ocurrió con las rocas cuando Jesús murió?",
+  "options": ["Se derritieron", "Se partieron", "Desaparecieron", "Se elevaron"],
+  "correctAnswer": 1,
+  "reference": "Mateo 27:51"
+},
+{
+  "id": "ex081",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién reconoció que Jesús era verdaderamente el Hijo de Dios al verlo morir?",
+  "options": ["Un fariseo", "Un centurión", "Herodes", "Un escriba"],
+  "correctAnswer": 1,
+  "reference": "Mateo 27:54"
+},
+{
+  "id": "ex082",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿En qué día de la semana resucitó Jesús?",
+  "options": ["Viernes", "Sábado", "Domingo", "Lunes"],
+  "correctAnswer": 2,
+  "reference": "Mateo 28:1"
+},
+{
+  "id": "ex083",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ángel removió la piedra del sepulcro?",
+  "options": ["Gabriel", "Miguel", "Un ángel del Señor", "No se menciona"],
+  "correctAnswer": 2,
+  "reference": "Mateo 28:2"
+},
+{
+  "id": "ex084",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué guardias custodiaban la tumba de Jesús?",
+  "options": ["Judíos", "Romanos", "Levitas", "Fariseos"],
+  "correctAnswer": 1,
+  "reference": "Mateo 27:65-66"
+},
+{
+  "id": "ex085",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿A qué ciudad se dirigían dos discípulos cuando Jesús se les apareció después de resucitar?",
+  "options": ["Betania", "Nazaret", "Emaús", "Jericó"],
+  "correctAnswer": 2,
+  "reference": "Lucas 24:13"
+},
+{
+  "id": "ex086",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué les explicó Jesús a los discípulos camino a Emaús?",
+  "options": ["Las parábolas", "Las profecías acerca de Él", "Las leyes de Moisés", "Los salmos de David"],
+  "correctAnswer": 1,
+  "reference": "Lucas 24:27"
+},
+{
+  "id": "ex087",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué instrucción dio Jesús antes de ascender al cielo?",
+  "options": ["Construir un templo", "Huir de Jerusalén", "Hacer discípulos a todas las naciones", "Esperar en Galilea"],
+  "correctAnswer": 2,
+  "reference": "Mateo 28:19"
+},
+{
+  "id": "ex088",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Con qué promesa acompañó Jesús la Gran Comisión?",
+  "options": ["Enviar riquezas", "Estar con ellos todos los días", "Evitar persecución", "Darles poder político"],
+  "correctAnswer": 1,
+  "reference": "Mateo 28:20"
+},
+{
+  "id": "ex089",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué les dijo Jesús que recibirían cuando viniera el Espíritu Santo?",
+  "options": ["Sabiduría", "Paz", "Poder", "Riqueza"],
+  "correctAnswer": 2,
+  "reference": "Hechos 1:8"
+},
+{
+  "id": "ex090",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Dónde estaban los discípulos cuando Jesús ascendió?",
+  "options": ["Nazaret", "Monte de los Olivos", "Belén", "Samaria"],
+  "correctAnswer": 1,
+  "reference": "Hechos 1:12"
+},
+{
+  "id": "ex091",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué discípulo corrió al sepulcro junto con Pedro?",
+  "options": ["Tomás", "Juan", "Felipe", "Mateo"],
+  "correctAnswer": 1,
+  "reference": "Juan 20:3-4"
+},
+{
+  "id": "ex092",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué señal mostró Jesús a Tomás para que creyera?",
+  "options": ["Su voz", "Sus milagros", "Sus heridas", "Una visión celestial"],
+  "correctAnswer": 2,
+  "reference": "Juan 20:27"
+},
+{
+  "id": "ex093",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué desayunaron los discípulos con Jesús en la orilla del mar?",
+  "options": ["Pan y vino", "Pescado y pan", "Cordero", "Miel y leche"],
+  "correctAnswer": 1,
+  "reference": "Juan 21:9"
+},
+{
+  "id": "ex094",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuántas veces preguntó Jesús a Pedro si lo amaba?",
+  "options": ["Dos", "Tres", "Cuatro", "Cinco"],
+  "correctAnswer": 1,
+  "reference": "Juan 21:15-17"
+},
+{
+  "id": "ex095",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué título usó Jesús frecuentemente para referirse a sí mismo?",
+  "options": ["Rey de Israel", "Hijo del Hombre", "Maestro Supremo", "Profeta Mayor"],
+  "correctAnswer": 1,
+  "reference": "Mateo 20:28"
+},
+{
+  "id": "ex096",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué dijo Jesús que vino a buscar y salvar?",
+  "options": ["A los justos", "A los ricos", "Lo que se había perdido", "A los sacerdotes"],
+  "correctAnswer": 2,
+  "reference": "Lucas 19:10"
+},
+{
+  "id": "ex097",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta anunció que el Mesías sería herido por nuestras rebeliones?",
+  "options": ["Jeremías", "Ezequiel", "Isaías", "Daniel"],
+  "correctAnswer": 2,
+  "reference": "Isaías 53:5"
+},
+{
+  "id": "ex098",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué pacto estableció Jesús mediante su sangre?",
+  "options": ["Pacto Sinaítico", "Pacto Davídico", "Nuevo Pacto", "Pacto Abrahámico"],
+  "correctAnswer": 2,
+  "reference": "Lucas 22:20"
+},
+{
+  "id": "ex099",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué evento marca el inicio de la predicación apostólica después de la ascensión?",
+  "options": ["La crucifixión", "Pentecostés", "La transfiguración", "La conversión de Pablo"],
+  "correctAnswer": 1,
+  "reference": "Hechos 2:1"
+},
+{
+  "id": "ex100",
+  "period": "Jesús y la Redención",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué declaró Jesús antes de ascender al cielo acerca de toda autoridad?",
+  "options": ["Que sería compartida con los apóstoles", "Que le había sido dada en el cielo y en la tierra", "Que pertenecería a Israel", "Que sería revelada después"],
+  "correctAnswer": 1,
+  "reference": "Mateo 28:18"
+},
+{
+  "id": "ic001",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿En qué día descendió el Espíritu Santo sobre los discípulos reunidos en Jerusalén?",
+  "options": ["En la Pascua", "En Pentecostés", "En la Fiesta de los Tabernáculos", "En el Día de la Expiación"],
+  "correctAnswer": 1,
+  "reference": "Hechos 2:1-4"
+},
+{
+  "id": "ic002",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Quién se puso en pie para predicar el primer sermón después de la venida del Espíritu Santo?",
+  "options": ["Juan", "Santiago", "Pedro", "Andrés"],
+  "correctAnswer": 2,
+  "reference": "Hechos 2:14"
+},
+{
+  "id": "ic003",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Cuántas personas fueron añadidas a la iglesia el día de Pentecostés?",
+  "options": ["Como mil", "Como tres mil", "Como cinco mil", "Como diez mil"],
+  "correctAnswer": 1,
+  "reference": "Hechos 2:41"
+},
+{
+  "id": "ic004",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿En qué perseveraban los primeros creyentes según Hechos 2:42?",
+  "options": ["En sacrificios diarios", "En la doctrina de los apóstoles, la comunión, el partimiento del pan y las oraciones", "En la reconstrucción del templo", "En ayunos continuos"],
+  "correctAnswer": 1,
+  "reference": "Hechos 2:42"
+},
+{
+  "id": "ic005",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue el primer mártir de la iglesia cristiana?",
+  "options": ["Jacobo", "Esteban", "Felipe", "Bernabé"],
+  "correctAnswer": 1,
+  "reference": "Hechos 7:59-60"
+},
+{
+  "id": "ic006",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Qué discípulo fue conocido inicialmente como Saulo antes de su conversión?",
+  "options": ["Timoteo", "Pablo", "Silas", "Tito"],
+  "correctAnswer": 1,
+  "reference": "Hechos 13:9"
+},
+{
+  "id": "ic007",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿En qué camino tuvo Saulo su encuentro con Jesús resucitado?",
+  "options": ["Camino a Jerusalén", "Camino a Galilea", "Camino a Damasco", "Camino a Roma"],
+  "correctAnswer": 2,
+  "reference": "Hechos 9:3-6"
+},
+{
+  "id": "ic008",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue enviado por Dios para imponer las manos sobre Saulo y que recobrara la vista?",
+  "options": ["Pedro", "Esteban", "Ananías", "Felipe"],
+  "correctAnswer": 2,
+  "reference": "Hechos 9:17"
+},
+{
+  "id": "ic009",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿En qué ciudad fueron llamados cristianos por primera vez los discípulos?",
+  "options": ["Jerusalén", "Roma", "Éfeso", "Antioquía"],
+  "correctAnswer": 3,
+  "reference": "Hechos 11:26"
+},
+{
+  "id": "ic010",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "BASIC",
+  "question": "¿Qué apóstol fue liberado milagrosamente de la cárcel por un ángel?",
+  "options": ["Juan", "Pedro", "Pablo", "Felipe"],
+  "correctAnswer": 1,
+  "reference": "Hechos 12:7-11"
+},
+{
+  "id": "ic011",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué señal visible acompañó la venida del Espíritu Santo en Pentecostés?",
+  "options": ["Una nube brillante", "Lenguas repartidas como de fuego", "Un terremoto fuerte", "Una estrella resplandeciente"],
+  "correctAnswer": 1,
+  "reference": "Hechos 2:3"
+},
+{
+  "id": "ic012",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué pidió la multitud después de oír el sermón de Pedro en Pentecostés?",
+  "options": ["Señales milagrosas", "Ser bautizados inmediatamente", "Qué debían hacer", "Que descendiera fuego del cielo"],
+  "correctAnswer": 2,
+  "reference": "Hechos 2:37"
+},
+{
+  "id": "ic013",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué matrimonio murió por mentir acerca del precio de una propiedad?",
+  "options": ["Aquila y Priscila", "Ananías y Safira", "Herodes y Herodías", "Felipe y sus hijas"],
+  "correctAnswer": 1,
+  "reference": "Hechos 5:1-10"
+},
+{
+  "id": "ic014",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién explicó las Escrituras al eunuco etíope?",
+  "options": ["Pedro", "Esteban", "Felipe", "Bernabé"],
+  "correctAnswer": 2,
+  "reference": "Hechos 8:30-35"
+},
+{
+  "id": "ic015",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué libro del Antiguo Testamento leía el eunuco cuando Felipe se le acercó?",
+  "options": ["Salmos", "Isaías", "Jeremías", "Daniel"],
+  "correctAnswer": 1,
+  "reference": "Hechos 8:28"
+},
+{
+  "id": "ic016",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol tuvo la visión del lienzo con animales antes de ir a casa de Cornelio?",
+  "options": ["Juan", "Santiago", "Pedro", "Andrés"],
+  "correctAnswer": 2,
+  "reference": "Hechos 10:9-16"
+},
+{
+  "id": "ic017",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ocurrió con el carcelero de Filipos después del terremoto?",
+  "options": ["Escapó de la ciudad", "Fue castigado por Roma", "Se convirtió y fue bautizado con su familia", "Liberó a todos los presos"],
+  "correctAnswer": 2,
+  "reference": "Hechos 16:30-33"
+},
+{
+  "id": "ic018",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿En qué ciudad discutió Pablo con filósofos en el Areópago?",
+  "options": ["Corinto", "Éfeso", "Atenas", "Tesalónica"],
+  "correctAnswer": 2,
+  "reference": "Hechos 17:22"
+},
+{
+  "id": "ic019",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién acompañó a Pablo en varios de sus viajes misioneros y escribió el Evangelio según Lucas?",
+  "options": ["Marcos", "Lucas", "Silas", "Timoteo"],
+  "correctAnswer": 1,
+  "reference": "Colosenses 4:14"
+},
+{
+  "id": "ic020",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol escribió cartas dirigidas a siete iglesias en Asia?",
+  "options": ["Pedro", "Pablo", "Juan", "Santiago"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 1:4"
+},
+{
+  "id": "ic021",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué problema doctrinal principal se trató en el Concilio de Jerusalén?",
+  "options": ["La autoridad de Pedro", "La reconstrucción del templo", "Si los gentiles debían circuncidarse para ser salvos", "La fecha correcta de la Pascua"],
+  "correctAnswer": 2,
+  "reference": "Hechos 15:1-29"
+},
+{
+  "id": "ic022",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Quién dio el informe decisivo en el Concilio de Jerusalén citando al profeta Amós?",
+  "options": ["Pedro", "Pablo", "Jacobo", "Bernabé"],
+  "correctAnswer": 2,
+  "reference": "Hechos 15:13-17"
+},
+{
+  "id": "ic023",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad fue el punto de partida del primer viaje misionero de Pablo?",
+  "options": ["Jerusalén", "Antioquía de Siria", "Tarso", "Éfeso"],
+  "correctAnswer": 1,
+  "reference": "Hechos 13:1-4"
+},
+{
+  "id": "ic024",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué nombre recibió José, a quien los apóstoles llamaban hijo de consolación?",
+  "options": ["Silas", "Bernabé", "Timoteo", "Tito"],
+  "correctAnswer": 1,
+  "reference": "Hechos 4:36"
+},
+{
+  "id": "ic025",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué joven se durmió durante una predicación de Pablo y cayó desde un tercer piso?",
+  "options": ["Tíquico", "Eutico", "Demas", "Aristarco"],
+  "correctAnswer": 1,
+  "reference": "Hechos 20:9"
+},
+{
+  "id": "ic026",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Ante qué rey presentó Pablo su defensa diciendo: \"Por poco me persuades a ser cristiano\"?",
+  "options": ["Herodes Antipas", "Félix", "Agripa", "César Augusto"],
+  "correctAnswer": 2,
+  "reference": "Hechos 26:28"
+},
+{
+  "id": "ic027",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿En qué isla naufragó Pablo camino a Roma?",
+  "options": ["Chipre", "Creta", "Malta", "Patmos"],
+  "correctAnswer": 2,
+  "reference": "Hechos 28:1"
+},
+{
+  "id": "ic028",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué práctica mágica abandonaron muchos creyentes en Éfeso quemando públicamente sus libros?",
+  "options": ["Adivinación y hechicería", "Astrología babilónica", "Sacrificios humanos", "Invocación de ángeles"],
+  "correctAnswer": 0,
+  "reference": "Hechos 19:18-19"
+},
+{
+  "id": "ic029",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol fue desterrado a la isla de Patmos por causa de la palabra de Dios?",
+  "options": ["Pedro", "Juan", "Pablo", "Santiago"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 1:9"
+},
+{
+  "id": "ic030",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué comparación usa Pablo para describir la unidad de la iglesia en 1 Corintios 12?",
+  "options": ["Un templo espiritual", "Un ejército disciplinado", "Un cuerpo con muchos miembros", "Un edificio bien cimentado"],
+  "correctAnswer": 2,
+  "reference": "1 Corintios 12:12-27"
+},
+{
+  "id": "ic031",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad era conocida por examinar cada día las Escrituras para comprobar lo que Pablo enseñaba?",
+  "options": ["Corinto", "Berea", "Filipos", "Tesalónica"],
+  "correctAnswer": 1,
+  "reference": "Hechos 17:11"
+},
+{
+  "id": "ic032",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué colaborador de Pablo fue dejado en Creta para establecer ancianos en cada ciudad?",
+  "options": ["Timoteo", "Lucas", "Tito", "Silas"],
+  "correctAnswer": 2,
+  "reference": "Tito 1:5"
+},
+{
+  "id": "ic033",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué comparación usa Pedro para describir a los creyentes como parte de una edificación espiritual?",
+  "options": ["Columnas firmes", "Piedras vivas", "Vigas santas", "Muros fuertes"],
+  "correctAnswer": 1,
+  "reference": "1 Pedro 2:5"
+},
+{
+  "id": "ic034",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué mujer comerciante de púrpura fue convertida en Filipos?",
+  "options": ["Lidia", "Damaris", "Priscila", "Febe"],
+  "correctAnswer": 0,
+  "reference": "Hechos 16:14"
+},
+{
+  "id": "ic035",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol escribió sobre el fruto del Espíritu en Gálatas 5?",
+  "options": ["Pedro", "Juan", "Pablo", "Santiago"],
+  "correctAnswer": 2,
+  "reference": "Gálatas 5:22-23"
+},
+{
+  "id": "ic036",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia recibió la exhortación de haber perdido su primer amor?",
+  "options": ["Laodicea", "Éfeso", "Sardis", "Pérgamo"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 2:4"
+},
+{
+  "id": "ic037",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué carta enfatiza que la salvación es por gracia mediante la fe, no por obras?",
+  "options": ["Romanos", "Efesios", "Hebreos", "Colosenses"],
+  "correctAnswer": 1,
+  "reference": "Efesios 2:8-9"
+},
+{
+  "id": "ic038",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol fue muerto a espada según la tradición bíblica registrada en Hechos 12?",
+  "options": ["Jacobo, hermano de Juan", "Pedro", "Andrés", "Tomás"],
+  "correctAnswer": 0,
+  "reference": "Hechos 12:2"
+},
+{
+  "id": "ic039",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad fue sacudida por un alboroto causado por los fabricantes de ídolos de Diana?",
+  "options": ["Éfeso", "Corinto", "Roma", "Tesalónica"],
+  "correctAnswer": 0,
+  "reference": "Hechos 19:23-29"
+},
+{
+  "id": "ic040",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué título se le da a Cristo como cabeza de la iglesia en Colosenses 1:18?",
+  "options": ["Sumo Sacerdote", "Rey de reyes", "Cabeza del cuerpo", "Buen Pastor"],
+  "correctAnswer": 2,
+  "reference": "Colosenses 1:18"
+},
+{
+  "id": "ic041",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ciudad fue el lugar donde Pablo trabajó haciendo tiendas junto a Aquila y Priscila?",
+  "options": ["Éfeso", "Corinto", "Filipos", "Tesalónica"],
+  "correctAnswer": 1,
+  "reference": "Hechos 18:1-3"
+},
+{
+  "id": "ic042",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué joven acompañó a Pablo en su segundo viaje misionero después de ser circuncidado?",
+  "options": ["Tito", "Silas", "Timoteo", "Lucas"],
+  "correctAnswer": 2,
+  "reference": "Hechos 16:1-3"
+},
+{
+  "id": "ic043",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue descrito como “varón bueno, lleno del Espíritu Santo y de fe”?",
+  "options": ["Esteban", "Felipe", "Bernabé", "Silas"],
+  "correctAnswer": 2,
+  "reference": "Hechos 11:24"
+},
+{
+  "id": "ic044",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia recibió la carta donde Pablo habló extensamente sobre la resurrección en el capítulo 15?",
+  "options": ["La iglesia en Roma", "La iglesia en Corinto", "La iglesia en Éfeso", "La iglesia en Galacia"],
+  "correctAnswer": 1,
+  "reference": "1 Corintios 15:1-4"
+},
+{
+  "id": "ic045",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué diácono fue conocido por evangelizar en Samaria?",
+  "options": ["Esteban", "Felipe", "Nicolás", "Prócoro"],
+  "correctAnswer": 1,
+  "reference": "Hechos 8:5"
+},
+{
+  "id": "ic046",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué carta fue escrita por Pablo mientras estaba prisionero en Roma?",
+  "options": ["Efesios", "Gálatas", "1 Tesalonicenses", "1 Corintios"],
+  "correctAnswer": 0,
+  "reference": "Efesios 3:1"
+},
+{
+  "id": "ic047",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol escribió que los creyentes son “real sacerdocio, nación santa”?",
+  "options": ["Pablo", "Juan", "Pedro", "Santiago"],
+  "correctAnswer": 2,
+  "reference": "1 Pedro 2:9"
+},
+{
+  "id": "ic048",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia fue reprendida por su tibieza espiritual?",
+  "options": ["Sardis", "Laodicea", "Pérgamo", "Tiatira"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 3:15-16"
+},
+{
+  "id": "ic049",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol escribió la epístola que enfatiza que la fe sin obras es muerta?",
+  "options": ["Pedro", "Juan", "Santiago", "Pablo"],
+  "correctAnswer": 2,
+  "reference": "Santiago 2:17"
+},
+{
+  "id": "ic050",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ciudad fue evangelizada primero en Europa por Pablo?",
+  "options": ["Atenas", "Roma", "Filipos", "Corinto"],
+  "correctAnswer": 2,
+  "reference": "Hechos 16:12"
+},
+{
+  "id": "ic051",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué herejía combatía principalmente la carta a los Gálatas?",
+  "options": ["Negación de la resurrección", "Judaizantes que exigían la ley para salvación", "Gnosticismo primitivo", "Adoración a ángeles"],
+  "correctAnswer": 1,
+  "reference": "Gálatas 5:1-4"
+},
+{
+  "id": "ic052",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué comparación usa Pablo para describir la armadura espiritual del creyente?",
+  "options": ["Vestidura sacerdotal", "Armadura de Dios", "Túnica de justicia", "Escudo celestial"],
+  "correctAnswer": 1,
+  "reference": "Efesios 6:11"
+},
+{
+  "id": "ic053",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia fue elogiada por su paciencia en medio de la persecución pero advertida contra falsas enseñanzas?",
+  "options": ["Éfeso", "Esmirna", "Pérgamo", "Filadelfia"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 2:12-15"
+},
+{
+  "id": "ic054",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro presenta a Cristo como nuestro Sumo Sacerdote celestial?",
+  "options": ["Romanos", "Hebreos", "Colosenses", "2 Corintios"],
+  "correctAnswer": 1,
+  "reference": "Hebreos 4:14"
+},
+{
+  "id": "ic055",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué colaborador de Pablo abandonó el ministerio amando este mundo?",
+  "options": ["Demas", "Silas", "Lucas", "Tíquico"],
+  "correctAnswer": 0,
+  "reference": "2 Timoteo 4:10"
+},
+{
+  "id": "ic056",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué carta enfatiza la supremacía de Cristo sobre toda potestad y autoridad?",
+  "options": ["Filipenses", "Colosenses", "1 Tesalonicenses", "Filemón"],
+  "correctAnswer": 1,
+  "reference": "Colosenses 2:9-10"
+},
+{
+  "id": "ic057",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad recibió dos cartas de Pablo enfocadas en la segunda venida de Cristo?",
+  "options": ["Corinto", "Roma", "Tesalónica", "Galacia"],
+  "correctAnswer": 2,
+  "reference": "1 Tesalonicenses 4:16-17"
+},
+{
+  "id": "ic058",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol escribió que debemos probar los espíritus si son de Dios?",
+  "options": ["Pedro", "Juan", "Santiago", "Pablo"],
+  "correctAnswer": 1,
+  "reference": "1 Juan 4:1"
+},
+{
+  "id": "ic059",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué don espiritual es descrito como el mayor en 1 Corintios 13?",
+  "options": ["Profecía", "Fe", "Amor", "Lenguas"],
+  "correctAnswer": 2,
+  "reference": "1 Corintios 13:13"
+},
+{
+  "id": "ic060",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia recibió la promesa de una puerta abierta que nadie puede cerrar?",
+  "options": ["Filadelfia", "Sardis", "Laodicea", "Éfeso"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 3:8"
+},
+{
+  "id": "ic061",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia recibió elogio por su trabajo, paciencia y rechazo a falsos apóstoles?",
+  "options": ["Laodicea", "Éfeso", "Sardis", "Tiatira"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 2:2"
+},
+{
+  "id": "ic062",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué compañero de Pablo fue llamado 'mi hijo amado y fiel en el Señor'?",
+  "options": ["Tito", "Silas", "Timoteo", "Marcos"],
+  "correctAnswer": 2,
+  "reference": "1 Corintios 4:17"
+},
+{
+  "id": "ic063",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ciudad fue conocida por su idolatría relacionada con la diosa Diana?",
+  "options": ["Corinto", "Éfeso", "Atenas", "Roma"],
+  "correctAnswer": 1,
+  "reference": "Hechos 19:27"
+},
+{
+  "id": "ic064",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué mujer ayudó a Apolos a comprender con mayor exactitud el camino de Dios?",
+  "options": ["Lidia", "Febe", "Priscila", "Damaris"],
+  "correctAnswer": 2,
+  "reference": "Hechos 18:26"
+},
+{
+  "id": "ic065",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué carta fue escrita específicamente a un esclavo fugitivo llamado Onésimo?",
+  "options": ["Colosenses", "Efesios", "Filemón", "Filipenses"],
+  "correctAnswer": 2,
+  "reference": "Filemón 1:10-12"
+},
+{
+  "id": "ic066",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol exhortó a los ancianos a apacentar la grey de Dios voluntariamente?",
+  "options": ["Pedro", "Juan", "Santiago", "Pablo"],
+  "correctAnswer": 0,
+  "reference": "1 Pedro 5:2"
+},
+{
+  "id": "ic067",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ciudad fue el lugar donde Pablo escribió la epístola a los Romanos?",
+  "options": ["Corinto", "Éfeso", "Jerusalén", "Antioquía"],
+  "correctAnswer": 0,
+  "reference": "Romanos 16:1,23"
+},
+{
+  "id": "ic068",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia fue reprendida por tolerar a una mujer llamada simbólicamente Jezabel?",
+  "options": ["Tiatira", "Pérgamo", "Sardis", "Esmirna"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 2:20"
+},
+{
+  "id": "ic069",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué apóstol escribió tres epístolas breves dirigidas a creyentes y líderes de la iglesia?",
+  "options": ["Pedro", "Juan", "Pablo", "Santiago"],
+  "correctAnswer": 1,
+  "reference": "2 Juan 1:1"
+},
+{
+  "id": "ic070",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ciudad fue la primera en recibir una carta dirigida a una iglesia específica en el Nuevo Testamento?",
+  "options": ["Tesalónica", "Corinto", "Roma", "Galacia"],
+  "correctAnswer": 0,
+  "reference": "1 Tesalonicenses 1:1"
+},
+{
+  "id": "ic071",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué término usa Pablo para describir el misterio revelado de que los gentiles son coherederos?",
+  "options": ["Justificación", "Dispensación", "Reconciliación", "Misterio de Cristo"],
+  "correctAnswer": 3,
+  "reference": "Efesios 3:4-6"
+},
+{
+  "id": "ic072",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro enfatiza que Cristo es el mediador de un nuevo pacto superior?",
+  "options": ["Romanos", "Hebreos", "Colosenses", "Gálatas"],
+  "correctAnswer": 1,
+  "reference": "Hebreos 8:6"
+},
+{
+  "id": "ic073",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol advirtió contra doctrinas de demonios en los últimos tiempos?",
+  "options": ["Juan", "Pedro", "Pablo", "Santiago"],
+  "correctAnswer": 2,
+  "reference": "1 Timoteo 4:1"
+},
+{
+  "id": "ic074",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia tenía fama de estar viva, pero estaba muerta espiritualmente?",
+  "options": ["Sardis", "Laodicea", "Pérgamo", "Éfeso"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 3:1"
+},
+{
+  "id": "ic075",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol escribió acerca del anticristo y los muchos anticristos?",
+  "options": ["Pedro", "Juan", "Pablo", "Judas"],
+  "correctAnswer": 1,
+  "reference": "1 Juan 2:18"
+},
+{
+  "id": "ic076",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué comparación usa Pablo para describir la iglesia como desposada con Cristo?",
+  "options": ["Una ciudad santa", "Un cuerpo glorificado", "Una virgen pura", "Una esposa adornada"],
+  "correctAnswer": 2,
+  "reference": "2 Corintios 11:2"
+},
+{
+  "id": "ic077",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué epístola advierte sobre hombres que entran encubiertamente y pervierten la gracia?",
+  "options": ["2 Pedro", "Judas", "1 Juan", "Hebreos"],
+  "correctAnswer": 1,
+  "reference": "Judas 1:4"
+},
+{
+  "id": "ic078",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad recibió una carta donde Pablo habló del arrebatamiento del Señor en el aire?",
+  "options": ["Roma", "Tesalónica", "Corinto", "Filipos"],
+  "correctAnswer": 1,
+  "reference": "1 Tesalonicenses 4:16-17"
+},
+{
+  "id": "ic079",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro describe el juicio ante el gran trono blanco?",
+  "options": ["Daniel", "Mateo", "Apocalipsis", "Hebreos"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:11-15"
+},
+{
+  "id": "ic080",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué figura simbólica representa a la iglesia glorificada descendiendo del cielo?",
+  "options": ["La nueva Jerusalén", "La vid verdadera", "El monte Sion", "El tabernáculo eterno"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 21:2"
+},
+{
+  "id": "ic081",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia fue conocida por su generosidad aun en medio de profunda pobreza?",
+  "options": ["Corinto", "Filipos", "Macedonia", "Roma"],
+  "correctAnswer": 2,
+  "reference": "2 Corintios 8:1-2"
+},
+{
+  "id": "ic082",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué colaborador de Pablo fue llamado 'mi compañero de prisiones'?",
+  "options": ["Lucas", "Aristarco", "Timoteo", "Tito"],
+  "correctAnswer": 1,
+  "reference": "Colosenses 4:10"
+},
+{
+  "id": "ic083",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia recibió la enseñanza sobre el tribunal de Cristo?",
+  "options": ["Roma", "Corinto", "Galacia", "Éfeso"],
+  "correctAnswer": 1,
+  "reference": "2 Corintios 5:10"
+},
+{
+  "id": "ic084",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué carta exhorta a contender ardientemente por la fe que ha sido dada a los santos?",
+  "options": ["2 Pedro", "Judas", "Hebreos", "Santiago"],
+  "correctAnswer": 1,
+  "reference": "Judas 1:3"
+},
+{
+  "id": "ic085",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué iglesia fue elogiada por guardar la palabra y no negar el nombre de Cristo?",
+  "options": ["Sardis", "Filadelfia", "Pérgamo", "Tiatira"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 3:8"
+},
+{
+  "id": "ic086",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué término utiliza Pablo para describir la transformación de los creyentes en la venida de Cristo?",
+  "options": ["Regeneración", "Glorificación", "Justificación", "Santificación"],
+  "correctAnswer": 1,
+  "reference": "Romanos 8:30"
+},
+{
+  "id": "ic087",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia fue reprendida por permitir la doctrina de Balaam?",
+  "options": ["Pérgamo", "Tiatira", "Éfeso", "Sardis"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 2:14"
+},
+{
+  "id": "ic088",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol escribió acerca del día del Señor que vendrá como ladrón en la noche?",
+  "options": ["Pedro", "Juan", "Pablo", "Santiago"],
+  "correctAnswer": 0,
+  "reference": "2 Pedro 3:10"
+},
+{
+  "id": "ic089",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué figura usa Hebreos para describir la esperanza del creyente como firme y segura?",
+  "options": ["Ancla del alma", "Roca eterna", "Columna inamovible", "Escudo poderoso"],
+  "correctAnswer": 0,
+  "reference": "Hebreos 6:19"
+},
+{
+  "id": "ic090",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué carta presenta a Cristo como la imagen del Dios invisible?",
+  "options": ["Filipenses", "Colosenses", "Romanos", "Gálatas"],
+  "correctAnswer": 1,
+  "reference": "Colosenses 1:15"
+},
+{
+  "id": "ic091",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia fue advertida acerca de los nicolaítas?",
+  "options": ["Éfeso", "Sardis", "Laodicea", "Filadelfia"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 2:6"
+},
+{
+  "id": "ic092",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué expresión usa Pablo para describir la reunión futura con el Señor en el aire?",
+  "options": ["Segunda manifestación", "Gran tribulación", "Arrebatamiento", "Revelación gloriosa"],
+  "correctAnswer": 2,
+  "reference": "1 Tesalonicenses 4:17"
+},
+{
+  "id": "ic093",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad recibió una carta donde Pablo habló del aguijón en la carne?",
+  "options": ["Roma", "Corinto", "Galacia", "Filipos"],
+  "correctAnswer": 1,
+  "reference": "2 Corintios 12:7"
+},
+{
+  "id": "ic094",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué epístola enseña que somos justificados por la fe aparte de las obras de la ley?",
+  "options": ["Hebreos", "Romanos", "Santiago", "1 Pedro"],
+  "correctAnswer": 1,
+  "reference": "Romanos 3:28"
+},
+{
+  "id": "ic095",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia fue descrita como rica y que no tenía necesidad de nada, pero era espiritualmente pobre?",
+  "options": ["Laodicea", "Sardis", "Pérgamo", "Éfeso"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 3:17"
+},
+{
+  "id": "ic096",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué apóstol escribió que debemos crecer en la gracia y el conocimiento de nuestro Señor?",
+  "options": ["Pedro", "Juan", "Pablo", "Judas"],
+  "correctAnswer": 0,
+  "reference": "2 Pedro 3:18"
+},
+{
+  "id": "ic097",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro describe el descenso del Espíritu Santo como garantía de nuestra herencia?",
+  "options": ["Romanos", "Efesios", "Gálatas", "Hebreos"],
+  "correctAnswer": 1,
+  "reference": "Efesios 1:13-14"
+},
+{
+  "id": "ic098",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué iglesia fue advertida acerca de falsos apóstoles que se disfrazan como ministros de justicia?",
+  "options": ["Corinto", "Roma", "Galacia", "Éfeso"],
+  "correctAnswer": 0,
+  "reference": "2 Corintios 11:13-15"
+},
+{
+  "id": "ic099",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué libro presenta la visión del nuevo cielo y la nueva tierra?",
+  "options": ["Isaías", "Hebreos", "Apocalipsis", "Daniel"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:1"
+},
+{
+  "id": "ic100",
+  "period": "La Iglesia Cristiana",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué llamado hace el Espíritu y la Esposa al final de la Escritura?",
+  "options": ["Velad y orad", "Ven", "Arrepentíos", "Esperad con paciencia"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 22:17"
+},
+{
+  "id": "tf001",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué sucederá con los creyentes que estén vivos cuando el Señor descienda del cielo?",
+  "options": ["Morirán primero", "Serán arrebatados para recibir al Señor en el aire", "Se quedarán en la tierra", "Serán convertidos en ángeles"],
+  "correctAnswer": 1,
+  "reference": "1 Tesalonicenses 4:17"
+},
+{
+  "id": "tf002",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "Según Apocalipsis 21:4, ¿qué no existirá en el estado eterno?",
+  "options": ["Oro", "Ángeles", "Árboles", "Muerte, llanto ni dolor"],
+  "correctAnswer": 3,
+  "reference": "Apocalipsis 21:4"
+},
+{
+  "id": "tf003",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "Jesús comparó los días de Su venida con los días de ¿quién?",
+  "options": ["Moisés", "Noé", "Abraham", "David"],
+  "correctAnswer": 1,
+  "reference": "Mateo 24:37"
+},
+{
+  "id": "tf004",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Cómo vendrá el día del Señor según Pablo y Pedro?",
+  "options": ["Como ladrón en la noche", "Con previo anuncio mundial", "Durante una fiesta solemne", "Solo en Jerusalén"],
+  "correctAnswer": 0,
+  "reference": "1 Tesalonicenses 5:2; 2 Pedro 3:10"
+},
+{
+  "id": "tf005",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué ciudad vio Juan descender del cielo como una esposa ataviada?",
+  "options": ["Babilonia", "Roma celestial", "Nueva Jerusalén", "Edén restaurado"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:2"
+},
+{
+  "id": "tf006",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué sucederá con los muertos en Cristo cuando el Señor descienda?",
+  "options": ["Dormirán más tiempo", "Resucitarán primero", "Serán juzgados inmediatamente", "Desaparecerán"],
+  "correctAnswer": 1,
+  "reference": "1 Tesalonicenses 4:16"
+},
+{
+  "id": "tf007",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué otro libro fue abierto en el juicio del Gran Trono Blanco?",
+  "options": ["El libro de Daniel", "El libro de la profecía", "El Libro de la Vida", "El libro de Moisés"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:12"
+},
+{
+  "id": "tf008",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Para quién fue preparado originalmente el lago de fuego?",
+  "options": ["Para los incrédulos", "Para el diablo y sus ángeles", "Para las naciones rebeldes", "Para los reyes de la tierra"],
+  "correctAnswer": 1,
+  "reference": "Mateo 25:41"
+},
+{
+  "id": "tf009",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué sucederá con el evangelio antes del fin?",
+  "options": ["Será olvidado", "Será predicado solo en Israel", "Será predicado en todo el mundo", "Será reemplazado"],
+  "correctAnswer": 2,
+  "reference": "Mateo 24:14"
+},
+{
+  "id": "tf010",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué dijo Jesús al final del libro de Apocalipsis?",
+  "options": ["Velad y orad", "Ciertamente vengo en breve", "Arrepentíos", "Paz os dejo"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 22:20"
+},
+{
+  "id": "tf011",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué señal aparecerá en el cielo antes de la venida del Hijo del Hombre?",
+  "options": ["Una nueva estrella", "La señal del Hijo del Hombre", "Un arco iris doble", "Una espada de fuego"],
+  "correctAnswer": 1,
+  "reference": "Mateo 24:30"
+},
+{
+  "id": "tf012",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Quién será atado por mil años según Apocalipsis 20?",
+  "options": ["El falso profeta", "La bestia", "Satanás", "El anticristo"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:2-3"
+},
+{
+  "id": "tf013",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué elemento caerá del cielo y amargará las aguas durante las trompetas?",
+  "options": ["Una estrella llamada Ajenjo", "Granizo ardiente", "Fuego eterno", "Una espada celestial"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 8:10-11"
+},
+{
+  "id": "tf014",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Cómo se llama el lugar del juicio final descrito en Apocalipsis 20?",
+  "options": ["Valle de Josafat", "Monte Sion", "Gran Trono Blanco", "Monte de los Olivos"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:11"
+},
+{
+  "id": "tf015",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué profeta habló de un tiempo de angustia cual nunca fue desde que hubo nación?",
+  "options": ["Isaías", "Jeremías", "Daniel", "Ezequiel"],
+  "correctAnswer": 2,
+  "reference": "Daniel 12:1"
+},
+{
+  "id": "tf016",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué marca impondrá la bestia para poder comprar o vender?",
+  "options": ["Un sello en la frente o mano", "Un tatuaje secreto", "Un documento romano", "Un número en la vestidura"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 13:16-17"
+},
+{
+  "id": "tf017",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuál es el número de la bestia?",
+  "options": ["777", "616", "144000", "666"],
+  "correctAnswer": 3,
+  "reference": "Apocalipsis 13:18"
+},
+{
+  "id": "tf018",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucederá con los cielos y la tierra actuales según 2 Pedro 3:10?",
+  "options": ["Serán purificados por agua", "Pasarán con grande estruendo", "Serán renovados inmediatamente", "Serán gobernados por ángeles"],
+  "correctAnswer": 1,
+  "reference": "2 Pedro 3:10"
+},
+{
+  "id": "tf019",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué comparación usó Jesús para describir la vigilancia ante Su regreso?",
+  "options": ["Un sembrador", "Una oveja perdida", "Diez vírgenes", "Un pescador fiel"],
+  "correctAnswer": 2,
+  "reference": "Mateo 25:1-13"
+},
+{
+  "id": "tf020",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucederá inmediatamente después de la tribulación de aquellos días?",
+  "options": ["Habrá paz mundial", "El sol se oscurecerá", "Descenderá fuego del cielo", "El templo será reconstruido"],
+  "correctAnswer": 1,
+  "reference": "Mateo 24:29"
+},
+{
+  "id": "tf021",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién será lanzado primero al lago de fuego?",
+  "options": ["Satanás", "La bestia y el falso profeta", "Los reyes de la tierra", "Los ángeles caídos"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 19:20"
+},
+{
+  "id": "tf022",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuántos sellos tiene el rollo que abre el Cordero?",
+  "options": ["5", "6", "7", "12"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 5:1; 6:1"
+},
+{
+  "id": "tf023",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué ejército es reunido en el lugar llamado Armagedón?",
+  "options": ["Los santos glorificados", "Las naciones de la tierra", "Israel restaurado", "Los 144000"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 16:16"
+},
+{
+  "id": "tf024",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién es digno de abrir el libro sellado?",
+  "options": ["Miguel", "Un anciano celestial", "El Cordero", "Juan"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 5:5-7"
+},
+{
+  "id": "tf025",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué evento ocurre después del milenio cuando Satanás es soltado?",
+  "options": ["Desciende la Nueva Jerusalén", "Reúne a Gog y Magog para batalla", "Se celebra el juicio inmediato", "Comienza el arrebatamiento"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 20:7-8"
+},
+{
+  "id": "tf026",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué dice Daniel que hará el príncipe que ha de venir respecto al pacto?",
+  "options": ["Lo confirmará por una semana", "Lo destruirá totalmente", "Lo cambiará por uno eterno", "Lo ignorará"],
+  "correctAnswer": 0,
+  "reference": "Daniel 9:27"
+},
+{
+  "id": "tf027",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con la muerte y el Hades en el juicio final?",
+  "options": ["Son purificados", "Son arrojados al lago de fuego", "Desaparecen sin juicio", "Son restaurados"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 20:14"
+},
+{
+  "id": "tf028",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué característica tiene la Nueva Jerusalén respecto al templo?",
+  "options": ["Tiene un templo de oro", "No tiene templo porque el Señor es su templo", "Tiene un templo reconstruido", "Tiene muchos templos"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 21:22"
+},
+{
+  "id": "tf029",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué juicio describe Mateo 25 respecto a las naciones?",
+  "options": ["Juicio del Trono Blanco", "Juicio de los creyentes", "Juicio de las ovejas y los cabritos", "Juicio de los profetas"],
+  "correctAnswer": 2,
+  "reference": "Mateo 25:31-46"
+},
+{
+  "id": "tf030",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué árbol aparece nuevamente en la Nueva Jerusalén para sanidad de las naciones?",
+  "options": ["Cedro del Líbano", "Árbol del conocimiento", "Árbol de la vida", "Olivo eterno"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 22:2"
+},
+{
+  "id": "tf031",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Cuántas trompetas aparecen en el libro de Apocalipsis?",
+  "options": ["5", "6", "7", "12"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 8:2"
+},
+{
+  "id": "tf032",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué cae del cielo con la quinta trompeta y recibe la llave del pozo del abismo?",
+  "options": ["Un ángel fuerte", "Una estrella", "Un querubín", "Miguel"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 9:1"
+},
+{
+  "id": "tf033",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué señal fue dada como advertencia en los días de Noé antes del juicio?",
+  "options": ["La construcción del arca", "Un eclipse solar", "La caída de fuego", "Una plaga mundial"],
+  "correctAnswer": 0,
+  "reference": "Génesis 6:14; Mateo 24:37"
+},
+{
+  "id": "tf034",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué ciudad simboliza el sistema mundial opuesto a Dios en Apocalipsis?",
+  "options": ["Jerusalén", "Roma", "Babilonia", "Tiro"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 17:5"
+},
+{
+  "id": "tf035",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuántos son sellados de las tribus de Israel en Apocalipsis 7?",
+  "options": ["7000", "12000", "144000", "100000"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 7:4"
+},
+{
+  "id": "tf036",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué hacen los dos testigos después de completar su testimonio?",
+  "options": ["Son arrebatados sin morir", "Mueren y resucitan después de tres días y medio", "Desaparecen", "Gobiernan Jerusalén"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 11:7-11"
+},
+{
+  "id": "tf037",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Dónde se para el Hijo del Hombre cuando regresa según Zacarías?",
+  "options": ["Monte Sion", "Monte Carmelo", "Monte de los Olivos", "Monte Sinaí"],
+  "correctAnswer": 2,
+  "reference": "Zacarías 14:4"
+},
+{
+  "id": "tf038",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucede con la bestia y el falso profeta al regreso de Cristo?",
+  "options": ["Son encarcelados mil años", "Huyen al desierto", "Son destruidos por espada", "Son lanzados vivos al lago de fuego"],
+  "correctAnswer": 3,
+  "reference": "Apocalipsis 19:20"
+},
+{
+  "id": "tf039",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué caracteriza el gobierno de Cristo durante el milenio?",
+  "options": ["Gobernará con vara de hierro", "Gobernará desde el cielo sin tierra", "Delegará todo a ángeles", "No habrá naciones"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 19:15; 20:4"
+},
+{
+  "id": "tf040",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucede con aquellos cuyos nombres no están en el Libro de la Vida?",
+  "options": ["Son enviados al desierto", "Son lanzados al lago de fuego", "Vuelven a vivir en la tierra", "Reciben otra oportunidad"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 20:15"
+},
+{
+  "id": "tf041",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué duración tiene el dominio de la bestia según Apocalipsis 13?",
+  "options": ["3 años exactos", "42 meses", "7 años completos", "1000 días"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 13:5"
+},
+{
+  "id": "tf042",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede cuando el séptimo ángel toca la trompeta?",
+  "options": ["Comienzan las copas", "Se anuncia el reino del Señor y de Su Cristo", "Cae Babilonia", "Termina el milenio"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 11:15"
+},
+{
+  "id": "tf043",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué describe Daniel 7 acerca del Hijo del Hombre?",
+  "options": ["Recibe dominio eterno", "Es rechazado por Israel", "Muere y resucita", "Es coronado en Jerusalén"],
+  "correctAnswer": 0,
+  "reference": "Daniel 7:13-14"
+},
+{
+  "id": "tf044",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué río fluye del trono de Dios en la Nueva Jerusalén?",
+  "options": ["Éufrates", "Jordán celestial", "Río de agua de vida", "Tigris eterno"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 22:1"
+},
+{
+  "id": "tf045",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué nombre está escrito en los fieles según Apocalipsis 14?",
+  "options": ["Nombre de Miguel", "Nombre del Cordero y del Padre", "Nombre de Jerusalén", "Nombre de Israel"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 14:1"
+},
+{
+  "id": "tf046",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué juicio ocurre antes del milenio según Mateo 25?",
+  "options": ["Juicio del Gran Trono Blanco", "Juicio de los ángeles caídos", "Juicio de las naciones", "Juicio del Hades"],
+  "correctAnswer": 2,
+  "reference": "Mateo 25:31-46"
+},
+{
+  "id": "tf047",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ocurre con el templo en la Nueva Jerusalén?",
+  "options": ["Es reconstruido por ángeles", "Desciende del cielo", "No existe porque Dios es su templo", "Es mayor que el de Salomón"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:22"
+},
+{
+  "id": "tf048",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué característica tiene la ciudad celestial respecto al sol y la luna?",
+  "options": ["Necesita ambos para iluminar", "No necesita sol ni luna", "Tiene doble sol", "Brilla solo de noche"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 21:23"
+},
+{
+  "id": "tf049",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con los cobardes e incrédulos según Apocalipsis 21:8?",
+  "options": ["Son restaurados", "Son enviados a la tierra", "Tienen parte en el lago que arde con fuego", "Duermen eternamente"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:8"
+},
+{
+  "id": "tf050",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué promesa hace Jesús al final de Apocalipsis acerca de Su regreso?",
+  "options": ["Vendré cuando estén preparados", "Ciertamente vengo en breve", "Regresaré después del milenio", "Vendré con trompeta solamente"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 22:20"
+},
+{
+  "id": "tf031",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Cuántas trompetas aparecen en el libro de Apocalipsis?",
+  "options": ["5", "6", "7", "12"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 8:2"
+},
+{
+  "id": "tf032",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué cae del cielo con la quinta trompeta y recibe la llave del pozo del abismo?",
+  "options": ["Un ángel fuerte", "Una estrella", "Un querubín", "Miguel"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 9:1"
+},
+{
+  "id": "tf033",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué señal fue dada como advertencia en los días de Noé antes del juicio?",
+  "options": ["La construcción del arca", "Un eclipse solar", "La caída de fuego", "Una plaga mundial"],
+  "correctAnswer": 0,
+  "reference": "Génesis 6:14; Mateo 24:37"
+},
+{
+  "id": "tf034",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué ciudad simboliza el sistema mundial opuesto a Dios en Apocalipsis?",
+  "options": ["Jerusalén", "Roma", "Babilonia", "Tiro"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 17:5"
+},
+{
+  "id": "tf035",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Cuántos son sellados de las tribus de Israel en Apocalipsis 7?",
+  "options": ["7000", "12000", "144000", "100000"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 7:4"
+},
+{
+  "id": "tf036",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué hacen los dos testigos después de completar su testimonio?",
+  "options": ["Son arrebatados sin morir", "Mueren y resucitan después de tres días y medio", "Desaparecen", "Gobiernan Jerusalén"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 11:7-11"
+},
+{
+  "id": "tf037",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Dónde se para el Hijo del Hombre cuando regresa según Zacarías?",
+  "options": ["Monte Sion", "Monte Carmelo", "Monte de los Olivos", "Monte Sinaí"],
+  "correctAnswer": 2,
+  "reference": "Zacarías 14:4"
+},
+{
+  "id": "tf038",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucede con la bestia y el falso profeta al regreso de Cristo?",
+  "options": ["Son encarcelados mil años", "Huyen al desierto", "Son destruidos por espada", "Son lanzados vivos al lago de fuego"],
+  "correctAnswer": 3,
+  "reference": "Apocalipsis 19:20"
+},
+{
+  "id": "tf039",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué caracteriza el gobierno de Cristo durante el milenio?",
+  "options": ["Gobernará con vara de hierro", "Gobernará desde el cielo sin tierra", "Delegará todo a ángeles", "No habrá naciones"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 19:15; 20:4"
+},
+{
+  "id": "tf040",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucede con aquellos cuyos nombres no están en el Libro de la Vida?",
+  "options": ["Son enviados al desierto", "Son lanzados al lago de fuego", "Vuelven a vivir en la tierra", "Reciben otra oportunidad"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 20:15"
+},
+{
+  "id": "tf041",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué duración tiene el dominio de la bestia según Apocalipsis 13?",
+  "options": ["3 años exactos", "42 meses", "7 años completos", "1000 días"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 13:5"
+},
+{
+  "id": "tf042",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede cuando el séptimo ángel toca la trompeta?",
+  "options": ["Comienzan las copas", "Se anuncia el reino del Señor y de Su Cristo", "Cae Babilonia", "Termina el milenio"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 11:15"
+},
+{
+  "id": "tf043",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué describe Daniel 7 acerca del Hijo del Hombre?",
+  "options": ["Recibe dominio eterno", "Es rechazado por Israel", "Muere y resucita", "Es coronado en Jerusalén"],
+  "correctAnswer": 0,
+  "reference": "Daniel 7:13-14"
+},
+{
+  "id": "tf044",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué río fluye del trono de Dios en la Nueva Jerusalén?",
+  "options": ["Éufrates", "Jordán celestial", "Río de agua de vida", "Tigris eterno"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 22:1"
+},
+{
+  "id": "tf045",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué nombre está escrito en los fieles según Apocalipsis 14?",
+  "options": ["Nombre de Miguel", "Nombre del Cordero y del Padre", "Nombre de Jerusalén", "Nombre de Israel"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 14:1"
+},
+{
+  "id": "tf046",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué juicio ocurre antes del milenio según Mateo 25?",
+  "options": ["Juicio del Gran Trono Blanco", "Juicio de los ángeles caídos", "Juicio de las naciones", "Juicio del Hades"],
+  "correctAnswer": 2,
+  "reference": "Mateo 25:31-46"
+},
+{
+  "id": "tf047",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ocurre con el templo en la Nueva Jerusalén?",
+  "options": ["Es reconstruido por ángeles", "Desciende del cielo", "No existe porque Dios es su templo", "Es mayor que el de Salomón"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:22"
+},
+{
+  "id": "tf048",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué característica tiene la ciudad celestial respecto al sol y la luna?",
+  "options": ["Necesita ambos para iluminar", "No necesita sol ni luna", "Tiene doble sol", "Brilla solo de noche"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 21:23"
+},
+{
+  "id": "tf049",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con los cobardes e incrédulos según Apocalipsis 21:8?",
+  "options": ["Son restaurados", "Son enviados a la tierra", "Tienen parte en el lago que arde con fuego", "Duermen eternamente"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:8"
+},
+{
+  "id": "tf050",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué promesa hace Jesús al final de Apocalipsis acerca de Su regreso?",
+  "options": ["Vendré cuando estén preparados", "Ciertamente vengo en breve", "Regresaré después del milenio", "Vendré con trompeta solamente"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 22:20"
+},
+{
+  "id": "tf071",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué dice Jesús que debemos hacer porque no sabemos el día ni la hora?",
+  "options": ["Ayunar", "Velar", "Subir al monte", "Construir templos"],
+  "correctAnswer": 1,
+  "reference": "Mateo 25:13"
+},
+{
+  "id": "tf072",
+  "period": "Tiempos Finales",
+  "difficulty": "BASIC",
+  "question": "¿Qué evento será visible para todos como señal del regreso de Cristo?",
+  "options": ["Un eclipse total", "Su manifestación en las nubes", "Un terremoto mundial", "Fuego sobre Jerusalén"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 1:7"
+},
+{
+  "id": "tf073",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué se le da a la mujer en Apocalipsis 12 para huir al desierto?",
+  "options": ["Un caballo blanco", "Dos alas de gran águila", "Un ejército celestial", "Una nube luminosa"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 12:14"
+},
+{
+  "id": "tf074",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué espíritu sale de la boca del dragón, la bestia y el falso profeta?",
+  "options": ["Espíritus de verdad", "Espíritus de profecía", "Espíritus de demonios", "Espíritus de juicio"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 16:13-14"
+},
+{
+  "id": "tf075",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué sucederá con los elementos según 2 Pedro 3?",
+  "options": ["Se derretirán con calor ardiente", "Serán congelados", "Serán transformados en oro", "Serán guardados eternamente"],
+  "correctAnswer": 0,
+  "reference": "2 Pedro 3:10"
+},
+{
+  "id": "tf076",
+  "period": "Tiempos Finales",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué caracteriza a los vencedores en Apocalipsis 14?",
+  "options": ["Siguen al Cordero por dondequiera que va", "Gobiernan las naciones", "Son ángeles redimidos", "No mueren físicamente"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 14:4"
+},
+{
+  "id": "tf077",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué señal profética mencionó Jesús citando a Daniel como indicadora de gran tribulación?",
+  "options": ["La caída de Babilonia", "La abominación desoladora", "El pacto con muchas naciones", "El sellamiento de Israel"],
+  "correctAnswer": 1,
+  "reference": "Mateo 24:15; Daniel 9:27"
+},
+{
+  "id": "tf078",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede cuando el dragón es finalmente derrotado?",
+  "options": ["Es encarcelado eternamente en el lago de fuego", "Es restaurado", "Gobierna mil años", "Desaparece sin juicio"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 20:10"
+},
+{
+  "id": "tf079",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué compara Santiago con la paciencia necesaria hasta la venida del Señor?",
+  "options": ["El soldado fiel", "El agricultor esperando el fruto", "El pastor vigilante", "El pescador perseverante"],
+  "correctAnswer": 1,
+  "reference": "Santiago 5:7"
+},
+{
+  "id": "tf080",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con el cielo actual después del juicio final?",
+  "options": ["Es purificado", "Es renovado parcialmente", "Huye de la presencia del Señor", "Se convierte en Nueva Jerusalén"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:11"
+},
+{
+  "id": "tf081",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué declaración hace el que está sentado en el trono en Apocalipsis 21?",
+  "options": ["Yo soy el Alfa y la Omega", "He aquí yo hago nuevas todas las cosas", "Consumado es", "Yo vengo pronto"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 21:5"
+},
+{
+  "id": "tf082",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con los que murieron por causa del testimonio de Jesús durante la tribulación?",
+  "options": ["Reinan con Cristo mil años", "Duermen eternamente", "Son juzgados primero", "Regresan como ángeles"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 20:4"
+},
+{
+  "id": "tf083",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué característica tiene el trono de Dios en Apocalipsis 4?",
+  "options": ["Está rodeado por un arco iris", "Está hecho de oro puro", "Está en Jerusalén", "Está sobre el templo"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 4:3"
+},
+{
+  "id": "tf084",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sonido precede a la resurrección según 1 Corintios 15?",
+  "options": ["Un susurro celestial", "La última trompeta", "Un canto angelical", "El rugido del cielo"],
+  "correctAnswer": 1,
+  "reference": "1 Corintios 15:52"
+},
+{
+  "id": "tf085",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué juicio ocurre después del milenio?",
+  "options": ["Juicio de las naciones", "Juicio del Gran Trono Blanco", "Juicio de Israel", "Juicio de los ángeles"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 20:11-12"
+},
+{
+  "id": "tf086",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué promesa se da al vencedor respecto al árbol de la vida?",
+  "options": ["Comerá del árbol de la vida", "Lo plantará en Jerusalén", "Lo gobernará", "Lo protegerá"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 2:7"
+},
+{
+  "id": "tf087",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué título se le da a Satanás en Apocalipsis 12?",
+  "options": ["Príncipe de Persia", "La serpiente antigua", "Rey de Babilonia", "Ángel de muerte"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 12:9"
+},
+{
+  "id": "tf088",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede cuando el Cordero abre el séptimo sello?",
+  "options": ["Gran terremoto", "Media hora de silencio en el cielo", "Comienza el milenio", "Caen las estrellas"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 8:1"
+},
+{
+  "id": "tf089",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué actitud deben tener los creyentes esperando estos eventos según 2 Pedro 3:11?",
+  "options": ["Temor constante", "Santidad y piedad", "Retiro del mundo", "Preparación militar"],
+  "correctAnswer": 1,
+  "reference": "2 Pedro 3:11"
+},
+{
+  "id": "tf090",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué declara el Espíritu y la Esposa al final de Apocalipsis?",
+  "options": ["Ven", "Gloria", "Amén", "Justicia"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 22:17"
+},
+{
+  "id": "tf091",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con los cielos y tierra actuales antes del estado eterno?",
+  "options": ["Huyen de la presencia del Señor", "Se transforman en oro", "Son absorbidos", "Se mezclan con el nuevo cielo"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 20:11"
+},
+{
+  "id": "tf092",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué ciudad es llamada \"la esposa del Cordero\"?",
+  "options": ["Jerusalén terrenal", "Babilonia", "Nueva Jerusalén", "Sion"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 21:9-10"
+},
+{
+  "id": "tf093",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué hace el falso profeta?",
+  "options": ["Hace descender fuego del cielo", "Gobierna Jerusalén", "Escribe profecías", "Construye el templo"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 13:13"
+},
+{
+  "id": "tf094",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con el que añada a las palabras de esta profecía?",
+  "options": ["Recibirá plagas", "Será bendecido", "Será ignorado", "Recibirá revelación adicional"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 22:18"
+},
+{
+  "id": "tf095",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con el que quite palabras de este libro?",
+  "options": ["Pierde su parte del libro de la vida", "Es disciplinado", "Recibe advertencia", "Pierde autoridad"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 22:19"
+},
+{
+  "id": "tf096",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué título se atribuye Cristo al final del libro?",
+  "options": ["Raíz y linaje de David", "León de Judá", "Cordero eterno", "Hijo del Hombre"],
+  "correctAnswer": 0,
+  "reference": "Apocalipsis 22:16"
+},
+{
+  "id": "tf097",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucederá con el mar en el estado eterno?",
+  "options": ["Se convertirá en cristal", "Ya no existirá", "Fluirá desde el trono", "Será purificado"],
+  "correctAnswer": 1,
+  "reference": "Apocalipsis 21:1"
+},
+{
+  "id": "tf098",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué describe la primera resurrección?",
+  "options": ["Resurrección de condenación", "Resurrección espiritual", "Resurrección de los santos para reinar", "Resurrección universal"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:5-6"
+},
+{
+  "id": "tf099",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué sucede con el diablo después del juicio final?",
+  "options": ["Es destruido", "Es encarcelado mil años", "Es lanzado al lago de fuego eternamente", "Desaparece"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 20:10"
+},
+{
+  "id": "tf100",
+  "period": "Tiempos Finales",
+  "difficulty": "ADVANCED",
+  "question": "¿Cómo concluye el libro de Apocalipsis?",
+  "options": ["Con una advertencia", "Con un juicio", "Con una bendición de gracia", "Con silencio"],
+  "correctAnswer": 2,
+  "reference": "Apocalipsis 22:21"
+}
 ]
