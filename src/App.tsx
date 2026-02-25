@@ -512,9 +512,9 @@ if (showWelcome) {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-8 py-8"
+            className="space-y-8 py-2"
           >
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-6">
 
               <div className="inline-block px-8 py-4 
                               bg-gradient-to-b from-amber-400 to-amber-600 
@@ -529,8 +529,8 @@ if (showWelcome) {
                 </h2>
             </div>
 
-  <p className="text-stone-400 italic">
-    Selecciona el nivel de complejidad para tu partida
+  <p className="text-stone-300 italic">
+    Selecciona el nivel de complejidad
   </p>
 
 </div>
