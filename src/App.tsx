@@ -600,8 +600,7 @@ if (showWelcome) {
 
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-serif font-bold">Selecciona un Período</h2>
-              <p className="text-stone-500 italic">El Juego de la Biblia</p>
-              <p className="text-stone-400 text-sm">Toca un período para generar una pregunta aleatoria.</p>
+              <p className="text-stone-200 text-sm">Toca un período para generar una pregunta.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
