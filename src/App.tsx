@@ -530,7 +530,7 @@ if (showWelcome) {
             </div>
 
   <p className="text-stone-300 italic">
-    Selecciona el nivel de complejidad
+    Selecciona el Nivel de Complejidad
   </p>
 
 </div>
@@ -598,10 +598,10 @@ if (showWelcome) {
               </div>
             </div>
 
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-1">
               <h2 className="text-3xl font-serif font-bold">Selecciona un Período</h2>
               <p className="text-stone-200 text-sm">Toca un período para generar una pregunta.</p>
-            </div>
+            </div>1xxx
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {Object.values(Period).map((period) => (
@@ -612,7 +612,7 @@ if (showWelcome) {
                     handleSelectPeriod(period);
                   }}
                   className={`
-                    relative overflow-hidden h-36 rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    relative overflow-hidden h-24 rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
