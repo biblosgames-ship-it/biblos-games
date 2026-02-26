@@ -598,9 +598,13 @@ if (showWelcome) {
               </div>
             </div>
 
-            <div className="text-center space-y-1">
-              <h2 className="text-3xl font-serif font-bold">Selecciona un Período</h2>
-              <p className="text-stone-200 text-sm">Toca un período para generar una pregunta.</p>
+            <div className="text-center space-y-0 mb-2">
+              <h2 className="text-xl font-serif font-semibold tracking-wide">
+                Selecciona un Período
+              </h2>
+              <p className="text-stone-400 text-xs">
+                Toca un período para generar una pregunta
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
