@@ -601,7 +601,7 @@ if (showWelcome) {
             <div className="text-center space-y-1">
               <h2 className="text-3xl font-serif font-bold">Selecciona un Período</h2>
               <p className="text-stone-200 text-sm">Toca un período para generar una pregunta.</p>
-            </div>1xxx
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {Object.values(Period).map((period) => (
