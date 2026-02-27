@@ -597,7 +597,7 @@ if (showWelcome) {
                 Modo {gameLevel}
               </div>
             </div>
-            <div className="text-center space-y-0 mb-1">
+            <div className="text-center space-y-0 mb-0">
               <h2 className="text-xl font-serif font-semibold tracking-wide">
                 Selecciona un Período
               </h2>
