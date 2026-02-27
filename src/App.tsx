@@ -662,7 +662,7 @@ if (showWelcome) {
                 Volver al Tablero
               </button>
               <div className="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em]">
-                Nivel {currentQuestion.difficulty}
+                {currentQuestion.difficulty}
               </div>
             </div>
 
