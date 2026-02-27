@@ -580,7 +580,7 @@ if (showWelcome) {
             </div>
           </motion.div>
         ) : !currentQuestion ? (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
               <button 
                 onClick={() => setGameLevel(null)}
