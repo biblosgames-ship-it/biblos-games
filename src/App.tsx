@@ -512,7 +512,7 @@ if (showWelcome) {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-8 py-2"
+            className="space-y-3 py-2"
           >
             <div className="text-center space-y-6">
 
