@@ -689,7 +689,7 @@ if (showWelcome) {
                         disabled={showAnswer}
                         onClick={() => handleAnswerClick(idx)}
                         className={`
-                          w-full p-6 rounded-2xl border-2 text-left transition-all flex items-center justify-between group
+                          w-full py-3 px-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group
                           ${showAnswer 
                             ? isCorrect 
                               ? 'bg-emerald-50 border-emerald-500 text-emerald-900' 
@@ -708,7 +708,7 @@ if (showWelcome) {
                           `}>
                             {String.fromCharCode(65 + idx)}
                           </span>
-                          <span className="text-xl font-medium">{option}</span>
+                          <span className="text-base font-medium">{option}</span>
                         </div>
                         {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-500" size={28} />}
                         {showAnswer && !isCorrect && <XCircle className="text-stone-200" size={28} />}
