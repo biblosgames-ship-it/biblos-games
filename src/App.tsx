@@ -675,7 +675,7 @@ if (showWelcome) {
                 <div className="text-xs font-mono opacity-80 font-bold">ITEM #{currentQuestion.id.toUpperCase()}</div>
               </div>
               
-              <div className="px-8 pt-4 pb-8 md:px-12 md:pt-6 md:pb-10 space-y-6">
+              <div className="px-8 pt-4 pb-8 md:px-12 md:pt-6 md:pb-10 space-y-4">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold leading-tight text-slate-900 text-balance">
                   {currentQuestion.question}
                 </h2>
