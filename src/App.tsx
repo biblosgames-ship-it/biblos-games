@@ -21,6 +21,7 @@ import {
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
+import { supabase } from './supabaseClient';
 
 const ALL_QUESTIONS = questionsData as Question[];
 
@@ -152,7 +153,28 @@ const handleAnswerClick = (index: number) => {
 
   setShowAnswer(true);
 };
+const saveGameResult = async () => {
+  const { error } = await supabase
+    .from('games')
+    .insert([
+      {
+        mode: 'team',
+        team_name: 'Equipo Prueba',
+        difficulty: gameLevel || 'No definido',
+        total_questions: 20,
+        correct_answers: 15,
+        accuracy: 75,
+        level_breakdown: {}
+      }
+    ]);
 
+  if (error) {
+    console.error('Error guardando partida:', error);
+    alert('Error al guardar partida');
+  } else {
+    alert('Partida guardada correctamente 🎉');
+  }
+};
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
