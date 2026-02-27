@@ -669,6 +669,14 @@ if (showWelcome) {
               </button>
             </div>
           </div>
+          <div className="mt-6 flex justify-center">
+             <button
+               onClick={saveGameResult}
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition-all"
+             >
+                Guardar partida (TEST)
+              </button>
+          </div>
         ) : (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
