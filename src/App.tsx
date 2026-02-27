@@ -516,7 +516,7 @@ if (showWelcome) {
           >
             <div className="text-center space-y-6">
 
-              <div className="inline-block px-3 py-4 
+              <div className="inline-block px-8 py-4 
                               bg-gradient-to-b from-amber-400 to-amber-600 
                               text-white 
                               rounded-2xl 
@@ -580,7 +580,7 @@ if (showWelcome) {
             </div>
           </motion.div>
         ) : !currentQuestion ? (
-          <div className="space-y-8">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <button 
                 onClick={() => setGameLevel(null)}
