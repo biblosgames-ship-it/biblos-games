@@ -599,8 +599,8 @@ if (showWelcome) {
             </div>
 
             <div className="text-center space-y-0 mb-1">
-              <h2 className="text-xl font-serif font-semibold tracking-wide">
-                Selecciona un Período
+              <h2 className="text-lg font-serif font-semibold tracking-wide">
+                SELECCIONAR UN PERIODO
               </h2>
               <p className="text-stone-400 text-xs">
                 Toca un período para generar una pregunta
