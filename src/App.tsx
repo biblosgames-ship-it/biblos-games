@@ -580,7 +580,7 @@ if (showWelcome) {
             </div>
           </motion.div>
         ) : !currentQuestion ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="flex items-center justify-between">
               <button 
                 onClick={() => setGameLevel(null)}
@@ -616,7 +616,7 @@ if (showWelcome) {
                     handleSelectPeriod(period);
                   }}
                   className={`
-                    relative overflow-hidden h-24 rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    relative overflow-hidden min-h-[110px] rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
