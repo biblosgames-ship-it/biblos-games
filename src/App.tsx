@@ -603,7 +603,7 @@ if (showWelcome) {
                 SELECCIONAR UN PERIODO
               </h2>
               <p className="text-stone-400 text-xs">
-                Toca un período para generar una pregunta
+                Toca para generar preguntas
               </p>
             </div>
 
@@ -676,7 +676,7 @@ if (showWelcome) {
               </div>
               
               <div className="p-8 md:p-12 space-y-10">
-                <h2 className="text-3xl md:text-4xl font-serif font-bold leading-tight text-slate-900 text-balance">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold leading-tight text-slate-900 text-balance">
                   {currentQuestion.question}
                 </h2>
 
