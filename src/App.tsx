@@ -580,7 +580,7 @@ if (showWelcome) {
             </div>
           </motion.div>
         ) : !currentQuestion ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <button 
                 onClick={() => setGameLevel(null)}
@@ -607,7 +607,7 @@ if (showWelcome) {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
               {Object.values(Period).map((period) => (
                 <button
                   key={period}
