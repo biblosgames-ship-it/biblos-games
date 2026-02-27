@@ -680,7 +680,7 @@ if (showWelcome) {
                   {currentQuestion.question}
                 </h2>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-2">
                   {currentQuestion.options.map((option, idx) => {
                     const isCorrect = idx === currentQuestion.correctAnswer;
                     return (
