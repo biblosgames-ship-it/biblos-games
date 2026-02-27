@@ -616,7 +616,7 @@ if (showWelcome) {
                     handleSelectPeriod(period);
                   }}
                   className={`
-                    relative overflow-hidden min-h-[110px] rounded-2xl py-5 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    relative overflow-hidden min-h-[85px] rounded-2xl py-3 px-6 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
