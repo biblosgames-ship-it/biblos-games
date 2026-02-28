@@ -658,8 +658,7 @@ if (showWelcome) {
   <p className="text-stone-300 italic">
     Selecciona el Nivel de Complejidad
   </p>
-
-</div>
+</motion.div>
 
             <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
               <button
