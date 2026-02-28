@@ -288,27 +288,6 @@ const handleAnswerClick = (index: number) => {
 const saveGameResult = async () => {
   console.log("BOTÓN GUARDAR PRESIONADO");
 
-  if (!user) {
-    console.log("NO HAY USUARIO LOGUEADO");
-    setShowAuth(true);
-    return;
-  }
-
-  const { error } = await supabase
-    .from("games")
-    .insert([
-      {
-        user_id: user.id,
-        score: score,
-      },
-    ]);
-
-  if (error) {
-    console.error(error);
-  } else {
-    console.log("Partida guardada correctamente");
-  }
-};
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
 
@@ -318,11 +297,11 @@ const saveGameResult = async () => {
   }
 
   if (!user) {
-  setShowAuth(true);
-  return;
+    console.log("NO HAY USUARIO LOGUEADO");
+    setShowAuth(true);
+    return;
   }
 
-  // 🔥 Calculamos duración en tiempo real
   const now = Date.now();
   const duration = startTime
     ? Math.floor((now - startTime) / 1000)
@@ -332,8 +311,8 @@ const saveGameResult = async () => {
     .from("games")
     .insert([
       {
+        user_id: user.id,
         mode: "solo",
-        team_name: null,
         difficulty: gameLevel || "No definido",
         total_questions: total,
         correct_answers: correct,
