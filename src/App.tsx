@@ -40,9 +40,28 @@ export default function App() {
   const [showFinalSummary, setShowFinalSummary] = useState(false);
   const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [user, setUser] = useState(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [globalAverage, setGlobalAverage] = useState<number | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [showAuth, setShowAuth] = useState(false);
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user);
+  });
 
+  const { data: listener } = supabase.auth.onAuthStateChange(
+    (_event, session) => {
+      setUser(session?.user ?? null);
+    }
+  );
+
+  return () => {
+    listener.subscription.unsubscribe();
+  };
+}, []);
 useEffect(() => {
   const initialStats: Record<string, { total: number; correct: number }> = {};
 
@@ -100,7 +119,53 @@ const formatTime = (seconds: number) => {
   const secs = seconds % 60;
   return `${mins}m ${secs}s`;
 };
+const signUp = async () => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
 
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          id: data.user.id,
+          name: name,
+        },
+      ]);
+
+    if (profileError) {
+      console.error("Error creando perfil:", profileError);
+    }
+  }
+
+  alert("Cuenta creada correctamente 🎉");
+  setShowAuth(false);
+};
+
+const signIn = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Sesión iniciada 🔥");
+    setShowAuth(false);
+  }
+};
+
+const signOut = async () => {
+  await supabase.auth.signOut();
+};
 const getColor = (accuracy: number) => {
   if (accuracy >= 80) return "text-green-600";
   if (accuracy >= 60) return "text-yellow-500";
@@ -215,6 +280,11 @@ const saveGameResult = async () => {
   if (total === 0) {
     alert("No hay datos para guardar");
     return;
+  }
+
+  if (!user) {
+  alert("Debes iniciar sesión para guardar tu partida");
+  return;
   }
 
   // 🔥 Calculamos duración en tiempo real
@@ -439,11 +509,70 @@ if (showWelcome) {
   );
 }
   return (
-    <div className={`min-h-screen flex flex-col transition-all duration-500 ${
-      isProjectionMode 
-        ? "bg-black text-white" 
+  <div
+    className={`min-h-screen flex flex-col transition-all duration-500 ${
+      isProjectionMode
+        ? "bg-black text-white"
         : "bg-[#1B1A17]"
-    }`}>
+    }`}
+  >
+
+    {/* HEADER */}
+      {showAuth && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(0,0,0,0.7)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 2000,
+    }}
+  >
+    <div
+      style={{
+        background: "white",
+        padding: "30px",
+        borderRadius: "10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        width: "300px",
+      }}
+    >
+      <h3>Registro / Login</h3>
+
+      <input
+        type="text"
+        placeholder="Nombre"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button onClick={signUp}>Registrarse</button>
+      <button onClick={signIn}>Iniciar sesión</button>
+      <button onClick={() => setShowAuth(false)}>Cancelar</button>
+    </div>
+  </div>
+)}
       {/* Header */}
       <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
