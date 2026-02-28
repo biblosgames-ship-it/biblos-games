@@ -765,9 +765,20 @@ if (showWelcome) {
             <div className="pt-4">
               <button
                 onClick={handleSurprise}
-                className="w-full py-6 rounded-2xl border-2 border-dashed border-stone-300 hover:border-bible-gold hover:bg-bible-gold/5 transition-all flex items-center gap-2 px-2 py-2 group"
+                className="
+                  w-full
+                  rounded-xl
+                  border border-stone-300/40
+                  hover:border-bible-gold
+                  hover:bg-bible-gold/5
+                  transition-all
+                  shadow-sm hover:shadow-md
+                  flex items-center gap-2
+                  px-3 py-2
+                  group
+                "
               >
-                <Sparkles className="text-stone-400 group-hover:text-bible-gold transition-colors" size={32} />
+                <Sparkles className="text-stone-400 group-hover:text-bible-gold transition-colors" size={20} />
                 <span className="font-serif font-bold text-xl text-stone-600 group-hover:text-bible-gold">Pregunta Sorpresa</span>
                 <span className="text-xs text-stone-400 uppercase tracking-widest">Cualquier período</span>
               </button>
