@@ -150,16 +150,24 @@ const signUp = async () => {
 };
 
 const signIn = async () => {
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
+  console.log("LOGIN RESPONSE:", data);
+
   if (error) {
     alert(error.message);
-  } else {
+    return;
+  }
+
+  if (data?.user) {
     alert("Sesión iniciada 🔥");
     setShowAuth(false);
+    setUser(data.user); // 🔥 MUY IMPORTANTE
+  } else {
+    alert("No se pudo obtener el usuario");
   }
 };
 
