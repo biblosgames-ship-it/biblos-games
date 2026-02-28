@@ -762,7 +762,7 @@ if (showWelcome) {
               ))}
             </div>
 
-            <div className="pt-4">
+            <div className="pt-2">
               <button
                 onClick={handleSurprise}
                 className="
