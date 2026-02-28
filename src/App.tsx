@@ -491,7 +491,8 @@ if (showFinalSummary) {
   }
 if (showWelcome) {
   return (
-    <>
+    <div>
+
       {showAuth && (
         <div
           style={{
@@ -564,7 +565,8 @@ if (showWelcome) {
           </button>
         </div>
       </div>
-    </>
+
+    </div>
   );
 }
       <img
