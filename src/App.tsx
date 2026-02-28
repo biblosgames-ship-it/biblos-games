@@ -649,7 +649,7 @@ if (showWelcome) {
                               border-2 border-amber-300
                               transform transition-all
                               hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
-                <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-wide">
+                <h2 className="text-lg md:text-xl font-serif font-semibold tracking-wide">
                   Nivel de Complejidad
                 </h2>
             </div>
