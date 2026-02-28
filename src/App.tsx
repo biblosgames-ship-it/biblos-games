@@ -286,6 +286,16 @@ const handleAnswerClick = (index: number) => {
 };
 
 const saveGameResult = async () => {
+  console.log("BOTÓN GUARDAR PRESIONADO");
+
+  if (!user) {
+    console.log("NO HAY USUARIO LOGUEADO");
+    setShowAuth(true);
+    return;
+  }
+
+  console.log("USUARIO LOGUEADO:", user);
+};
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
 
