@@ -259,13 +259,6 @@ const saveGameResult = async () => {
   }
 };
 
-  if (error) {
-    console.error('Error guardando partida:', error);
-    alert('Error al guardar partida');
-  } else {
-    alert('Partida guardada correctamente 🎉');
-  }
-};
 if (showFinalSummary) {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
