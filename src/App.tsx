@@ -731,7 +731,7 @@ if (showWelcome) {
                     handleSelectPeriod(period);
                   }}
                   className={`
-                    relative overflow-hidden min-h-[85px] rounded-2xl py-0 px-3 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    relative overflow-hidden min-h-[75px] rounded-2xl py-0 px-3 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
@@ -742,19 +742,21 @@ if (showWelcome) {
                       className="w-32 h-32 object-contain"
                     />
                   </div>
-                  <div className="relative z-10 flex flex-col justify-between items-start">
+                  <div className="relative z-10 flex items-center gap-3">
                     <img
                       src={PERIOD_ICONS[period]}
                       alt=""
-                      className="w-20 h-16 object-contain mb-2"
+                      className="w-10 h-10 object-contain"
                     />
 
-                    <div className="space-y-1">
-                      <h3 className="font-serif font-bold text-lg leading-tight">{period}</h3>
-                      <p className="text-[10px] opacity-70 font-medium uppercase tracking-wider">
+                    <div>
+                      <h3 className="font-serif font-bold text-base leading-tight">
+                        {period}
+                      </h3>
+                      <p className="text-[9px] opacity-70 uppercase tracking-wider">
                         Toca para jugar
                       </p>
-                    </div>
+                  </div>
                   </div>
                 </button>
               ))}
