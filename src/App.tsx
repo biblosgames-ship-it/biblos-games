@@ -222,7 +222,32 @@ if (showFinalSummary) {
           <p>Precisión: {accuracy}%</p>
           <p>Duración: {formatTime(duration)}</p>
         </div>
+<div className="mt-8 space-y-4">
+  <h2 className="text-xl font-bold">Resumen por Período</h2>
 
+  {Object.entries(gameStats).map(([period, stats]) => {
+    if (stats.total === 0) return null;
+
+    const periodAccuracy =
+      stats.total === 0
+        ? 0
+        : Math.round((stats.correct / stats.total) * 100);
+
+    return (
+      <div
+        key={period}
+        className="p-4 rounded-xl bg-[#2A2621] border border-[#3A342C]"
+      >
+        <p className="font-bold">{period}</p>
+        <p>Preguntas: {stats.total}</p>
+        <p>Correctas: {stats.correct}</p>
+        <p className={getColor(periodAccuracy)}>
+          Precisión: {periodAccuracy}%
+        </p>
+      </div>
+    );
+  })}
+</div>
           <button
             onClick={() => {
               setShowFinalSummary(false);
