@@ -211,33 +211,38 @@ const handleAnswerClick = (index: number) => {
 const saveGameResult = async () => {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
-  const duration = getDuration();
 
   if (total === 0) {
-    alert('No hay datos para guardar');
+    alert("No hay datos para guardar");
     return;
   }
 
+  // 🔥 Calculamos duración en tiempo real
+  const now = Date.now();
+  const duration = startTime
+    ? Math.floor((now - startTime) / 1000)
+    : 0;
+
   const { error } = await supabase
-    .from('games')
+    .from("games")
     .insert([
       {
-        mode: 'solo',
+        mode: "solo",
         team_name: null,
-        difficulty: gameLevel || 'No definido',
+        difficulty: gameLevel || "No definido",
         total_questions: total,
         correct_answers: correct,
         accuracy: accuracy,
         duration_seconds: duration,
-        level_breakdown: gameStats
-      }
+        level_breakdown: gameStats,
+      },
     ]);
 
   if (error) {
-    console.error('Error guardando partida:', error);
-    alert('Error al guardar partida');
+    console.error("SUPABASE ERROR:", error);
+    alert("Error al guardar partida");
   } else {
-    alert('Partida guardada correctamente 🎉');
+    alert("Partida guardada correctamente 🎉");
   }
 };
 
