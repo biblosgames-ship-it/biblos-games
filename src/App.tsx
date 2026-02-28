@@ -21,7 +21,6 @@ import {
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
-import { supabase } from './supabaseClient';
 
 const ALL_QUESTIONS = questionsData as Question[];
 
@@ -40,28 +39,9 @@ export default function App() {
   const [showFinalSummary, setShowFinalSummary] = useState(false);
   const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [user, setUser] = useState(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [globalAverage, setGlobalAverage] = useState<number | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [showAuth, setShowAuth] = useState(false);
-useEffect(() => {
-  supabase.auth.getUser().then(({ data }) => {
-    setUser(data.user);
-  });
 
-  const { data: listener } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
-      setUser(session?.user ?? null);
-    }
-  );
-
-  return () => {
-    listener.subscription.unsubscribe();
-  };
-}, []);
 useEffect(() => {
   const initialStats: Record<string, { total: number; correct: number }> = {};
 
@@ -119,74 +99,7 @@ const formatTime = (seconds: number) => {
   const secs = seconds % 60;
   return `${mins}m ${secs}s`;
 };
-const signUp = async () => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  if (data.user) {
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert([
-        {
-          id: data.user.id,
-          name: name,
-        },
-      ]);
-
-    if (profileError) {
-      console.error("Error creando perfil:", profileError);
-    }
-  }
-
-  alert("Cuenta creada correctamente 🎉");
-  setShowAuth(false);
-};
-
-const signIn = async () => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  console.log("LOGIN RESPONSE:", data);
-  console.log(
-    "SESSION DESPUÉS DEL LOGIN:",
-    await supabase.auth.getSession()
-  );
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  if (data?.user) {
-    alert("Sesión iniciada 🔥");
-    setUser(data.user);      // 🔥 MUY IMPORTANTE
-    setShowAuth(false);      // 🔥 Cierra el modal
-  } else {
-    alert("No vino usuario");
-  }
-};
-
-const signOut = async () => {
-  await supabase.auth.signOut();
-};
-const signInWithGoogle = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-  });
-
-  if (error) {
-    alert(error.message);
-  }
-};
 const getColor = (accuracy: number) => {
   if (accuracy >= 80) return "text-green-600";
   if (accuracy >= 60) return "text-yellow-500";
@@ -294,58 +207,12 @@ const handleAnswerClick = (index: number) => {
   setShowAnswer(true);
 };
 
-const saveGameResult = async () => {
-  console.log("BOTÓN GUARDAR PRESIONADO");
-
-  const { total, correct } = getTotalStats();
-  const accuracy = getAccuracy();
-
-  if (total === 0) {
-    alert("No hay datos para guardar");
-    return;
-  }
-
-  if (!user) {
-    console.log("NO HAY USUARIO LOGUEADO");
-    setShowAuth(true);
-    return;
-  }
-
-  const now = Date.now();
-  const duration = startTime
-    ? Math.floor((now - startTime) / 1000)
-    : 0;
-
-  const { error } = await supabase
-    .from("games")
-    .insert([
-      {
-        user_id: user.id,
-        mode: "solo",
-        difficulty: gameLevel || "No definido",
-        total_questions: total,
-        correct_answers: correct,
-        accuracy: accuracy,
-        duration_seconds: duration,
-        level_breakdown: gameStats,
-      },
-    ]);
-
-  if (error) {
-    console.error("SUPABASE ERROR:", error);
-    alert("Error al guardar partida");
-  } else {
-    alert("Partida guardada correctamente 🎉");
-  }
-};
-
 if (showFinalSummary) {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
   const duration = getDuration();
 
   return (
-    <>
       <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8 text-center">
         <h1 className="text-3xl font-bold">Resumen Final</h1>
 
@@ -356,14 +223,6 @@ if (showFinalSummary) {
           <p>Duración: {formatTime(duration)}</p>
         </div>
 
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={saveGameResult}
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl"
-          >
-            Guardar Partida
-          </button>
-
           <button
             onClick={() => {
               setShowFinalSummary(false);
@@ -371,53 +230,9 @@ if (showFinalSummary) {
             }}
             className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl"
           >
-            Volver al inicio
-          </button>
-        </div>
-      </div>
-
-      {showAuth && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg space-y-3 w-80">
-            <h3 className="text-lg font-bold text-center">Iniciar sesión</h3>
-
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border p-2"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border p-2"
-            />
-
-            <button onClick={signIn} className="w-full bg-green-600 text-white py-2 rounded">
-              Iniciar sesión
-            </button>
-
-            <button onClick={signUp} className="w-full bg-blue-600 text-white py-2 rounded">
-              Registrarse
-            </button>
-            <button
-              onClick={signInWithGoogle}
-              className="w-full bg-red-600 text-white py-2 rounded"
-            >
-  Continuar con Google
-</button>
-
-            <button onClick={() => setShowAuth(false)} className="w-full bg-gray-500 text-white py-2 rounded">
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+        Volver al inicio
+      </button>
+    </div>
   );
 }
   // Projection View Component
@@ -509,52 +324,6 @@ if (showWelcome) {
   return (
     <div>
 
-      {showAuth && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.8)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 99999,
-          }}
-        >
-          <div style={{ background: "white", padding: 30 }}>
-            <h2>Login</h2>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-            />
-
-            <button type="button" onClick={signIn}>
-              Iniciar sesión
-            </button>
-
-            <button type="button" onClick={signUp}>
-              Registrarse
-            </button>
-
-            <button type="button" onClick={() => setShowAuth(false)}>
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="fixed inset-0 w-full h-full">
         <img
@@ -595,61 +364,7 @@ if (showWelcome) {
   >
 
     {/* HEADER */}
-      {showAuth && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      background: "rgba(0,0,0,0.7)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 2000,
-    }}
-  >
-    <div
-      style={{
-        background: "white",
-        padding: "30px",
-        borderRadius: "10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-        width: "300px",
-      }}
-    >
-      <h3>Registro / Login</h3>
 
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <button onClick={signUp}>Registrarse</button>
-      <button onClick={signIn}>Iniciar sesión</button>
-      <button onClick={() => setShowAuth(false)}>Cancelar</button>
-    </div>
-  </div>
-)}
       {/* Header */}
       <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         {/* Left: Logo & Title */}
@@ -1019,14 +734,6 @@ if (showWelcome) {
                 <Sparkles className="text-stone-400 group-hover:text-bible-gold transition-colors" size={32} />
                 <span className="font-serif font-bold text-xl text-stone-600 group-hover:text-bible-gold">Pregunta Sorpresa</span>
                 <span className="text-xs text-stone-400 uppercase tracking-widest">Cualquier período</span>
-              </button>
-            </div>
-            <div className="mt-6 flex justify-center">
-              <button
-                onClick={saveGameResult}
-                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition-all"
-              >
-                Guardar partida (TEST)
               </button>
             </div>
 
