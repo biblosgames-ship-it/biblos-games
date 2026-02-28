@@ -717,8 +717,13 @@ if (showWelcome) {
                       className="w-32 h-32 object-contain"
                     />
                   </div>
-                  <div className="relative z-10 flex flex-col justify-between">
-                    <span className="text-4xl">{PERIOD_ICONS[period]}</span>
+                  <div className="relative z-10 flex flex-col justify-between items-start">
+                    <img
+                      src={PERIOD_ICONS[period]}
+                      alt=""
+                      className="w-12 h-12 object-contain mb-2"
+                    />
+
                     <div className="space-y-1">
                       <h3 className="font-serif font-bold text-lg leading-tight">{period}</h3>
                       <p className="text-[10px] opacity-70 font-medium uppercase tracking-wider">
