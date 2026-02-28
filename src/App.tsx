@@ -641,17 +641,18 @@ if (showWelcome) {
           >
             <div className="text-center space-y-6">
 
-              <div className="inline-block px-8 py-4 
-                              bg-gradient-to-b from-amber-400 to-amber-600 
-                              text-white 
-                              rounded-2xl 
-                              shadow-[0_8px_0_rgb(120,53,15)] 
-                              border-2 border-amber-300
-                              transform transition-all
-                              hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
-                <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-wide">
-                  Modo de Juego
+              <div className="inline-block px-8 py-4
+                              bg-white
+                              text-slate-800
+                              rounded-xl
+                              border-2 border-slate-300
+                              shadow-md
+                              transition
+                              hover:shadow-lg">
+                <h2 className="text-3xl md:text-4xl font-sans font-bold tracking-wide">
+                  Nivel de Complejidad
                 </h2>
+              </div>
             </div>
 
   <p className="text-stone-300 italic">
