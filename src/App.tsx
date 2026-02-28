@@ -569,34 +569,6 @@ if (showWelcome) {
     </div>
   );
 }
-      <img
-        src="/fondo-biblos.jpg"
-        alt="Biblos Background"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-
-      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
-
-        <img
-          src="/logo-biblos.png"
-          alt="Biblos Games"
-          className="w-72 md:w-[500px] drop-shadow-2xl"
-        />
-
-        <button
-          onClick={() => {
-            playSound("select");
-            setShowWelcome(false);
-          }}
-          className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
-        >
-          Comenzar
-        </button>
-
-      </div>
-    </div>
-  );
-}
   return (
   <div
     className={`min-h-screen flex flex-col transition-all duration-500 ${
