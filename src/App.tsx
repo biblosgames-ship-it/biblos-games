@@ -773,7 +773,7 @@ if (showWelcome) {
                   hover:bg-bible-gold/5
                   transition-all
                   shadow-sm hover:shadow-md
-                  flex items-center gap-2
+                  flex items-center gap-3
                   px-3 py-2
                   group
                 "
