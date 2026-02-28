@@ -778,7 +778,7 @@ if (showWelcome) {
                   group
                 "
               >
-                <Sparkles className="text-stone-400 group-hover:text-bible-gold transition-colors" size={20} />
+                <Sparkles className="text-stone-400 group-hover:text-bible-gold transition-colors" size={28} />
                 <span className="font-serif font-bold text-xl text-stone-600 group-hover:text-bible-gold">Pregunta Sorpresa</span>
                 <span className="text-xs text-stone-400 uppercase tracking-widest">Cualquier período</span>
               </button>
