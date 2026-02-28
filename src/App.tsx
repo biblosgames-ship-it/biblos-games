@@ -37,7 +37,21 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
 
   const [isSoundOn, setIsSoundOn] = useState(true);
+  const [showFinalSummary, setShowFinalSummary] = useState(false);
+  const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const [globalAverage, setGlobalAverage] = useState<number | null>(null);
 
+useEffect(() => {
+  const initialStats: Record<string, { total: number; correct: number }> = {};
+
+  Object.values(Period).forEach(period => {
+    initialStats[period] = { total: 0, correct: 0 };
+  });
+
+  setGameStats(initialStats);
+}, []);
   // 🔊 Precargar sonidos una sola vez
 const sounds = {
   select: new Audio("/sounds/select.mp3"),
@@ -58,7 +72,40 @@ const playSound = (type: keyof typeof sounds) => {
   sound.currentTime = 0;
   sound.play();
 };
+const getTotalStats = () => {
+  let total = 0;
+  let correct = 0;
 
+  Object.values(gameStats).forEach(stat => {
+    total += stat.total;
+    correct += stat.correct;
+  });
+
+  return { total, correct };
+};
+
+const getAccuracy = () => {
+  const { total, correct } = getTotalStats();
+  if (total === 0) return 0;
+  return Math.round((correct / total) * 100);
+};
+
+const getDuration = () => {
+  if (!startTime || !endTime) return 0;
+  return Math.floor((endTime - startTime) / 1000);
+};
+
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}m ${secs}s`;
+};
+
+const getColor = (accuracy: number) => {
+  if (accuracy >= 80) return "text-green-600";
+  if (accuracy >= 60) return "text-yellow-500";
+  return "text-red-600";
+};
   const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
     
@@ -133,7 +180,33 @@ const playSound = (type: keyof typeof sounds) => {
   };
 
 const handleAnswerClick = (index: number) => {
-  if (showAnswer) return;
+  if (showAnswer || !currentQuestion) return;
+
+  if (!startTime) setStartTime(Date.now());
+
+  const isCorrect = index === currentQuestion.correctAnswer;
+
+  setGameStats(prev => ({
+    ...prev,
+    [currentQuestion.period]: {
+      total: prev[currentQuestion.period].total + 1,
+      correct: prev[currentQuestion.period].correct + (isCorrect ? 1 : 0)
+    }
+  }));
+
+  if (isCorrect) {
+    playSound("correct");
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  } else {
+    playSound("wrong");
+  }
+
+  setShowAnswer(true);
+};
 
   const isCorrect = index === currentQuestion?.correctAnswer;
 
@@ -154,17 +227,27 @@ const handleAnswerClick = (index: number) => {
   setShowAnswer(true);
 };
 const saveGameResult = async () => {
+  const { total, correct } = getTotalStats();
+  const accuracy = getAccuracy();
+  const duration = getDuration();
+
+  if (total === 0) {
+    alert('No hay datos para guardar');
+    return;
+  }
+
   const { error } = await supabase
     .from('games')
     .insert([
       {
-        mode: 'team',
-        team_name: 'Equipo Prueba',
+        mode: 'solo',
+        team_name: null,
         difficulty: gameLevel || 'No definido',
-        total_questions: 20,
-        correct_answers: 15,
-        accuracy: 75,
-        level_breakdown: {}
+        total_questions: total,
+        correct_answers: correct,
+        accuracy: accuracy,
+        duration_seconds: duration,
+        level_breakdown: gameStats
       }
     ]);
 
@@ -175,6 +258,90 @@ const saveGameResult = async () => {
     alert('Partida guardada correctamente 🎉');
   }
 };
+
+  if (error) {
+    console.error('Error guardando partida:', error);
+    alert('Error al guardar partida');
+  } else {
+    alert('Partida guardada correctamente 🎉');
+  }
+};
+if (showFinalSummary) {
+  const { total, correct } = getTotalStats();
+  const accuracy = getAccuracy();
+  const duration = getDuration();
+
+  if (total === 0) {
+    setShowFinalSummary(false);
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-serif font-bold">Resumen Final</h1>
+
+        <p className="text-2xl font-bold">
+          Precisión General: {accuracy}%
+        </p>
+
+        <p>
+          📊 {correct} correctas de {total}
+        </p>
+
+        <p>
+          ⏱ Tiempo de partida: {formatTime(duration)}
+        </p>
+
+        {globalAverage !== null && (
+          <p>📈 Promedio histórico global: {globalAverage}%</p>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {Object.entries(gameStats).map(([period, stat]) => {
+          if (stat.total === 0) return null;
+
+          const periodAccuracy = Math.round(
+            (stat.correct / stat.total) * 100
+          );
+
+          return (
+            <div
+              key={period}
+              className="flex justify-between border-b border-stone-700 pb-2"
+            >
+              <span>{period}</span>
+              <span className={getColor(periodAccuracy)}>
+                {periodAccuracy}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col gap-4 pt-6">
+        <button
+          onClick={saveGameResult}
+          className="py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl"
+        >
+          Guardar Partida
+        </button>
+
+        <button
+          onClick={() => {
+            setShowFinalSummary(false);
+            setStartTime(null);
+            setEndTime(null);
+          }}
+          className="py-4 bg-stone-700 hover:bg-stone-800 text-white font-bold rounded-xl"
+        >
+          Nueva Partida
+        </button>
+      </div>
+    </div>
+  );
+}
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
@@ -797,6 +964,17 @@ if (showWelcome) {
                     <span className="text-xl">Revelar Respuesta</span>
                   </button>
                 )}
+                {Object.values(gameStats).some(stat => stat.total > 0) && (
+                  <button
+                    onClick={() => {
+                    setEndTime(Date.now());
+                    setShowFinalSummary(true);
+                  }}
+                  className="w-full mt-6 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
+                >
+                  Finalizar Partida
+                </button>
+              )}
               </div>
             </div>
           </motion.div>
