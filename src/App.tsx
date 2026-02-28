@@ -331,81 +331,37 @@ const saveGameResult = async () => {
 };
 
 if (showFinalSummary) {
-  const { total, correct } = getTotalStats();
-  const accuracy = getAccuracy();
-  const duration = getDuration();
-
-  if (total === 0) {
-    setShowFinalSummary(false);
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-serif font-bold">Resumen Final</h1>
-
-        <p className="text-2xl font-bold">
-          Precisión General: {accuracy}%
-        </p>
-
-        <p>
-          📊 {correct} correctas de {total}
-        </p>
-
-        <p>
-          ⏱ Tiempo de partida: {formatTime(duration)}
-        </p>
-
-        {globalAverage !== null && (
-          <p>📈 Promedio histórico global: {globalAverage}%</p>
-        )}
+    <>
+      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8">
+        ...
       </div>
 
-      <div className="space-y-4">
-        {Object.entries(gameStats).map(([period, stat]) => {
-          if (stat.total === 0) return null;
+      {showAuth && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-[#1B1A17] p-8 rounded-xl space-y-4 w-80">
+            <h2 className="text-xl font-bold text-white text-center">
+              Iniciar sesión
+            </h2>
 
-          const periodAccuracy = Math.round(
-            (stat.correct / stat.total) * 100
-          );
+            <button onClick={signUp} className="w-full py-2 bg-blue-600 text-white rounded-lg">
+              Registrarse
+            </button>
 
-          return (
-            <div
-              key={period}
-              className="flex justify-between border-b border-stone-700 pb-2"
-            >
-              <span>{period}</span>
-              <span className={getColor(periodAccuracy)}>
-                {periodAccuracy}%
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            <button onClick={signIn} className="w-full py-2 bg-green-600 text-white rounded-lg">
+              Iniciar sesión
+            </button>
 
-      <div className="flex flex-col gap-4 pt-6">
-        <button
-          onClick={saveGameResult}
-          className="py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl"
-        >
-          Guardar Partida
-        </button>
-
-        <button
-          onClick={() => {
-            setShowFinalSummary(false);
-            setStartTime(null);
-            setEndTime(null);
-          }}
-          className="py-4 bg-stone-700 hover:bg-stone-800 text-white font-bold rounded-xl"
-        >
-          Nueva Partida
-        </button>
-      </div>
-    </div>
+            <button onClick={() => setShowAuth(false)} className="w-full py-2 bg-gray-600 text-white rounded-lg">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
+
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
