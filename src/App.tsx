@@ -156,7 +156,11 @@ const signIn = async () => {
   });
 
   console.log("LOGIN RESPONSE:", data);
-  console.log("SESSION DESPUÉS DEL LOGIN:", await supabase.auth.getSession());
+  console.log(
+    "SESSION DESPUÉS DEL LOGIN:",
+    await supabase.auth.getSession()
+  );
+
   if (error) {
     alert(error.message);
     return;
@@ -164,10 +168,10 @@ const signIn = async () => {
 
   if (data?.user) {
     alert("Sesión iniciada 🔥");
-    setShowAuth(false);
-    setUser(data.user); // 🔥 MUY IMPORTANTE
+    setUser(data.user);      // 🔥 MUY IMPORTANTE
+    setShowAuth(false);      // 🔥 Cierra el modal
   } else {
-    alert("No se pudo obtener el usuario");
+    alert("No vino usuario");
   }
 };
 
