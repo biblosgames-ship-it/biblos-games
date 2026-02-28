@@ -710,8 +710,12 @@ if (showWelcome) {
                     ${PERIOD_COLORS[period]} text-white group
                   `}
                 >
-                  <div className="absolute -right-4 -bottom-4 text-8xl opacity-10 group-hover:scale-110 transition-transform duration-500">
-                    {PERIOD_ICONS[period]}
+                  <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                    <img
+                      src={PERIOD_ICONS[period]}
+                      alt={period}
+                      className="w-32 h-32 object-contain"
+                    />
                   </div>
                   <div className="relative z-10 flex flex-col justify-between">
                     <span className="text-4xl">{PERIOD_ICONS[period]}</span>

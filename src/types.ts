@@ -33,10 +33,10 @@ export const PERIOD_COLORS: Record<Period, string> = {
 };
 
 export const PERIOD_ICONS: Record<Period, string> = {
-  [Period.PRINCIPIO]: '🌳',
-  [Period.LEY]: '⚖️',
-  [Period.REYES_PROFETAS]: '👑',
-  [Period.REDENCION]: '✝️',
-  [Period.IGLESIA]: '🕊️',
-  [Period.TIEMPOS_FINALES]: '🎺',
+  [Period.PRINCIPIO]: '/images/principio.png',
+  [Period.LEY]: '/images/ley.png',
+  [Period.REYES_PROFETAS]: '/images/reyes.png',
+  [Period.REDENCION]: '/images/redencion.png',
+  [Period.IGLESIA]: '/images/iglesia.png',
+  [Period.TIEMPOS_FINALES]: '/images/finales.png',
 };
