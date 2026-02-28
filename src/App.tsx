@@ -294,7 +294,20 @@ const saveGameResult = async () => {
     return;
   }
 
-  console.log("USUARIO LOGUEADO:", user);
+  const { error } = await supabase
+    .from("games")
+    .insert([
+      {
+        user_id: user.id,
+        score: score,
+      },
+    ]);
+
+  if (error) {
+    console.error(error);
+  } else {
+    console.log("Partida guardada correctamente");
+  }
 };
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
