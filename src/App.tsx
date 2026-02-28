@@ -583,7 +583,7 @@ if (showWelcome) {
                 >
                   <XCircle size={24} />
                 </button>
-                <div className="w-20 h-20 bg-white rounded-3xl mx-auto flex items-center justify-center shadow-xl">
+                <div className="w-30 h-30 bg-teal-700 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
                   <img
                     src="/logo.png"
                     alt="Biblos Logo"
