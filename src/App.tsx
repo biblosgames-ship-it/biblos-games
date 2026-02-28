@@ -721,7 +721,7 @@ if (showWelcome) {
                     <img
                       src={PERIOD_ICONS[period]}
                       alt=""
-                      className="w-16 h-16 object-contain mb-2"
+                      className="w-20 h-16 object-contain mb-2"
                     />
 
                     <div className="space-y-1">
