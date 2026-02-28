@@ -584,7 +584,11 @@ if (showWelcome) {
                   <XCircle size={24} />
                 </button>
                 <div className="w-20 h-20 bg-white rounded-3xl mx-auto flex items-center justify-center shadow-xl">
-                  <span className="text-5xl font-bold text-red-600 font-serif">β</span>
+                  <img
+                    src="/logo.png"
+                    alt="Biblos Logo"
+                    className="w-14 h-14 object-contain"
+                  />
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold font-['Helvetica_Neue'] uppercase tracking-tight">Biblos Games</h2>
@@ -600,7 +604,7 @@ if (showWelcome) {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="text-left">
                       <p className="text-stone-400 uppercase tracking-widest text-[10px] font-bold">Diseño</p>
-                      <p className="text-stone-700 font-medium">Alexander Palacio E.</p>
+                      <p className="text-stone-700 font-medium">Alexander Palacio Espiritusanto</p>
                     </div>
                     <div className="text-left">
                       <p className="text-stone-400 uppercase tracking-widest text-[10px] font-bold">Versión</p>
@@ -612,6 +616,12 @@ if (showWelcome) {
                     <p className="text-stone-400 uppercase tracking-widest text-[10px] font-bold">Producción</p>
                     <p className="text-stone-700 font-medium">Biblos Papelería y Librería Cristiana SRL</p>
                     <p className="text-stone-500 text-xs">Higüey, República Dominicana</p>
+                    <a
+                    href="mailto:biblosgames@gmail.com"
+                    className="text-stone-500 text-xs hover:text-bible-gold transition-colors"
+                  >
+                    Mail: biblosgames@gmail.com
+                  </a>
                   </div>
                 </div>
 
