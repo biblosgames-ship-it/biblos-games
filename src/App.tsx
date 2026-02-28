@@ -178,6 +178,15 @@ const signIn = async () => {
 const signOut = async () => {
   await supabase.auth.signOut();
 };
+const signInWithGoogle = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+  });
+
+  if (error) {
+    alert(error.message);
+  }
+};
 const getColor = (accuracy: number) => {
   if (accuracy >= 80) return "text-green-600";
   if (accuracy >= 60) return "text-yellow-500";
@@ -395,6 +404,12 @@ if (showFinalSummary) {
             <button onClick={signUp} className="w-full bg-blue-600 text-white py-2 rounded">
               Registrarse
             </button>
+            <button
+              onClick={signInWithGoogle}
+              className="w-full bg-red-600 text-white py-2 rounded"
+            >
+  Continuar con Google
+</button>
 
             <button onClick={() => setShowAuth(false)} className="w-full bg-gray-500 text-white py-2 rounded">
               Cancelar
