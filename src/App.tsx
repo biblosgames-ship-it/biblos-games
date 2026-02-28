@@ -764,7 +764,11 @@ if (showWelcome) {
             <div className="bg-[#F1E6CF] text-[#2B2B2B] rounded-[2rem] overflow-hidden border border-[#C2B280] shadow-2xl">
               <div className={`p-6 text-white flex justify-between items-center ${PERIOD_COLORS[currentQuestion.period]}`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{PERIOD_ICONS[currentQuestion.period]}</span>
+                  <img
+                    src={PERIOD_ICONS[currentQuestion.period]}
+                    alt=""
+                    className="w-8 h-8 object-contain"
+                  />
                   <span className="font-serif font-bold tracking-tight">{currentQuestion.period}</span>
                 </div>
                 <div className="text-xs font-mono opacity-80 font-bold">ITEM #{currentQuestion.id.toUpperCase()}</div>
