@@ -331,28 +331,72 @@ const saveGameResult = async () => {
 };
 
 if (showFinalSummary) {
+  const { total, correct } = getTotalStats();
+  const accuracy = getAccuracy();
+  const duration = getDuration();
+
   return (
     <>
-      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8">
-        ...
+      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8 text-center">
+        <h1 className="text-3xl font-bold">Resumen Final</h1>
+
+        <div className="space-y-2">
+          <p>Total preguntas: {total}</p>
+          <p>Correctas: {correct}</p>
+          <p>Precisión: {accuracy}%</p>
+          <p>Duración: {formatTime(duration)}</p>
+        </div>
+
+        <div className="flex justify-center gap-4 mt-6">
+          <button
+            onClick={saveGameResult}
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl"
+          >
+            Guardar Partida
+          </button>
+
+          <button
+            onClick={() => {
+              setShowFinalSummary(false);
+              resetGame();
+            }}
+            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl"
+          >
+            Volver al inicio
+          </button>
+        </div>
       </div>
 
       {showAuth && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#1B1A17] p-8 rounded-xl space-y-4 w-80">
-            <h2 className="text-xl font-bold text-white text-center">
-              Iniciar sesión
-            </h2>
+          <div className="bg-white p-6 rounded-lg space-y-3 w-80">
+            <h3 className="text-lg font-bold text-center">Iniciar sesión</h3>
 
-            <button onClick={signUp} className="w-full py-2 bg-blue-600 text-white rounded-lg">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border p-2"
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border p-2"
+            />
+
+            <button onClick={signIn} className="w-full bg-green-600 text-white py-2 rounded">
+              Iniciar sesión
+            </button>
+
+            <button onClick={signUp} className="w-full bg-blue-600 text-white py-2 rounded">
               Registrarse
             </button>
 
-            <button onClick={signIn} className="w-full py-2 bg-green-600 text-white rounded-lg">
-              Iniciar sesión
-            </button>
-
-            <button onClick={() => setShowAuth(false)} className="w-full py-2 bg-gray-600 text-white rounded-lg">
+            <button onClick={() => setShowAuth(false)} className="w-full bg-gray-500 text-white py-2 rounded">
               Cancelar
             </button>
           </div>
@@ -361,7 +405,6 @@ if (showFinalSummary) {
     </>
   );
 }
-
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
