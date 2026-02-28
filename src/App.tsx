@@ -576,10 +576,10 @@ if (showWelcome) {
               className="bg-white rounded-3xl max-w-xl w-full parchment-shadow border border-stone-200 overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="bg-bible-gold p-8 text-white text-center space-y-4 relative">
+              <div className="bg-cyan-800 p-8 text-white text-center space-y-4 relative">
                 <button 
                   onClick={() => setShowAbout(false)}
-                  className="absolute top-4 right-4 p-2 hover:bg-teal-700/20 rounded-full transition-colors"
+                  className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
                 >
                   <XCircle size={24} />
                 </button>
@@ -587,7 +587,7 @@ if (showWelcome) {
                   <img
                     src="/logo.png"
                     alt="Biblos Logo"
-                    className="w-20 h-20 object-contain"
+                    className="w-23 h-23 object-contain"
                   />
                 </div>
                 <div>
