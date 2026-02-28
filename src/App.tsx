@@ -156,7 +156,7 @@ const signIn = async () => {
   });
 
   console.log("LOGIN RESPONSE:", data);
-
+  console.log("SESSION DESPUÉS DEL LOGIN:", await supabase.auth.getSession());
   if (error) {
     alert(error.message);
     return;
