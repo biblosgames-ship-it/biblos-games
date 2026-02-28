@@ -650,11 +650,11 @@ if (showWelcome) {
                               transform transition-all
                               hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
                 <h2 className="text-lg md:text-xl font-serif font-semibold tracking-wide">
-                  Nivel de Complejidad
+                  NIVEL DE COMPLEJIDAD
                 </h2>
             </div>
 
-  <p className="text-stone-300 italic">
+  <p className="text-stone-200 italic">
     Selecciona el Nivel de Complejidad
   </p>
 
