@@ -295,7 +295,7 @@ const saveGameResult = async () => {
   }
 
   if (!user) {
-  alert("Debes iniciar sesión para guardar tu partida");
+  setShowAuth(true);
   return;
   }
 
