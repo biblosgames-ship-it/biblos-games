@@ -472,7 +472,7 @@ if (showWelcome) {
               <div className="sticky top-0 bg-white/90 backdrop-blur-md p-6 border-b border-stone-100 flex items-center justify-between z-10">
                 <div className="flex items-center gap-3">
                   <BookOpen className="text-bible-gold" size={24} />
-                  <h2 className="text-2xl font-serif font-bold">Instrucciones del Juego</h2>
+                  <h2 className="text-2xl font-sans font-bold">Instrucciones del Juego</h2>
                 </div>
                 <button 
                   onClick={() => setShowInstructions(false)}
@@ -481,7 +481,7 @@ if (showWelcome) {
                   <XCircle size={24} className="text-stone-400" />
                 </button>
               </div>
-              <div className="p-8 space-y-8 font-serif text-stone-700 leading-relaxed">
+              <div className="p-8 space-y-8 font-sans text-stone-700 leading-relaxed">
                 <section className="space-y-4">
                   <h3 className="text-2xl font-bold text-slate-900 border-b border-stone-100 pb-2">Introducción</h3>
                   <p>
@@ -583,7 +583,7 @@ if (showWelcome) {
                 >
                   <XCircle size={24} />
                 </button>
-                <div className="w-20 h-20 bg-teal-700 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
+                <div className="w-20 h-20 bg-cyan-800 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
                   <img
                     src="/logo.png"
                     alt="Biblos Logo"
