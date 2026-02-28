@@ -208,24 +208,6 @@ const handleAnswerClick = (index: number) => {
   setShowAnswer(true);
 };
 
-  const isCorrect = index === currentQuestion?.correctAnswer;
-
-  if (isCorrect) {
-    playSound("correct");  // ✅ sonido correcto
-
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#A52A2A', '#C2B280', '#556B2F', '#26619C']
-    });
-
-  } else {
-    playSound("wrong");   // ❌ sonido incorrecto
-  }
-
-  setShowAnswer(true);
-};
 const saveGameResult = async () => {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
