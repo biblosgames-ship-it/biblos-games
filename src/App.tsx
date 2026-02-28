@@ -491,7 +491,82 @@ if (showFinalSummary) {
   }
 if (showWelcome) {
   return (
-    <div className="fixed inset-0 w-full h-full">
+    <>
+      {showAuth && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+          }}
+        >
+          <div style={{ background: "white", padding: 30 }}>
+            <h2>Login</h2>
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+            />
+
+            <button type="button" onClick={signIn}>
+              Iniciar sesión
+            </button>
+
+            <button type="button" onClick={signUp}>
+              Registrarse
+            </button>
+
+            <button type="button" onClick={() => setShowAuth(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="fixed inset-0 w-full h-full">
+        <img
+          src="/fondo-biblos.jpg"
+          alt="Biblos Background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
+          <img
+            src="/logo-biblos.png"
+            alt="Biblos Games"
+            className="w-72 md:w-[500px] drop-shadow-2xl"
+          />
+
+          <button
+            onClick={() => {
+              playSound("select");
+              setShowWelcome(false);
+            }}
+            className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
+          >
+            Comenzar
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
       <img
         src="/fondo-biblos.jpg"
         alt="Biblos Background"
