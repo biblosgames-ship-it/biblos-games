@@ -46,6 +46,7 @@ export default function App() {
   | 'HISTORIA'
   | null
 >(null);
+  const [isKidsMode, setIsKidsMode] = useState(false);
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -123,8 +124,15 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
-  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
-    const activeLevel = levelOverride || gameLevel;
+  const getRandomQuestion = (
+  period: Period | 'SURPRISE',
+  levelOverride?: typeof gameLevel
+) => {
+
+  const activeLevel =
+    gameMode === 'KIDS'
+      ? 'PRINCIPIANTE'
+      : (levelOverride || gameLevel);
     
     let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
     
@@ -681,7 +689,13 @@ if (showWelcome) {
       ].map((mode) => (
         <button
           key={mode.id}
-          onClick={() => setGameMode(mode.id as any)}
+          onClick={() => {
+            setGameMode(mode.id as any);
+
+            if (mode.id === 'KIDS') {
+              setGameLevel('PRINCIPIANTE');
+            }
+          }}
           className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] 
                       hover:border-[#C2B280] hover:bg-[#332E27] 
                       transition-all shadow-lg 
