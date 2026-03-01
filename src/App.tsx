@@ -28,6 +28,17 @@ export default function App() {
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [gameLevel, setGameLevel] = useState<'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null>(null);
+  const [gameMode, setGameMode] = useState<
+  | 'TABLERO'
+  | 'KIDS'
+  | 'VERSICULOS'
+  | 'PERSONAJES'
+  | 'DIOS'
+  | 'SALVACION'
+  | 'MANDAMIENTOS'
+  | 'HISTORIA'
+  | null
+>(null);
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -633,77 +644,113 @@ if (showWelcome) {
       </AnimatePresence>
 
       <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
-        {!gameLevel ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-8 py-2"
-          >
-            <div className="text-center space-y-6">
+{!gameMode ? (
 
-              <div className="inline-block px-8 py-4 
-                              bg-gradient-to-b from-amber-400 to-amber-600 
-                              text-white 
-                              rounded-2xl 
-                              shadow-[0_8px_0_rgb(120,53,15)] 
-                              border-2 border-amber-300
-                              transform transition-all
-                              hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
-                <h2 className="text-lg md:text-xl font-serif font-semibold tracking-wide">
-                  NIVEL DE COMPLEJIDAD
-                </h2>
-            </div>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-10 py-6"
+  >
+    <div className="text-center space-y-3">
+      <h2 className="text-2xl font-serif font-bold tracking-wide">
+        SELECCIONA EL MODO DE JUEGO
+      </h2>
+      <p className="text-stone-400 text-sm italic">
+        Escoge cómo deseas jugar
+      </p>
+    </div>
 
-  <p className="text-stone-200 italic">
-    Selecciona el Nivel de Complejidad
-  </p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-</div>
+      {[
+        { id: 'TABLERO', label: 'Modo Tablero' },
+        { id: 'KIDS', label: 'Modo Kids' },
+        { id: 'VERSICULOS', label: 'Versículos Favoritos' },
+        { id: 'PERSONAJES', label: 'Personajes Bíblicos' },
+        { id: 'DIOS', label: 'Modo Dios' },
+        { id: 'SALVACION', label: 'Salvación' },
+        { id: 'MANDAMIENTOS', label: 'Mandamientos' },
+        { id: 'HISTORIA', label: 'Historia Bíblica' },
+      ].map((mode) => (
+        <button
+          key={mode.id}
+          onClick={() => setGameMode(mode.id as any)}
+          className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all shadow-lg text-left"
+        >
+          <h3 className="text-lg font-bold text-amber-200">
+            {mode.label}
+          </h3>
+          <p className="text-xs text-stone-400 uppercase tracking-wider">
+            Toca para continuar
+          </p>
+        </button>
+      ))}
 
-            <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
-              <button
-                onClick={() => {
-                  playSound("select");
-                  setGameLevel('PRINCIPIANTE');
-                }}
-                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-amber-200">Principiante</h3>
-                  <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-md">Fácil</span>
-                </div>
-                <p className="text-sm text-stone-400">Preguntas sencillas y directas. Ideal para niños o quienes recién comienzan.</p>
-              </button>
+    </div>
+  </motion.div>
 
-              <button
-                onClick={() => {
-                  playSound("select");
-                  setGameLevel('INTERMEDIO');
-                }}
-                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-amber-200">Intermedio</h3>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase rounded-md">Medio</span>
-                </div>
-                <p className="text-sm text-stone-400">Mezcla de preguntas fáciles y de complejidad media para un desafío equilibrado.</p>
-              </button>
+) : !gameLevel ? (
 
-              <button
-                onClick={() => {
-                  playSound("select");
-                  setGameLevel('AVANZADO');
-                }}
-                className="group p-6 bg-[#2A2621] rounded-2xl border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all text-left shadow-lg"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl font-bold text-amber-200">Avanzado</h3>
-                  <span className="px-2 py-1 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded-md">Difícil</span>
-                </div>
-                <p className="text-sm text-stone-400">Preguntas de complejidad media y difíciles. Para expertos en la Palabra.</p>
-              </button>
-            </div>
-          </motion.div>
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-8 py-6"
+  >
+
+    <div className="text-center space-y-6">
+
+      <div className="inline-block px-8 py-4 
+                      bg-gradient-to-b from-amber-400 to-amber-600 
+                      text-white 
+                      rounded-2xl 
+                      shadow-[0_8px_0_rgb(120,53,15)] 
+                      border-2 border-amber-300
+                      transform transition-all
+                      hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
+        <h2 className="text-lg md:text-xl font-serif font-semibold tracking-wide">
+          NIVEL DE COMPLEJIDAD
+        </h2>
+      </div>
+
+      <p className="text-stone-200 italic">
+        Selecciona el Nivel de Complejidad
+      </p>
+
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+
+      {[
+        { id: 'PRINCIPIANTE', label: 'Principiante' },
+        { id: 'INTERMEDIO', label: 'Intermedio' },
+        { id: 'AVANZADO', label: 'Avanzado' },
+      ].map((level) => (
+        <button
+          key={level.id}
+          onClick={() => setGameLevel(level.id as any)}
+          className="rounded-2xl p-6 
+                    bg-[#2A2621] 
+                    border-2 border-[#3A342C] 
+                    hover:border-amber-400 
+                    hover:bg-[#332E27] 
+                    transition-all 
+                    shadow-lg"
+        >
+          <h3 className="text-lg font-bold text-amber-200">
+            {level.label}
+          </h3>
+          <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
+            Toca para comenzar
+          </p>
+        </button>
+      ))}
+
+    </div>
+
+  </motion.div>
+
+) : (
+
         ) : !currentQuestion ? (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
