@@ -643,13 +643,13 @@ if (showWelcome) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-2 pb-6 space-y-6 bg-[#1B1A17] text-[#D6D0C4]">
+      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
 {!gameMode ? (
 
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="space-y-4 py-4"
+    className="space-y-10 py-6"
   >
     <div className="text-center space-y-3">
       <h2 className="text-base font-sans font-medium">
@@ -662,35 +662,31 @@ if (showWelcome) {
 
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-    {[
-      { id: 'TABLERO', label: 'Tablero Fisico', icon: LayoutGrid },
-      { id: 'KIDS', label: 'Kids', icon: Baby },
-      { id: 'VERSICULOS', label: 'Versículos Favoritos', icon: BookOpen },
-      { id: 'PERSONAJES', label: 'Personajes Biblicos', icon: Users },
-      { id: 'DIOS', label: 'Modo Dios', icon: Crown },
-      { id: 'SALVACION', label: 'Salvación', icon: Heart },
-      { id: 'MANDAMIENTOS', label: 'Mandamientos', icon: ScrollText },
-      { id: 'HISTORIA', label: 'Historia Biblica', icon: Landmark },
-    ].map((mode) => (
-    <button
-  key={mode.id}
-  onClick={() => setGameMode(mode.id as any)}
-  className="rounded-2xl p-6 bg-[#2A2621] border-2 border-amber-200 hover:border-amber-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.4)] hover:bg-[#332E27] transition-all duration-300 text-left flex items-start gap-4"
->
-  <mode.icon className="w-7 h-7 text-amber-200 mt-1 shrink-0" />
+      {[
+        { id: 'TABLERO', label: 'Tablero Fisico' },
+        { id: 'KIDS', label: 'Kids' },
+        { id: 'VERSICULOS', label: 'Versículos Favoritos' },
+        { id: 'PERSONAJES', label: 'Personajes Biblicos' },
+        { id: 'DIOS', label: 'Modo Dios' },
+        { id: 'SALVACION', label: 'Salvación' },
+        { id: 'MANDAMIENTOS', label: 'Mandamientos' },
+        { id: 'HISTORIA', label: 'Historia Biblica' },
+      ].map((mode) => (
+        <button
+          key={mode.id}
+          onClick={() => setGameMode(mode.id as any)}
+          className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all shadow-lg text-left"
+        >
+          <h3 className="text-lg font-bold text-amber-200">
+            {mode.label}
+          </h3>
+          <p className="text-xs text-stone-400 uppercase tracking-wider">
+            Toca para continuar
+          </p>
+        </button>
+      ))}
 
-  <div>
-    <h3 className="text-lg font-bold text-amber-200">
-      {mode.label}
-    </h3>
-    <p className="text-xs text-stone-400 uppercase tracking-wider">
-      Toca para continuar
-    </p>
-  </div>
-</button>
-  ))}
-
-</div>
+    </div>
   </motion.div>
 
 ) : !gameLevel ? (
