@@ -46,7 +46,7 @@ export default function App() {
   | 'HISTORIA'
   | null
 >(null);
-  const [isKidsMode, setIsKidsMode] = useState(false);
+const [isKidsMode, setIsKidsMode] = useState(false);
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -124,86 +124,58 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
+  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
+    const activeLevel =
+    gameMode === 'KIDS'
+      ? 'PRINCIPIANTE'
+      : (levelOverride || gameLevel);
+    
+    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+    
+    // Filter by game level
+    if (activeLevel === 'PRINCIPIANTE') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC);
+    } else if (activeLevel === 'INTERMEDIO') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+    } else if (activeLevel === 'AVANZADO') {
+      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+    }
 
-const applyDifficultyFilter = (questions, level) => {
-  if (level === 'PRINCIPIANTE') {
-    return questions.filter(q => q.difficulty === Difficulty.BASIC);
-  }
-  if (level === 'INTERMEDIO') {
-    return questions.filter(q =>
-      q.difficulty === Difficulty.BASIC ||
-      q.difficulty === Difficulty.INTERMEDIATE
-    );
-  }
-  return questions.filter(q =>
-    q.difficulty === Difficulty.INTERMEDIATE ||
-    q.difficulty === Difficulty.ADVANCED
-  );
-};
-  const getRandomQuestion = (
-  period: Period | 'SURPRISE',
-  levelOverride?: typeof gameLevel
-) => {
-const effectiveLevel =
-  gameMode === 'KIDS'
-    ? 'PRINCIPIANTE'
-    : (levelOverride || gameLevel);
-// 🔥 1. Base: preguntas no usadas
-let available = ALL_QUESTIONS.filter(q =>
-  !usedQuestionIds.has(q.id)
-);
+    if (period !== 'SURPRISE') {
+      available = available.filter(q => q.period === period);
+    }
 
-// 🔥 2. Filtrar por modo
-if (gameMode !== "SURPRISE") {
-  available = available.filter(q => q.mode === gameMode);
-}
+    // If no questions left in this filtered set, reset for this period/level
+    if (available.length === 0) {
+      let resetSet = ALL_QUESTIONS.filter(q => period === 'SURPRISE' ? true : q.period === period);
+      
+      if (activeLevel === 'PRINCIPIANTE') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
+      } else if (activeLevel === 'INTERMEDIO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+      } else if (activeLevel === 'AVANZADO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+      }
 
-// 🔥 3. Filtrar por periodo
-if (period !== "SURPRISE") {
-  available = available.filter(q => q.period === period);
-}
+      const newUsed = new Set(usedQuestionIds);
+      resetSet.forEach(q => newUsed.delete(q.id));
+      setUsedQuestionIds(newUsed);
+      available = resetSet;
+    }
 
-// 🔥 4. Filtrar por dificultad
-available = applyDifficultyFilter(available, effectiveLevel);
+    if (available.length === 0) return;
 
-// 🔁 RESET INTELIGENTE
-if (available.length === 0) {
-
-  let resetSet = [...ALL_QUESTIONS];
-
-  // modo
-  if (gameMode !== "SURPRISE") {
-    resetSet = resetSet.filter(q => q.mode === gameMode);
-  }
-
-  // periodo
-  if (period !== "SURPRISE") {
-    resetSet = resetSet.filter(q => q.period === period);
-  }
-
-  // dificultad
-  resetSet = applyDifficultyFilter(resetSet, effectiveLevel);
-
-  if (resetSet.length === 0) return; // 🔥 evita pantalla blanca
-
-  setUsedQuestionIds(new Set()); // reset total limpio
-  available = resetSet;
-}
-
-if (available.length === 0) return;
-
-const randomIndex = Math.floor(Math.random() * available.length);
-const selected = available[randomIndex];
-
-setCurrentQuestion(selected);
-setUsedQuestionIds(prev => {
-  const next = new Set(prev);
-  if (next.size > 1000) next.clear(); // Safety reset
-  next.add(selected.id);
-  return next;
-});
-
-setShowAnswer(false);
+    const randomIndex = Math.floor(Math.random() * available.length);
+    const selected = available[randomIndex];
+    
+    setCurrentQuestion(selected);
+    setUsedQuestionIds(prev => {
+      const next = new Set(prev);
+      if (next.size > 1000) next.clear(); // Safety reset
+      next.add(selected.id);
+      return next;
+    });
+    setShowAnswer(false);
   };
 
   const handleSelectPeriod = (period: Period) => {
