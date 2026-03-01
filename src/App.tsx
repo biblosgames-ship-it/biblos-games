@@ -748,6 +748,28 @@ if (showWelcome) {
 
             </div>
 
+            <div className="pt-8 flex justify-center">
+  <button
+    onClick={() => {
+      setGameLevel(null);
+      setGameMode(null);
+    }}
+    className="flex items-center gap-2
+                px-6 py-3
+                rounded-2xl
+                bg-[#2A2621]
+                border-2 border-[#3A342C]
+                hover:border-amber-400
+                hover:bg-[#332E27]
+                transition-all
+                shadow-md
+                text-stone-300 hover:text-amber-200"
+  >
+    <ChevronLeft size={18} />
+    Volver a modos de juego
+  </button>
+</div>
+
           </motion.div>
 
         ) : !currentQuestion ? (
