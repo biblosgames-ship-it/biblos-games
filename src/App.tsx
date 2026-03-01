@@ -148,43 +148,45 @@ const effectiveLevel =
   gameMode === 'KIDS'
     ? 'PRINCIPIANTE'
     : (levelOverride || gameLevel);
-
+// 🔥 1. Base: preguntas no usadas
 let available = ALL_QUESTIONS.filter(q =>
   !usedQuestionIds.has(q.id)
 );
 
-// 🔥 FILTRO POR MODO PERSONAJES
-if (gameMode === "PERSONAJES") {
-  available = available.filter(q => q.mode === "PERSONAJES");
+// 🔥 2. Filtrar por modo
+if (gameMode !== "SURPRISE") {
+  available = available.filter(q => q.mode === gameMode);
 }
 
-available = applyDifficultyFilter(available, effectiveLevel);
-
-// 🔥 Filter by period
-if (period !== 'SURPRISE') {
+// 🔥 3. Filtrar por periodo
+if (period !== "SURPRISE") {
   available = available.filter(q => q.period === period);
 }
 
-// 🔁 Reset if empty
+// 🔥 4. Filtrar por dificultad
+available = applyDifficultyFilter(available, effectiveLevel);
+
+// 🔁 RESET INTELIGENTE
 if (available.length === 0) {
 
-  let resetSet = ALL_QUESTIONS.filter(q =>
-    period === 'SURPRISE'
-      ? true
-      : q.period === period
-  );
+  let resetSet = [...ALL_QUESTIONS];
 
-  // 🔥 FILTRO POR MODO PERSONAJES
-  if (gameMode === "PERSONAJES") {
-    resetSet = resetSet.filter(q => q.mode === "PERSONAJES");
+  // modo
+  if (gameMode !== "SURPRISE") {
+    resetSet = resetSet.filter(q => q.mode === gameMode);
   }
 
+  // periodo
+  if (period !== "SURPRISE") {
+    resetSet = resetSet.filter(q => q.period === period);
+  }
+
+  // dificultad
   resetSet = applyDifficultyFilter(resetSet, effectiveLevel);
 
-  const newUsed = new Set(usedQuestionIds);
-  resetSet.forEach(q => newUsed.delete(q.id));
-  setUsedQuestionIds(newUsed);
+  if (resetSet.length === 0) return; // 🔥 evita pantalla blanca
 
+  setUsedQuestionIds(new Set()); // reset total limpio
   available = resetSet;
 }
 
