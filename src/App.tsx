@@ -643,13 +643,13 @@ if (showWelcome) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-2 pb-6 space-y-6 bg-[#1B1A17] text-[#D6D0C4]">
 {!gameMode ? (
 
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="space-y-10 py-6"
+    className="space-y-4 py-4"
   >
     <div className="text-center space-y-3">
       <h2 className="text-base font-sans font-medium">
@@ -663,14 +663,14 @@ if (showWelcome) {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
       {[
-        { id: 'TABLERO', label: 'Modo Tablero' },
-        { id: 'KIDS', label: 'Modo Kids' },
+        { id: 'TABLERO', label: 'Tablero Fisico' },
+        { id: 'KIDS', label: 'Kids' },
         { id: 'VERSICULOS', label: 'Versículos Favoritos' },
-        { id: 'PERSONAJES', label: 'Modo Personajes' },
+        { id: 'PERSONAJES', label: 'Personajes Biblicos' },
         { id: 'DIOS', label: 'Modo Dios' },
-        { id: 'SALVACION', label: 'Modo Salvación' },
-        { id: 'MANDAMIENTOS', label: 'Modo Mandamientos' },
-        { id: 'HISTORIA', label: 'Modo Historico' },
+        { id: 'SALVACION', label: 'Salvación' },
+        { id: 'MANDAMIENTOS', label: 'Mandamientos' },
+        { id: 'HISTORIA', label: 'Historia Biblica' },
       ].map((mode) => (
         <button
           key={mode.id}
