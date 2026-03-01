@@ -662,31 +662,31 @@ if (showWelcome) {
 
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-      {[
-        { id: 'TABLERO', label: 'Tablero Fisico' },
-        { id: 'KIDS', label: 'Kids' },
-        { id: 'VERSICULOS', label: 'Versículos Favoritos' },
-        { id: 'PERSONAJES', label: 'Personajes Biblicos' },
-        { id: 'DIOS', label: 'Modo Dios' },
-        { id: 'SALVACION', label: 'Salvación' },
-        { id: 'MANDAMIENTOS', label: 'Mandamientos' },
-        { id: 'HISTORIA', label: 'Historia Biblica' },
-      ].map((mode) => (
-        <button
-          key={mode.id}
-          onClick={() => setGameMode(mode.id as any)}
-          className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] hover:border-[#C2B280] hover:bg-[#332E27] transition-all shadow-lg text-left"
-        >
-          <h3 className="text-lg font-bold text-amber-200">
-            {mode.label}
-          </h3>
-          <p className="text-xs text-stone-400 uppercase tracking-wider">
-            Toca para continuar
-          </p>
-        </button>
-      ))}
+  {[
+    { id: 'TABLERO', label: 'Tablero Fisico' },
+    { id: 'KIDS', label: 'Kids' },
+    { id: 'VERSICULOS', label: 'Versículos Favoritos' },
+    { id: 'PERSONAJES', label: 'Personajes Biblicos' },
+    { id: 'DIOS', label: 'Modo Dios' },
+    { id: 'SALVACION', label: 'Salvación' },
+    { id: 'MANDAMIENTOS', label: 'Mandamientos' },
+    { id: 'HISTORIA', label: 'Historia Biblica' },
+  ].map((mode) => (
+    <button
+      key={mode.id}
+      onClick={() => setGameMode(mode.id as any)}
+      className="rounded-2xl p-6 bg-[#2A2621] border-2 border-amber-200 hover:bg-[#332E27] transition-all shadow-lg text-left"
+    >
+      <h3 className="text-lg font-bold text-amber-200">
+        {mode.label}
+      </h3>
+      <p className="text-xs text-stone-400 uppercase tracking-wider">
+        Toca para continuar
+      </p>
+    </button>
+  ))}
 
-    </div>
+</div>
   </motion.div>
 
 ) : !gameLevel ? (
