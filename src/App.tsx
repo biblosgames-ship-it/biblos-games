@@ -696,7 +696,7 @@ if (showWelcome) {
             </p>
           </div>
 
-          <mode.icon className="w-6 h-6 text-amber-200 shrink-0" />
+          <mode.icon className="w-8 h-8 text-amber-200 shrink-0" />
         </button>
       ))}
 
