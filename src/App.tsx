@@ -21,7 +21,7 @@ import {
   Baby,
   Users,
   Crown,
-  Heart,
+  Cross,
   ScrollText,
   Landmark
 } from 'lucide-react';
@@ -675,7 +675,7 @@ if (showWelcome) {
         { id: 'VERSICULOS', label: 'Versículos Favoritos', icon: BookOpen },
         { id: 'PERSONAJES', label: 'Personajes Biblicos', icon: Users },
         { id: 'DIOS', label: 'Modo Dios', icon: Crown },
-        { id: 'SALVACION', label: 'Salvación', icon: Heart },
+        { id: 'SALVACION', label: 'Salvación', icon: Cross },
         { id: 'MANDAMIENTOS', label: 'Mandamientos', icon: ScrollText },
         { id: 'HISTORIA', label: 'Historia Biblica', icon: Landmark },
       ].map((mode) => (
