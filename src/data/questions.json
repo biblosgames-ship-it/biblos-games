@@ -5488,5 +5488,155 @@
   "options": ["Con una advertencia", "Con un juicio", "Con una bendición de gracia", "Con silencio"],
   "correctAnswer": 2,
   "reference": "Apocalipsis 22:21"
+},
+{
+  "id": "pb001",
+  "mode": "PERSONAJES",
+  "period": "Patriarcas",
+  "difficulty": "BASIC",
+  "question": "¿Quién construyó el arca?",
+  "options": ["Moisés", "Noé", "Abraham", "Pedro"],
+  "correctAnswer": 1,
+  "reference": "Génesis 6:14"
+},
+{
+  "id": "pb002",
+  "mode": "PERSONAJES",
+  "period": "Patriarcas",
+  "difficulty": "BASIC",
+  "question": "¿Quién fue tragado por un gran pez?",
+  "options": ["Jonás", "David", "Isaías", "Samuel"],
+  "correctAnswer": 0,
+  "reference": "Jonás 1:17"
+},
+{
+  "id": "pb003",
+  "mode": "PERSONAJES",
+  "period": "Reyes",
+  "difficulty": "BASIC",
+  "question": "¿Quién venció a Goliat?",
+  "options": ["Saúl", "David", "Sansón", "Josué"],
+  "correctAnswer": 1,
+  "reference": "1 Samuel 17"
+},
+{
+  "id": "pb004",
+  "mode": "PERSONAJES",
+  "period": "Éxodo",
+  "difficulty": "BASIC",
+  "question": "¿Quién recibió los Diez Mandamientos?",
+  "options": ["Abraham", "Moisés", "Elías", "Daniel"],
+  "correctAnswer": 1,
+  "reference": "Éxodo 20"
+},
+{
+  "id": "pb005",
+  "mode": "PERSONAJES",
+  "period": "Nuevo Testamento",
+  "difficulty": "BASIC",
+  "question": "¿Quién negó a Jesús tres veces?",
+  "options": ["Juan", "Pedro", "Tomás", "Pablo"],
+  "correctAnswer": 1,
+  "reference": "Mateo 26:69-75"
+},
+{
+  "id": "pb006",
+  "mode": "PERSONAJES",
+  "period": "Reyes",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue el primer rey de Israel?",
+  "options": ["David", "Salomón", "Saúl", "Samuel"],
+  "correctAnswer": 2,
+  "reference": "1 Samuel 10"
+},
+{
+  "id": "pb007",
+  "mode": "PERSONAJES",
+  "period": "Patriarcas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién interpretó los sueños del faraón?",
+  "options": ["José", "Daniel", "Moisés", "Isaías"],
+  "correctAnswer": 0,
+  "reference": "Génesis 41"
+},
+{
+  "id": "pb008",
+  "mode": "PERSONAJES",
+  "period": "Nuevo Testamento",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Qué discípulo dudó hasta ver a Jesús resucitado?",
+  "options": ["Pedro", "Juan", "Tomás", "Andrés"],
+  "correctAnswer": 2,
+  "reference": "Juan 20:24-29"
+},
+{
+  "id": "pb009",
+  "mode": "PERSONAJES",
+  "period": "Reyes",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue conocido por su gran sabiduría?",
+  "options": ["David", "Salomón", "Elías", "Jeremías"],
+  "correctAnswer": 1,
+  "reference": "1 Reyes 3"
+},
+{
+  "id": "pb010",
+  "mode": "PERSONAJES",
+  "period": "Profetas",
+  "difficulty": "INTERMEDIATE",
+  "question": "¿Quién fue lanzado al foso de los leones?",
+  "options": ["Daniel", "Jeremías", "Isaías", "Ezequiel"],
+  "correctAnswer": 0,
+  "reference": "Daniel 6"
+},
+{
+  "id": "pb011",
+  "mode": "PERSONAJES",
+  "period": "Nuevo Testamento",
+  "difficulty": "ADVANCED",
+  "question": "¿Quién fue el padre de Juan el Bautista?",
+  "options": ["Zacarías", "José", "Nicodemo", "Felipe"],
+  "correctAnswer": 0,
+  "reference": "Lucas 1:13"
+},
+{
+  "id": "pb012",
+  "mode": "PERSONAJES",
+  "period": "Jueces",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué mujer fue jueza en Israel?",
+  "options": ["Ester", "Rut", "Débora", "Miriam"],
+  "correctAnswer": 2,
+  "reference": "Jueces 4"
+},
+{
+  "id": "pb013",
+  "mode": "PERSONAJES",
+  "period": "Nuevo Testamento",
+  "difficulty": "ADVANCED",
+  "question": "¿Quién reemplazó a Judas Iscariote?",
+  "options": ["Bernabé", "Matías", "Silas", "Esteban"],
+  "correctAnswer": 1,
+  "reference": "Hechos 1:26"
+},
+{
+  "id": "pb014",
+  "mode": "PERSONAJES",
+  "period": "Reyes",
+  "difficulty": "ADVANCED",
+  "question": "¿Qué profeta confrontó al rey Acab?",
+  "options": ["Isaías", "Eliseo", "Elías", "Oseas"],
+  "correctAnswer": 2,
+  "reference": "1 Reyes 18"
+},
+{
+  "id": "pb015",
+  "mode": "PERSONAJES",
+  "period": "Nuevo Testamento",
+  "difficulty": "ADVANCED",
+  "question": "¿Quién fue discípulo de Pablo y pastor en Éfeso?",
+  "options": ["Tito", "Timoteo", "Lucas", "Marcos"],
+  "correctAnswer": 1,
+  "reference": "1 Timoteo 1:3"
 }
 ]

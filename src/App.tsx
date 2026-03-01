@@ -152,13 +152,20 @@ const effectiveLevel =
 let available = ALL_QUESTIONS.filter(q =>
   !usedQuestionIds.has(q.id)
 );
+
+// 🔥 FILTRO POR MODO PERSONAJES
+if (gameMode === "PERSONAJES") {
+  available = available.filter(q => q.mode === "PERSONAJES");
+}
+
 available = applyDifficultyFilter(available, effectiveLevel);
-// Filter by period
+
+// 🔥 Filter by period
 if (period !== 'SURPRISE') {
   available = available.filter(q => q.period === period);
 }
 
-// Reset if empty
+// 🔁 Reset if empty
 if (available.length === 0) {
 
   let resetSet = ALL_QUESTIONS.filter(q =>
@@ -167,7 +174,12 @@ if (available.length === 0) {
       : q.period === period
   );
 
-resetSet = applyDifficultyFilter(resetSet, effectiveLevel);
+  // 🔥 FILTRO POR MODO PERSONAJES
+  if (gameMode === "PERSONAJES") {
+    resetSet = resetSet.filter(q => q.mode === "PERSONAJES");
+  }
+
+  resetSet = applyDifficultyFilter(resetSet, effectiveLevel);
 
   const newUsed = new Set(usedQuestionIds);
   resetSet.forEach(q => newUsed.delete(q.id));
@@ -176,19 +188,20 @@ resetSet = applyDifficultyFilter(resetSet, effectiveLevel);
   available = resetSet;
 }
 
-    if (available.length === 0) return;
+if (available.length === 0) return;
 
-    const randomIndex = Math.floor(Math.random() * available.length);
-    const selected = available[randomIndex];
-    
-    setCurrentQuestion(selected);
-    setUsedQuestionIds(prev => {
-      const next = new Set(prev);
-      if (next.size > 1000) next.clear(); // Safety reset
-      next.add(selected.id);
-      return next;
-    });
-    setShowAnswer(false);
+const randomIndex = Math.floor(Math.random() * available.length);
+const selected = available[randomIndex];
+
+setCurrentQuestion(selected);
+setUsedQuestionIds(prev => {
+  const next = new Set(prev);
+  if (next.size > 1000) next.clear(); // Safety reset
+  next.add(selected.id);
+  return next;
+});
+
+setShowAnswer(false);
   };
 
   const handleSelectPeriod = (period: Period) => {
