@@ -742,14 +742,12 @@ if (showWelcome) {
           <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
             Toca para comenzar
           </p>
-        </button>
-      ))}
+          </button>
+          ))}
 
-    </div>
+            </div>
 
-  </motion.div>
-
-) : (
+          </motion.div>
 
         ) : !currentQuestion ? (
           <div className="space-y-2">
