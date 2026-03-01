@@ -662,28 +662,32 @@ if (showWelcome) {
 
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-  {[
-    { id: 'TABLERO', label: 'Tablero Fisico' },
-    { id: 'KIDS', label: 'Kids' },
-    { id: 'VERSICULOS', label: 'Versículos Favoritos' },
-    { id: 'PERSONAJES', label: 'Personajes Biblicos' },
-    { id: 'DIOS', label: 'Modo Dios' },
-    { id: 'SALVACION', label: 'Salvación' },
-    { id: 'MANDAMIENTOS', label: 'Mandamientos' },
-    { id: 'HISTORIA', label: 'Historia Biblica' },
-  ].map((mode) => (
+    {[
+      { id: 'TABLERO', label: 'Tablero Fisico', icon: LayoutGrid },
+      { id: 'KIDS', label: 'Kids', icon: Baby },
+      { id: 'VERSICULOS', label: 'Versículos Favoritos', icon: BookOpen },
+      { id: 'PERSONAJES', label: 'Personajes Biblicos', icon: Users },
+      { id: 'DIOS', label: 'Modo Dios', icon: Crown },
+      { id: 'SALVACION', label: 'Salvación', icon: Heart },
+      { id: 'MANDAMIENTOS', label: 'Mandamientos', icon: ScrollText },
+      { id: 'HISTORIA', label: 'Historia Biblica', icon: Landmark },
+    ].map((mode) => (
     <button
-      key={mode.id}
-      onClick={() => setGameMode(mode.id as any)}
-      className="rounded-2xl p-6 bg-[#2A2621] border-2 border-amber-200 hover:bg-[#332E27] transition-all shadow-lg text-left"
-    >
-      <h3 className="text-lg font-bold text-amber-200">
-        {mode.label}
-      </h3>
-      <p className="text-xs text-stone-400 uppercase tracking-wider">
-        Toca para continuar
-      </p>
-    </button>
+  key={mode.id}
+  onClick={() => setGameMode(mode.id as any)}
+  className="rounded-2xl p-6 bg-[#2A2621] border-2 border-amber-200 hover:border-amber-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.4)] hover:bg-[#332E27] transition-all duration-300 text-left flex items-start gap-4"
+>
+  <mode.icon className="w-7 h-7 text-amber-200 mt-1 shrink-0" />
+
+  <div>
+    <h3 className="text-lg font-bold text-amber-200">
+      {mode.label}
+    </h3>
+    <p className="text-xs text-stone-400 uppercase tracking-wider">
+      Toca para continuar
+    </p>
+  </div>
+</button>
   ))}
 
 </div>
