@@ -652,8 +652,8 @@ if (showWelcome) {
     className="space-y-10 py-6"
   >
     <div className="text-center space-y-3">
-      <h2 className="text-2xl font-serif font-bold tracking-wide">
-        SELECCIONA EL MODO DE JUEGO
+      <h2 className="text-base font-sans font-medium">
+        Selecciona el modo de juego
       </h2>
       <p className="text-stone-400 text-sm italic">
         Escoge cómo deseas jugar
@@ -666,11 +666,11 @@ if (showWelcome) {
         { id: 'TABLERO', label: 'Modo Tablero' },
         { id: 'KIDS', label: 'Modo Kids' },
         { id: 'VERSICULOS', label: 'Versículos Favoritos' },
-        { id: 'PERSONAJES', label: 'Personajes Bíblicos' },
+        { id: 'PERSONAJES', label: 'Modo Personajes' },
         { id: 'DIOS', label: 'Modo Dios' },
-        { id: 'SALVACION', label: 'Salvación' },
-        { id: 'MANDAMIENTOS', label: 'Mandamientos' },
-        { id: 'HISTORIA', label: 'Historia Bíblica' },
+        { id: 'SALVACION', label: 'Modo Salvación' },
+        { id: 'MANDAMIENTOS', label: 'Modo Mandamientos' },
+        { id: 'HISTORIA', label: 'Modo Historico' },
       ].map((mode) => (
         <button
           key={mode.id}
