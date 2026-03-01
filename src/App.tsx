@@ -699,19 +699,6 @@ if (showWelcome) {
 
     <div className="text-center space-y-6">
 
-      <div className="inline-block px-8 py-4 
-                      bg-gradient-to-b from-amber-400 to-amber-600 
-                      text-white 
-                      rounded-2xl 
-                      shadow-[0_8px_0_rgb(120,53,15)] 
-                      border-2 border-amber-300
-                      transform transition-all
-                      hover:translate-y-1 hover:shadow-[0_4px_0_rgb(120,53,15)]">
-        <h2 className="text-lg md:text-xl font-serif font-semibold tracking-wide">
-          NIVEL DE COMPLEJIDAD
-        </h2>
-      </div>
-
       <p className="text-stone-200 italic">
         Selecciona el Nivel de Complejidad
       </p>
