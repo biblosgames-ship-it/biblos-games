@@ -15,11 +15,20 @@ export enum Period {
 
 export interface Question {
   id: string;
+  mode: 
+    | 'TABLERO'
+    | 'KIDS'
+    | 'VERSICULOS'
+    | 'PERSONAJES'
+    | 'DIOS'
+    | 'SALVACION'
+    | 'MANDAMIENTOS'
+    | 'HISTORIA';
   period: Period;
   difficulty: Difficulty;
   question: string;
   options: string[];
-  correctAnswer: number; // Index of options
+  correctAnswer: number;
   reference: string;
 }
 

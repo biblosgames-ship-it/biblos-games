@@ -129,39 +129,68 @@ const getColor = (accuracy: number) => {
     gameMode === 'KIDS'
       ? 'PRINCIPIANTE'
       : (levelOverride || gameLevel);
-    
-    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
-    
-    // Filter by game level
+
+/* =========================================
+   🔥 FUNCIÓN CENTRAL DE FILTROS
+========================================= */
+const applyFilters = (questions: Question[]) => {
+  let filtered = questions;
+
+  // 🔹 FILTRO POR MODO
+  if (gameMode) {
+    if (gameMode === 'KIDS') {
+      // KIDS = preguntas TABLERO + BASIC
+      filtered = filtered.filter(q =>
+        q.mode === 'TABLERO' &&
+        q.difficulty === Difficulty.BASIC
+      );
+    } else {
+      filtered = filtered.filter(q => q.mode === gameMode);
+    }
+  }
+
+  // 🔹 FILTRO POR NIVEL (solo si NO es KIDS)
+  if (gameMode !== 'KIDS') {
     if (activeLevel === 'PRINCIPIANTE') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC);
+      filtered = filtered.filter(q => q.difficulty === Difficulty.BASIC);
     } else if (activeLevel === 'INTERMEDIO') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+      filtered = filtered.filter(q =>
+        q.difficulty === Difficulty.BASIC ||
+        q.difficulty === Difficulty.INTERMEDIATE
+      );
     } else if (activeLevel === 'AVANZADO') {
-      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+      filtered = filtered.filter(q =>
+        q.difficulty === Difficulty.INTERMEDIATE ||
+        q.difficulty === Difficulty.ADVANCED
+      );
     }
+  }
 
-    if (period !== 'SURPRISE') {
-      available = available.filter(q => q.period === period);
-    }
+  // 🔹 FILTRO POR PERÍODO
+  if (period !== 'SURPRISE') {
+    filtered = filtered.filter(q => q.period === period);
+  }
 
-    // If no questions left in this filtered set, reset for this period/level
-    if (available.length === 0) {
-      let resetSet = ALL_QUESTIONS.filter(q => period === 'SURPRISE' ? true : q.period === period);
-      
-      if (activeLevel === 'PRINCIPIANTE') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
-      } else if (activeLevel === 'INTERMEDIO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
-      } else if (activeLevel === 'AVANZADO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
-      }
+  return filtered;
+};
 
-      const newUsed = new Set(usedQuestionIds);
-      resetSet.forEach(q => newUsed.delete(q.id));
-      setUsedQuestionIds(newUsed);
-      available = resetSet;
-    }
+/* =========================================
+   🔥 APLICACIÓN DE FILTROS
+========================================= */
+
+let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+available = applyFilters(available);
+
+// 🔁 RESET SI SE ACABAN
+if (available.length === 0) {
+  let resetSet = applyFilters(ALL_QUESTIONS);
+
+  const newUsed = new Set(usedQuestionIds);
+  resetSet.forEach(q => newUsed.delete(q.id));
+  setUsedQuestionIds(newUsed);
+
+  available = resetSet;
+}
 
     if (available.length === 0) return;
 
