@@ -782,18 +782,13 @@ if (showWelcome) {
           <h3 className={`text-xl font-serif font-black tracking-wide ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
             {level.label.toUpperCase()}
           </h3>
-          
           <div className={`h-px w-12 my-2 ${level.id === 'MIXTO' ? 'bg-purple-500/30' : 'bg-amber-400/30'}`} />
-          
           <p className="text-sm italic text-stone-400 leading-tight">
             {level.sub}
           </p>
         </button>
       ))}
     </div>
-
-    {/* CIERRE DE LA SECCIÓN ANIMADA (IMPORTANTE) */}
-    </motion.div>
 
     {/* BOTÓN VOLVER ABAJO */}
     <div className="pt-8 flex justify-center pb-10">
@@ -802,28 +797,21 @@ if (showWelcome) {
           setGameLevel(null);
           setGameMode(null);
         }}
-        className="flex items-center gap-2
-                  px-6 py-3
-                  rounded-2xl
-                  bg-[#2A2621]
-                  border-2 border-[#3A342C]
-                  hover:border-amber-400
-                  hover:bg-[#332E27]
-                  transition-all
-                  shadow-md
-                  text-stone-300 hover:text-amber-200"
+        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#2A2621] border-2 border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27] transition-all shadow-md text-stone-300 hover:text-amber-200"
       >
-<ChevronLeft size={18} />
+        <ChevronLeft size={18} />
         Volver a modos de juego
       </button>
     </div>
   </motion.div>
 ) : !currentQuestion ? (
-  <div className="space-y-4">
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-6"
+  >
     <div className="flex items-center justify-between mb-6">
       <h2 className="text-2xl font-serif font-bold text-amber-200">Selecciona un Periodo</h2>
-      
-      {/* AQUÍ ESTABA EL ERROR: Faltaba la apertura del botón */}
       <button
         onClick={() => setGameLevel(null)}
         className="flex items-center gap-2 text-stone-400 hover:text-amber-200 transition-colors font-medium text-sm"
