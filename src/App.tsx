@@ -879,28 +879,48 @@ if (showWelcome) {
               ))}
             </div>
 
-            <div className="pt-1">
-              <button
-                onClick={handleSurprise}
-                className="
-                  w-full
-                  rounded-xl
-                  border border-stone-300/40
-                  hover:border-bible-gold
-                  hover:bg-bible-gold/5
-                  transition-all
-                  shadow-sm hover:shadow-md
-                  flex items-center gap-2
-                  px-3 py-2
-                  group
-                "
-              >
-                <Sparkles className="ml-3 shrink-0 text-stone-400 group-hover:text-bible-gold transition-colors" size={28} />
-                <span className="font-serif font-bold text-xl text-stone-600 group-hover:text-bible-gold">Pregunta Sorpresa</span>
-                <span className="text-xs text-stone-400 uppercase tracking-widest">Cualquier período</span>
-              </button>
-            </div>
+          <div className="pt-2 px-4"> 
+  <button
+    onClick={handleSurprise}
+    className="
+      w-full
+      relative
+      overflow-hidden
+      rounded-2xl
+      border-2 border-stone-200/60
+      bg-white/50
+      hover:border-bible-gold
+      hover:bg-bible-gold/[0.03]
+      transition-all duration-300
+      shadow-sm hover:shadow-lg hover:-translate-y-0.5
+      flex items-center justify-center gap-3
+      px-6 py-4
+      group
+    "
+  >
+    {/* Destello sutil de fondo */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-bible-gold/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
 
+    <Sparkles 
+      className="text-stone-400 group-hover:text-bible-gold group-hover:scale-110 transition-all duration-300" 
+      size={24} 
+    />
+    
+    <div className="flex flex-col items-center">
+      <span className="font-serif font-black text-xl tracking-tight text-stone-700 group-hover:text-bible-gold transition-colors">
+        PREGUNTA SORPRESA
+      </span>
+      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] group-hover:text-bible-gold/70 transition-colors">
+        Modo Aleatorio Global
+      </span>
+    </div>
+
+    <Sparkles 
+      className="text-stone-400/0 group-hover:text-bible-gold/40 group-hover:scale-110 transition-all duration-300" 
+      size={20} 
+    />
+  </button>
+</div>
           </div>
         ) : (
           <motion.div 
