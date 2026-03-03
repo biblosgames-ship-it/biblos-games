@@ -120,34 +120,25 @@ const formatTime = (seconds: number) => {
 };
 
 const getColor = (accuracy: number) => {
-  if (accuracy >= 80) return "text-green-600";
-  if (accuracy >= 60) return "text-yellow-500";
-  return "text-red-600";
-};
-  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
-    const activeLevel =
-    gameMode === 'KIDS'
-      ? 'PRINCIPIANTE'
-      : (levelOverride || gameLevel);
-/* =========================================
-   🔥 FUNCIÓN CENTRAL DE FILTROS (VERSIÓN PRO)
+  /* =========================================
+   🔥 FUNCIÓN CENTRAL DE FILTROS
 ========================================= */
-const applyFilters = (questions: Question[]) => {
+
+const applyFilters = (
+  questions: Question[],
+  period: Period | 'SURPRISE',
+  activeLevel: typeof gameLevel
+) => {
   let filtered = questions;
 
-  /* ================================
-     🔹 FILTRO POR MODO
-  ================================= */
-
+  // 🔹 FILTRO POR MODO
   if (gameMode === 'TABLERO') {
-    // TABLERO solo filtra por su modo
     filtered = filtered.filter(q =>
       !q.mode || q.mode === 'TABLERO'
     );
   }
 
   else if (gameMode === 'KIDS') {
-    // KIDS = TABLERO + solo BASIC
     filtered = filtered.filter(q =>
       (!q.mode || q.mode === 'TABLERO') &&
       q.difficulty === Difficulty.BASIC
@@ -155,27 +146,24 @@ const applyFilters = (questions: Question[]) => {
   }
 
   else if (gameMode) {
-    // Otros modos (HISTORIA, PROFETAS, etc.)
     filtered = filtered.filter(q =>
       !q.mode || q.mode === gameMode
     );
-
-    /* ================================
-       🔹 FILTRO POR NIVEL (solo aquí)
-    ================================= */
 
     if (activeLevel === 'PRINCIPIANTE') {
       filtered = filtered.filter(q =>
         q.difficulty === Difficulty.BASIC
       );
+    }
 
-    } else if (activeLevel === 'INTERMEDIO') {
+    else if (activeLevel === 'INTERMEDIO') {
       filtered = filtered.filter(q =>
         q.difficulty === Difficulty.BASIC ||
         q.difficulty === Difficulty.INTERMEDIATE
       );
+    }
 
-    } else if (activeLevel === 'AVANZADO') {
+    else if (activeLevel === 'AVANZADO') {
       filtered = filtered.filter(q =>
         q.difficulty === Difficulty.INTERMEDIATE ||
         q.difficulty === Difficulty.ADVANCED
@@ -183,10 +171,7 @@ const applyFilters = (questions: Question[]) => {
     }
   }
 
-  /* ================================
-     🔹 FILTRO POR PERÍODO
-  ================================= */
-
+  // 🔹 FILTRO POR PERÍODO
   if (period !== 'SURPRISE') {
     filtered = filtered.filter(q =>
       q.period === period
@@ -195,6 +180,52 @@ const applyFilters = (questions: Question[]) => {
 
   return filtered;
 };
+
+  if (accuracy >= 80) return "text-green-600";
+  if (accuracy >= 60) return "text-yellow-500";
+  return "text-red-600";
+};
+ const getRandomQuestion = (
+  period: Period | 'SURPRISE',
+  levelOverride?: typeof gameLevel
+) => {
+
+  const activeLevel =
+    gameMode === 'KIDS'
+      ? 'PRINCIPIANTE'
+      : (levelOverride || gameLevel);
+
+  let available = ALL_QUESTIONS.filter(
+    q => !usedQuestionIds.has(q.id)
+  );
+
+  available = applyFilters(available, period, activeLevel);
+
+  // 🔁 RESET SI SE ACABAN
+  if (available.length === 0) {
+    available = applyFilters(ALL_QUESTIONS, period, activeLevel);
+    setUsedQuestionIds(new Set());
+  }
+
+  if (available.length === 0) return;
+
+  const randomIndex = Math.floor(Math.random() * available.length);
+  const selected = available[randomIndex];
+
+  setCurrentQuestion(selected);
+
+  setUsedQuestionIds(prev => {
+    const next = new Set(prev);
+    next.add(selected.id);
+    return next;
+  });
+
+  setShowAnswer(false);
+};
+    const activeLevel =
+    gameMode === 'KIDS'
+      ? 'PRINCIPIANTE'
+      : (levelOverride || gameLevel);
 
 /* =========================================
    🔥 APLICACIÓN DE FILTROS
@@ -210,9 +241,7 @@ available = applyFilters(available);
 if (available.length === 0) {
   const resetSet = applyFilters(ALL_QUESTIONS);
 
-  const newUsed = new Set(usedQuestionIds);
-  resetSet.forEach(q => newUsed.delete(q.id));
-  setUsedQuestionIds(newUsed);
+  setUsedQuestionIds(new Set());
 
   available = resetSet;
 }
@@ -743,11 +772,7 @@ if (showWelcome) {
             setGameMode(mode.id as any);
 
             if (mode.id === 'KIDS') {
-            setGameLevel('PRINCIPIANTE');
-            }
-
-            if (mode.id === 'TABLERO') {
-              setGameLevel('PRINCIPIANTE'); // neutro, no se usará realmente
+              setGameLevel('PRINCIPIANTE');
             }
           }}
           className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] 
@@ -771,7 +796,7 @@ if (showWelcome) {
     </div>
   </motion.div>
 
-) : (!gameLevel && gameMode !== 'TABLERO' && gameMode !== 'KIDS') ? (
+) : !gameLevel ? (
 
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
