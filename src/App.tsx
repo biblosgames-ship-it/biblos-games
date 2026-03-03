@@ -907,10 +907,10 @@ if (showWelcome) {
     />
     
     <div className="flex flex-col items-center">
-      <span className="font-serif font-black text-xl tracking-tight text-stone-700 group-hover:text-amber-300 transition-colors">
+      <span className="font-serif font-black text-xl tracking-tight text-amber-300 group-hover:text-amber-300 transition-colors">
         PREGUNTA SORPRESA
         </span>
-      <span className="text-[10px] font-bold text-amber-300 uppercase tracking-[0.2em] group-hover:text-blue-600/70 transition-colors">
+      <span className="text-[10px] font-bold text-stone-700 uppercase tracking-[0.2em] group-hover:text-blue-600/70 transition-colors">
       Modo Aleatorio Global
       </span>
   </div>
