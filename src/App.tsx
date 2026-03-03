@@ -772,11 +772,11 @@ if (showWelcome) {
             rounded-2xl p-6 
             transition-all shadow-lg border-2
             ${level.id === 'MIXTO' 
-              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/40 hover:border-purple-400' 
+              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-amber-300/40 hover:border-amber-300' 
               : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
           `}
         >
-          <h3 className={`text-lg font-bold ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
+          <h3 className={`text-lg font-bold ${level.id === 'MIXTO' ? 'text-amber-300' : 'text-amber-200'}`}>
             {level.label}
           </h3>
           <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
