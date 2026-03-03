@@ -758,83 +758,89 @@ if (showWelcome) {
 
     </div>
 
+{/* CONTENEDOR DE NIVELES */}
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto p-4">
-  {[
-    { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros pasos en la Palabra' },
-    { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el conocimiento' },
-    { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los maestros' },
-    { id: 'MIXTO', label: 'Mixto', sub: 'El desafío bíblico total' },
-  ].map((level) => (
-    <button
-      key={level.id}
-      onClick={() => setGameLevel(level.id as any)}
-      className={`
-        relative overflow-hidden rounded-2xl p-6 
-        transition-all duration-300 shadow-lg border-2
-        flex flex-col items-center justify-center text-center
-        ${level.id === 'MIXTO' 
-          ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/50 hover:border-purple-400' 
-          : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
-        hover:-translate-y-1 active:scale-95
-      `}
-    >
-      <h3 className={`text-xl font-serif font-black tracking-wide ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
-        {level.label.toUpperCase()}
-      </h3>
+      {[
+        { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros pasos en la Palabra' },
+        { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el conocimiento' },
+        { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los maestros' },
+        { id: 'MIXTO', label: 'Mixto', sub: 'El desafío bíblico total' },
+      ].map((level) => (
+        <button
+          key={level.id}
+          onClick={() => setGameLevel(level.id as any)}
+          className={`
+            relative overflow-hidden rounded-2xl p-6 
+            transition-all duration-300 shadow-lg border-2
+            flex flex-col items-center justify-center text-center
+            ${level.id === 'MIXTO' 
+              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/50 hover:border-purple-400' 
+              : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
+            hover:-translate-y-1 active:scale-95
+          `}
+        >
+          <h3 className={`text-xl font-serif font-black tracking-wide ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
+            {level.label.toUpperCase()}
+          </h3>
+          
+          <div className={`h-px w-12 my-2 ${level.id === 'MIXTO' ? 'bg-purple-500/30' : 'bg-amber-400/30'}`} />
+          
+          <p className="text-sm italic text-stone-400 leading-tight">
+            {level.sub}
+          </p>
+        </button>
+      ))}
+    </div>
+
+    {/* CIERRE DE LA SECCIÓN ANIMADA (IMPORTANTE) */}
+    </motion.div>
+
+    {/* BOTÓN VOLVER ABAJO */}
+    <div className="pt-8 flex justify-center pb-10">
+      <button
+        onClick={() => {
+          setGameLevel(null);
+          setGameMode(null);
+        }}
+        className="flex items-center gap-2
+                  px-6 py-3
+                  rounded-2xl
+                  bg-[#2A2621]
+                  border-2 border-[#3A342C]
+                  hover:border-amber-400
+                  hover:bg-[#332E27]
+                  transition-all
+                  shadow-md
+                  text-stone-300 hover:text-amber-200"
+      >
+<ChevronLeft size={18} />
+        Volver a modos de juego
+      </button>
+    </div>
+  </motion.div>
+) : !currentQuestion ? (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between mb-6">
+      <h2 className="text-2xl font-serif font-bold text-amber-200">Selecciona un Periodo</h2>
       
-      <div className={`h-px w-12 my-2 ${level.id === 'MIXTO' ? 'bg-purple-500/30' : 'bg-amber-400/30'}`} />
-      
-      <p className="text-sm italic text-stone-400 leading-tight">
-        {level.sub}
-      </p>
-    </button>
-  ))}
-</div>
+      {/* AQUÍ ESTABA EL ERROR: Faltaba la apertura del botón */}
+      <button
+        onClick={() => setGameLevel(null)}
+        className="flex items-center gap-2 text-stone-400 hover:text-amber-200 transition-colors font-medium text-sm"
+      >
+        <ChevronLeft size={16} />
+        Cambiar Nivel
+      </button>
+    </div>
 
-            </div>
-
-            <div className="pt-8 flex justify-center">
-  <button
-    onClick={() => {
-      setGameLevel(null);
-      setGameMode(null);
-    }}
-    className="flex items-center gap-2
-                px-6 py-3
-                rounded-2xl
-                bg-[#2A2621]
-                border-2 border-[#3A342C]
-                hover:border-amber-400
-                hover:bg-[#332E27]
-                transition-all
-                shadow-md
-                text-stone-300 hover:text-amber-200"
-  >
-    <ChevronLeft size={18} />
-    Volver a modos de juego
-  </button>
-</div>
-
-          </motion.div>
-
-        ) : !currentQuestion ? (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <button 
-                onClick={() => setGameLevel(null)}
-                className="flex items-center gap-2 text-stone-400 hover:text-stone-800 transition-colors font-medium text-sm"
-              >
-                <ChevronLeft size={16} />
-                Cambiar Nivel
-              </button>
-              <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                gameLevel === 'PRINCIPIANTE' ? 'bg-emerald-100 text-emerald-700' :
-                gameLevel === 'INTERMEDIO' ? 'bg-blue-100 text-blue-700' :
-                'bg-purple-100 text-purple-700'
-              }`}>
-                Modo {gameLevel}
-              </div>
-            </div>
+    <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+      gameLevel === 'PRINCIPIANTE' ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30' :
+      gameLevel === 'INTERMEDIO' ? 'bg-blue-900/40 text-blue-400 border border-blue-500/30' :
+      gameLevel === 'AVANZADO' ? 'bg-orange-900/40 text-orange-400 border border-orange-500/30' :
+      'bg-purple-900/40 text-purple-400 border border-purple-500/30'
+    }`}>
+      Nivel {gameLevel}
+    </div>
 
             <div className="text-center space-y-0 mb-1">
               <h2 className="text-base font-serif font-semibold tracking-wide">
