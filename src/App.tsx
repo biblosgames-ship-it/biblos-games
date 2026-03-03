@@ -136,35 +136,42 @@ const getColor = (accuracy: number) => {
 const applyFilters = (questions: Question[]) => {
   let filtered = questions;
 
-  // 🔹 FILTRO POR MODO
-  if (gameMode) {
-    if (gameMode === 'KIDS') {
-      // KIDS = preguntas TABLERO + BASIC
-      filtered = filtered.filter(q =>
-        q.mode === 'TABLERO' &&
-        q.difficulty === Difficulty.BASIC
-      );
-    } else {
-      filtered = filtered.filter(q => q.mode === gameMode);
-    }
-  }
+// 🔹 FILTRO POR MODO (versión flexible para probar)
+if (gameMode) {
 
-  // 🔹 FILTRO POR NIVEL (solo si NO es KIDS)
-  if (gameMode !== 'KIDS') {
-    if (activeLevel === 'PRINCIPIANTE') {
-      filtered = filtered.filter(q => q.difficulty === Difficulty.BASIC);
-    } else if (activeLevel === 'INTERMEDIO') {
-      filtered = filtered.filter(q =>
-        q.difficulty === Difficulty.BASIC ||
-        q.difficulty === Difficulty.INTERMEDIATE
-      );
-    } else if (activeLevel === 'AVANZADO') {
-      filtered = filtered.filter(q =>
-        q.difficulty === Difficulty.INTERMEDIATE ||
-        q.difficulty === Difficulty.ADVANCED
-      );
-    }
+  if (gameMode === 'KIDS') {
+    // KIDS = preguntas BASIC del modo TABLERO
+    filtered = filtered.filter(q =>
+      ( !q.mode || q.mode === 'TABLERO' ) &&
+      q.difficulty === Difficulty.BASIC
+    );
+
+  } else {
+    // Si la pregunta no tiene mode definido, la aceptamos
+    filtered = filtered.filter(q =>
+      !q.mode || q.mode === gameMode
+    );
   }
+}
+
+// 🔹 FILTRO POR NIVEL (solo si NO es KIDS)
+if (gameMode !== 'KIDS') {
+  if (activeLevel === 'PRINCIPIANTE') {
+    filtered = filtered.filter(q => q.difficulty === Difficulty.BASIC);
+
+  } else if (activeLevel === 'INTERMEDIO') {
+    filtered = filtered.filter(q =>
+      q.difficulty === Difficulty.BASIC ||
+      q.difficulty === Difficulty.INTERMEDIATE
+    );
+
+  } else if (activeLevel === 'AVANZADO') {
+    filtered = filtered.filter(q =>
+      q.difficulty === Difficulty.INTERMEDIATE ||
+      q.difficulty === Difficulty.ADVANCED
+    );
+  }
+}
 
   // 🔹 FILTRO POR PERÍODO
   if (period !== 'SURPRISE') {
