@@ -139,13 +139,12 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
-  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
+  cconst getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
     
     let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+
     // 1. FILTRADO POR MODO DE JUEGO
-    // Si el modo es KIDS, forzamos dificultad básica. 
-    // Si es otro modo (PERSONAJES, DIOS, etc.), buscamos preguntas de ese modo específico.
     if (gameMode && gameMode !== 'TABLERO') {
       if (gameMode === 'KIDS') {
         available = available.filter(q => q.difficulty === Difficulty.BASIC);
@@ -154,14 +153,15 @@ const getColor = (accuracy: number) => {
       }
     }
 
-    // 2. FILTRADO POR NIVEL (DIFICULTAD)
+    // 2. FILTRADO POR NIVEL (DIFICULTAD) - MODIFICADO PARA "MIXTO"
     if (activeLevel === 'PRINCIPIANTE') {
       available = available.filter(q => q.difficulty === Difficulty.BASIC);
     } else if (activeLevel === 'INTERMEDIO') {
       available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
     } else if (activeLevel === 'AVANZADO') {
       available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
-    }
+    } 
+    // Si activeLevel es 'MIXTO', no aplicamos filtro aquí, pasan todas.
 
     // 3. FILTRADO POR PERIODO BÍBLICO
     if (period !== 'SURPRISE') {
@@ -170,14 +170,14 @@ const getColor = (accuracy: number) => {
 
     // --- REINICIO DE PREGUNTAS SI SE ACABAN ---
     if (available.length === 0) {
-      // Si no quedan preguntas disponibles con esos filtros, volvemos a cargar el set
       let resetSet = ALL_QUESTIONS.filter(q => {
         const matchesPeriod = period === 'SURPRISE' ? true : q.period === period;
         const matchesMode = (gameMode === 'TABLERO' || !gameMode) ? true : 
-                            (gameMode === 'KIDS' ? q.difficulty === Difficulty.BASIC : q.mode === gameMode);
+                            (gameMode === 'KIDS' ? q.difficulty === Difficulty.BASIC : q.mode.includes(gameMode));
         return matchesPeriod && matchesMode;
       });
       
+      // FILTRADO DE REINICIO - MODIFICADO PARA "MIXTO"
       if (activeLevel === 'PRINCIPIANTE') {
         resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
       } else if (activeLevel === 'INTERMEDIO') {
@@ -185,14 +185,14 @@ const getColor = (accuracy: number) => {
       } else if (activeLevel === 'AVANZADO') {
         resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
       }
+      // Si es 'MIXTO', el resetSet se queda con todas las dificultades.
 
-      // Borramos de la memoria de "usadas" solo las de este grupo para poder repetirlas
       const newUsed = new Set(usedQuestionIds);
       resetSet.forEach(q => newUsed.delete(q.id));
       setUsedQuestionIds(newUsed);
       available = resetSet;
     }
-
+    // ... (El resto de la selección aleatoria con mezcla se queda igual)
     if (available.length === 0) return;
 
     // 4. SELECCIÓN ALEATORIA CON MEZCLA
@@ -759,31 +759,31 @@ if (showWelcome) {
     </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
-
-      {[
-        { id: 'PRINCIPIANTE', label: 'Principiante' },
-        { id: 'INTERMEDIO', label: 'Intermedio' },
-        { id: 'AVANZADO', label: 'Avanzado' },
+{[
+        { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Básico' },
+        { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Desafío' },
+        { id: 'AVANZADO', label: 'Avanzado', sub: 'Experto' },
+        { id: 'MIXTO', label: 'Mixto', sub: 'Todo nivel' }, // <--- El nuevo integrante
       ].map((level) => (
         <button
           key={level.id}
           onClick={() => setGameLevel(level.id as any)}
-          className="rounded-2xl p-6 
-                    bg-[#2A2621] 
-                    border-2 border-[#3A342C] 
-                    hover:border-amber-400 
-                    hover:bg-[#332E27] 
-                    transition-all 
-                    shadow-lg"
+          className={`
+            rounded-2xl p-6 
+            transition-all shadow-lg border-2
+            ${level.id === 'MIXTO' 
+              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/40 hover:border-purple-400' 
+              : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
+          `}
         >
-          <h3 className="text-lg font-bold text-amber-200">
+          <h3 className={`text-lg font-bold ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
             {level.label}
           </h3>
           <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
-            Toca para comenzar
+            {level.sub}
           </p>
-          </button>
-          ))}
+        </button>
+      ))}
 
             </div>
 
