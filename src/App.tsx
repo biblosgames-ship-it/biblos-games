@@ -129,53 +129,68 @@ const getColor = (accuracy: number) => {
     gameMode === 'KIDS'
       ? 'PRINCIPIANTE'
       : (levelOverride || gameLevel);
-
 /* =========================================
-   🔥 FUNCIÓN CENTRAL DE FILTROS
+   🔥 FUNCIÓN CENTRAL DE FILTROS (VERSIÓN PRO)
 ========================================= */
 const applyFilters = (questions: Question[]) => {
   let filtered = questions;
 
-// 🔹 FILTRO POR MODO (versión flexible para probar)
-if (gameMode) {
+  /* ================================
+     🔹 FILTRO POR MODO
+  ================================= */
 
-  if (gameMode === 'KIDS') {
-    // KIDS = preguntas BASIC del modo TABLERO
+  if (gameMode === 'TABLERO') {
+    // TABLERO solo filtra por su modo
     filtered = filtered.filter(q =>
-      ( !q.mode || q.mode === 'TABLERO' ) &&
+      !q.mode || q.mode === 'TABLERO'
+    );
+  }
+
+  else if (gameMode === 'KIDS') {
+    // KIDS = TABLERO + solo BASIC
+    filtered = filtered.filter(q =>
+      (!q.mode || q.mode === 'TABLERO') &&
       q.difficulty === Difficulty.BASIC
     );
+  }
 
-  } else {
-    // Si la pregunta no tiene mode definido, la aceptamos
+  else if (gameMode) {
+    // Otros modos (HISTORIA, PROFETAS, etc.)
     filtered = filtered.filter(q =>
       !q.mode || q.mode === gameMode
     );
+
+    /* ================================
+       🔹 FILTRO POR NIVEL (solo aquí)
+    ================================= */
+
+    if (activeLevel === 'PRINCIPIANTE') {
+      filtered = filtered.filter(q =>
+        q.difficulty === Difficulty.BASIC
+      );
+
+    } else if (activeLevel === 'INTERMEDIO') {
+      filtered = filtered.filter(q =>
+        q.difficulty === Difficulty.BASIC ||
+        q.difficulty === Difficulty.INTERMEDIATE
+      );
+
+    } else if (activeLevel === 'AVANZADO') {
+      filtered = filtered.filter(q =>
+        q.difficulty === Difficulty.INTERMEDIATE ||
+        q.difficulty === Difficulty.ADVANCED
+      );
+    }
   }
-}
 
-// 🔹 FILTRO POR NIVEL (solo si NO es KIDS)
-if (gameMode !== 'KIDS') {
-  if (activeLevel === 'PRINCIPIANTE') {
-    filtered = filtered.filter(q => q.difficulty === Difficulty.BASIC);
+  /* ================================
+     🔹 FILTRO POR PERÍODO
+  ================================= */
 
-  } else if (activeLevel === 'INTERMEDIO') {
-    filtered = filtered.filter(q =>
-      q.difficulty === Difficulty.BASIC ||
-      q.difficulty === Difficulty.INTERMEDIATE
-    );
-
-  } else if (activeLevel === 'AVANZADO') {
-    filtered = filtered.filter(q =>
-      q.difficulty === Difficulty.INTERMEDIATE ||
-      q.difficulty === Difficulty.ADVANCED
-    );
-  }
-}
-
-  // 🔹 FILTRO POR PERÍODO
   if (period !== 'SURPRISE') {
-    filtered = filtered.filter(q => q.period === period);
+    filtered = filtered.filter(q =>
+      q.period === period
+    );
   }
 
   return filtered;
@@ -185,12 +200,15 @@ if (gameMode !== 'KIDS') {
    🔥 APLICACIÓN DE FILTROS
 ========================================= */
 
-let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+let available = ALL_QUESTIONS.filter(
+  q => !usedQuestionIds.has(q.id)
+);
+
 available = applyFilters(available);
 
 // 🔁 RESET SI SE ACABAN
 if (available.length === 0) {
-  let resetSet = applyFilters(ALL_QUESTIONS);
+  const resetSet = applyFilters(ALL_QUESTIONS);
 
   const newUsed = new Set(usedQuestionIds);
   resetSet.forEach(q => newUsed.delete(q.id));
@@ -199,7 +217,7 @@ if (available.length === 0) {
   available = resetSet;
 }
 
-    if (available.length === 0) return;
+if (available.length === 0) return;
 
     const randomIndex = Math.floor(Math.random() * available.length);
     const selected = available[randomIndex];
