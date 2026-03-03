@@ -758,32 +758,38 @@ if (showWelcome) {
 
     </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
-{[
-        { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Básico' },
-        { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Desafío' },
-        { id: 'AVANZADO', label: 'Avanzado', sub: 'Experto' },
-        { id: 'MIXTO', label: 'Mixto', sub: 'Todo nivel' }, // <--- El nuevo integrante
-      ].map((level) => (
-        <button
-          key={level.id}
-          onClick={() => setGameLevel(level.id as any)}
-          className={`
-            rounded-2xl p-6 
-            transition-all shadow-lg border-2
-            ${level.id === 'MIXTO' 
-              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/40 hover:border-purple-400' 
-              : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
-          `}
-        >
-          <h3 className={`text-lg font-bold ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
-            {level.label}
-          </h3>
-          <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
-            {level.sub}
-          </p>
-        </button>
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto p-4">
+  {[
+    { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros pasos en la Palabra' },
+    { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el conocimiento' },
+    { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los maestros' },
+    { id: 'MIXTO', label: 'Mixto', sub: 'El desafío bíblico total' },
+  ].map((level) => (
+    <button
+      key={level.id}
+      onClick={() => setGameLevel(level.id as any)}
+      className={`
+        relative overflow-hidden rounded-2xl p-6 
+        transition-all duration-300 shadow-lg border-2
+        flex flex-col items-center justify-center text-center
+        ${level.id === 'MIXTO' 
+          ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-purple-500/50 hover:border-purple-400' 
+          : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
+        hover:-translate-y-1 active:scale-95
+      `}
+    >
+      <h3 className={`text-xl font-serif font-black tracking-wide ${level.id === 'MIXTO' ? 'text-purple-300' : 'text-amber-200'}`}>
+        {level.label.toUpperCase()}
+      </h3>
+      
+      <div className={`h-px w-12 my-2 ${level.id === 'MIXTO' ? 'bg-purple-500/30' : 'bg-amber-400/30'}`} />
+      
+      <p className="text-sm italic text-stone-400 leading-tight">
+        {level.sub}
+      </p>
+    </button>
+  ))}
+</div>
 
             </div>
 
