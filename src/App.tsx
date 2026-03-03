@@ -46,7 +46,6 @@ export default function App() {
   | 'HISTORIA'
   | null
 >(null);
-const [isKidsMode, setIsKidsMode] = useState(false);
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -120,133 +119,47 @@ const formatTime = (seconds: number) => {
 };
 
 const getColor = (accuracy: number) => {
-  /* =========================================
-   🔥 FUNCIÓN CENTRAL DE FILTROS
-========================================= */
-
-const applyFilters = (
-  questions: Question[],
-  period: Period | 'SURPRISE',
-  activeLevel: typeof gameLevel
-) => {
-  let filtered = questions;
-
-  // 🔹 FILTRO POR MODO
-  if (gameMode === 'TABLERO') {
-    filtered = filtered.filter(q =>
-      !q.mode || q.mode === 'TABLERO'
-    );
-  }
-
-  else if (gameMode === 'KIDS') {
-    filtered = filtered.filter(q =>
-      (!q.mode || q.mode === 'TABLERO') &&
-      q.difficulty === Difficulty.BASIC
-    );
-  }
-
-  else if (gameMode) {
-    filtered = filtered.filter(q =>
-      !q.mode || q.mode === gameMode
-    );
-
-    if (activeLevel === 'PRINCIPIANTE') {
-      filtered = filtered.filter(q =>
-        q.difficulty === Difficulty.BASIC
-      );
-    }
-
-    else if (activeLevel === 'INTERMEDIO') {
-      filtered = filtered.filter(q =>
-        q.difficulty === Difficulty.BASIC ||
-        q.difficulty === Difficulty.INTERMEDIATE
-      );
-    }
-
-    else if (activeLevel === 'AVANZADO') {
-      filtered = filtered.filter(q =>
-        q.difficulty === Difficulty.INTERMEDIATE ||
-        q.difficulty === Difficulty.ADVANCED
-      );
-    }
-  }
-
-  // 🔹 FILTRO POR PERÍODO
-  if (period !== 'SURPRISE') {
-    filtered = filtered.filter(q =>
-      q.period === period
-    );
-  }
-
-  return filtered;
-};
-
   if (accuracy >= 80) return "text-green-600";
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
- const getRandomQuestion = (
-  period: Period | 'SURPRISE',
-  levelOverride?: typeof gameLevel
-) => {
+  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
+    const activeLevel = levelOverride || gameLevel;
+    
+    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+    
+    // Filter by game level
+    if (activeLevel === 'PRINCIPIANTE') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC);
+    } else if (activeLevel === 'INTERMEDIO') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+    } else if (activeLevel === 'AVANZADO') {
+      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+    }
 
-  const activeLevel =
-    gameMode === 'KIDS'
-      ? 'PRINCIPIANTE'
-      : (levelOverride || gameLevel);
+    if (period !== 'SURPRISE') {
+      available = available.filter(q => q.period === period);
+    }
 
-  let available = ALL_QUESTIONS.filter(
-    q => !usedQuestionIds.has(q.id)
-  );
+    // If no questions left in this filtered set, reset for this period/level
+    if (available.length === 0) {
+      let resetSet = ALL_QUESTIONS.filter(q => period === 'SURPRISE' ? true : q.period === period);
+      
+      if (activeLevel === 'PRINCIPIANTE') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
+      } else if (activeLevel === 'INTERMEDIO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+      } else if (activeLevel === 'AVANZADO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+      }
 
-  available = applyFilters(available, period, activeLevel);
+      const newUsed = new Set(usedQuestionIds);
+      resetSet.forEach(q => newUsed.delete(q.id));
+      setUsedQuestionIds(newUsed);
+      available = resetSet;
+    }
 
-  // 🔁 RESET SI SE ACABAN
-  if (available.length === 0) {
-    available = applyFilters(ALL_QUESTIONS, period, activeLevel);
-    setUsedQuestionIds(new Set());
-  }
-
-  if (available.length === 0) return;
-
-  const randomIndex = Math.floor(Math.random() * available.length);
-  const selected = available[randomIndex];
-
-  setCurrentQuestion(selected);
-
-  setUsedQuestionIds(prev => {
-    const next = new Set(prev);
-    next.add(selected.id);
-    return next;
-  });
-
-  setShowAnswer(false);
-};
-    const activeLevel =
-    gameMode === 'KIDS'
-      ? 'PRINCIPIANTE'
-      : (levelOverride || gameLevel);
-
-/* =========================================
-   🔥 APLICACIÓN DE FILTROS
-========================================= */
-
-let available = ALL_QUESTIONS.filter(
-  q => !usedQuestionIds.has(q.id)
-);
-
-available = applyFilters(available);
-
-// 🔁 RESET SI SE ACABAN
-if (available.length === 0) {
-  const resetSet = applyFilters(ALL_QUESTIONS);
-
-  setUsedQuestionIds(new Set());
-
-  available = resetSet;
-}
-
-if (available.length === 0) return;
+    if (available.length === 0) return;
 
     const randomIndex = Math.floor(Math.random() * available.length);
     const selected = available[randomIndex];
@@ -768,13 +681,7 @@ if (showWelcome) {
       ].map((mode) => (
         <button
           key={mode.id}
-          onClick={() => {
-            setGameMode(mode.id as any);
-
-            if (mode.id === 'KIDS') {
-              setGameLevel('PRINCIPIANTE');
-            }
-          }}
+          onClick={() => setGameMode(mode.id as any)}
           className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] 
                       hover:border-[#C2B280] hover:bg-[#332E27] 
                       transition-all shadow-lg 
