@@ -123,7 +123,76 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
- const getRandomQuestion = (
+  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
+    const activeLevel = levelOverride || gameLevel;
+    
+    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+    // 1. FILTRADO POR MODO DE JUEGO
+    // Si el modo es KIDS, forzamos dificultad básica. 
+    // Si es otro modo (PERSONAJES, DIOS, etc.), buscamos preguntas de ese modo específico.
+    if (gameMode && gameMode !== 'TABLERO') {
+      if (gameMode === 'KIDS') {
+        available = available.filter(q => q.difficulty === Difficulty.BASIC);
+      } else {
+        available = available.filter(q => q.mode === gameMode);
+      }
+    }
+
+    // 2. FILTRADO POR NIVEL (DIFICULTAD)
+    if (activeLevel === 'PRINCIPIANTE') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC);
+    } else if (activeLevel === 'INTERMEDIO') {
+      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+    } else if (activeLevel === 'AVANZADO') {
+      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+    }
+
+    // 3. FILTRADO POR PERIODO BÍBLICO
+    if (period !== 'SURPRISE') {
+      available = available.filter(q => q.period === period);
+    }
+
+    // --- REINICIO DE PREGUNTAS SI SE ACABAN ---
+    if (available.length === 0) {
+      // Si no quedan preguntas disponibles con esos filtros, volvemos a cargar el set
+      let resetSet = ALL_QUESTIONS.filter(q => {
+        const matchesPeriod = period === 'SURPRISE' ? true : q.period === period;
+        const matchesMode = (gameMode === 'TABLERO' || !gameMode) ? true : 
+                            (gameMode === 'KIDS' ? q.difficulty === Difficulty.BASIC : q.mode === gameMode);
+        return matchesPeriod && matchesMode;
+      });
+      
+      if (activeLevel === 'PRINCIPIANTE') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
+      } else if (activeLevel === 'INTERMEDIO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
+      } else if (activeLevel === 'AVANZADO') {
+        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+      }
+
+      // Borramos de la memoria de "usadas" solo las de este grupo para poder repetirlas
+      const newUsed = new Set(usedQuestionIds);
+      resetSet.forEach(q => newUsed.delete(q.id));
+      setUsedQuestionIds(newUsed);
+      available = resetSet;
+    }
+
+    if (available.length === 0) return;
+
+    // 4. SELECCIÓN ALEATORIA
+    const randomIndex = Math.floor(Math.random() * available.length);
+    const selected = available[randomIndex];
+    
+    // ... viene de la parte anterior
+    setCurrentQuestion(selected);
+    setUsedQuestionIds(prev => {
+      const next = new Set(prev);
+      if (next.size > 1000) next.clear(); // Limpieza de seguridad
+      next.add(selected.id);
+      return next;
+    });
+    setShowAnswer(false);
+  }; // <--- Aquí termina getRandomQuestion
 
   const handleSelectPeriod = (period: Period) => {
     setCurrentPeriod(period);

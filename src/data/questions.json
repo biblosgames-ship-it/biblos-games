@@ -60,16 +60,6 @@
     "reference": "Génesis 4:1"
   },
   {
-    "id": "ep007",
-    "mode": "HISTORIA",
-    "period": "El Principio",
-    "difficulty": "BASIC",
-    "question": "¿Qué mandó Dios construir a Noé para salvarse del diluvio?",
-    "options": ["Un templo", "Un arca", "Una torre", "Una balsa"],
-    "correctAnswer": 1,
-    "reference": "Génesis 6:14"
-  },
-  {
     "id": "ep008",
     "mode": "HISTORIA",
     "period": "El Principio",
@@ -213,7 +203,7 @@
     "id": "ep022",
     "mode": "HISTORIA",
     "period": "El Principio",
-    "difficulty": "HISTORIA",
+    "difficulty": "INTERMEDIATE",
     "question": "¿Qué hizo el cuervo que Noé soltó primero?",
     "options": ["Regresó con una hoja", "No volvió", "Iba y venía hasta que se secaron las aguas", "Murió en el vuelo"],
     "correctAnswer": 2,
@@ -730,16 +720,6 @@
     "reference": "Génesis 40:8"
   },
   {
-    "id": "ep074",
-    "mode": "HISTORIA",
-    "period": "El Principio",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué soñó el faraón que José interpretó?",
-    "options": ["Siete vacas gordas y siete flacas", "Una torre en llamas", "Un río seco", "Un ejército invencible"],
-    "correctAnswer": 0,
-    "reference": "Génesis 41:1-4"
-  },
-  {
     "id": "ep075",
     "mode": "HISTORIA",
     "period": "El Principio",
@@ -998,6 +978,56 @@
     "options": ["Dios lo encaminó a bien", "Será castigado", "Olvidemos el pasado", "No tiene importancia"],
     "correctAnswer": 0,
     "reference": "Génesis 50:20"
+  },
+    {
+    "id": "ep101",
+    "mode": "HISTORIA",
+    "period": "El Principio",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Dónde se estableció el arca después del diluvio?",
+    "options": ["Carmelo", "Sinaí", "Ararat", "Horeb"],
+    "correctAnswer": 2,
+    "reference": "Génesis 8:4"
+  },
+  {
+    "id": "ep102",
+    "mode": "HISTORIA",
+    "period": "El Principio",
+    "difficulty": "BASIC",
+    "question": "¿Qué ciudad intentaron construir para alcanzar el cielo?",
+    "options": ["Nínive", "Babel", "Jericó", "Ur"],
+    "correctAnswer": 1,
+    "reference": "Génesis 11:4"
+  },
+  {
+    "id": "ep103",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "El Principio",
+    "difficulty": "BASIC",
+    "question": "Completa el versículo: 'En el principio creó Dios los...'",
+    "options": ["cielos y la tierra", "ángeles y arcángeles", "mares y montes", "hombres y mujeres"],
+    "correctAnswer": 0,
+    "reference": "Génesis 1:1"
+  },
+{
+    "id": "ep104",
+    "mode": "DIOS",
+    "period": "El Principio",
+    "difficulty": "INTERMEDIATE",
+    "question": "Según Génesis 1:1, ¿qué atributo de Dios se muestra cuando crea los cielos y la tierra?",
+    "options": ["Omnipotencia", "Omnisciencia", "Misericordia", "Justicia"],
+    "correctAnswer": 0,
+    "reference": "Génesis 1:1"
+  },
+{
+    "id": "ep105",
+    "mode": "SALVACION",
+    "period": "El Principio",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué promesa en Génesis es el primer anuncio de salvación?",
+    "options": ["El arco iris", "La simiente que heriría a la serpiente", "La bendición de Adán", "La torre de Babel"],
+    "correctAnswer": 1,
+    "reference": "Génesis 3:15"
   },
   {
     "id": "ex001",
@@ -2000,6 +2030,96 @@
     "reference": "Deuteronomio 30:14"
   },
   {
+    "id": "ex101",
+    "mode": "HISTORIA",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Cuánto tiempo estuvo Israel en Egipto?",
+    "options": ["70 años", "215 años", "400 años", "600 años"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 12:40"
+  },
+  {
+    "id": "ex102",
+    "mode": "HISTORIA",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "BASIC",
+    "question": "¿Qué río cruzó Israel para entrar a la Tierra Prometida?",
+    "options": ["Éufrates", "Tigris", "Jordán", "Nilo"],
+    "correctAnswer": 2,
+    "reference": "Josué 3:14-17"
+  },
+{
+    "id": "ex103",
+    "mode": "MANDAMIENTOS",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "BASIC",
+    "question": "¿En qué monte se entregaron los Diez Mandamientos?",
+    "options": ["Monte Carmelo", "Monte Sinaí", "Monte de los Olivos", "Monte Hermón"],
+    "correctAnswer": 1,
+    "reference": "Éxodo 20:1-17"
+  },
+  {
+    "id": "ex104",
+    "mode": "MANDAMIENTOS",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Cuál era el propósito de la Ley según Romanos?",
+    "options": ["Salvar al hombre", "Reemplazar la fe", "Mostrar el pecado", "Eliminar sacrificios"],
+    "correctAnswer": 2,
+    "reference": "Romanos 3:20"
+  },
+  {
+    "id": "ex105",
+    "mode": "MANDAMIENTOS",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué día fue apartado como santo en el cuarto mandamiento?",
+    "options": ["Primer día", "Día de la expiación", "Día de reposo", "Luna nueva"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 20:8-10"
+  },
+{
+    "id": "ex106",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "Completa el mandamiento: 'Honra a tu padre y a tu madre, para que tus días...'",
+    "options": ["sean largos en la tierra", "sean bendecidos en el cielo", "se multipliquen en sabiduría", "se llenen de paz"],
+    "correctAnswer": 0,
+    "reference": "Éxodo 20:12"
+  },
+{
+    "id": "ex107",
+    "mode": "DIOS",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "Cuando Dios declara 'Yo soy el que soy', ¿qué atributo está revelando?",
+    "options": ["Su autoexistencia", "Su misericordia", "Su paciencia", "Su poder militar"],
+    "correctAnswer": 0,
+    "reference": "Éxodo 3:14"
+  },
+{
+    "id": "ex108",
+    "mode": "SALVACION",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué evento simboliza la redención por medio de la sangre?",
+    "options": ["Las tablas de la ley", "El paso del Mar Rojo", "La Pascua y la sangre en los dinteles", "El maná"],
+    "correctAnswer": 2,
+    "reference": "Éxodo 12:13"
+  },
+  {
+    "id": "ex109",
+    "mode": "SALVACION",
+    "period": "El Pueblo de Dios y la Ley",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué sistema de la Ley apuntaba al sacrificio de Cristo?",
+    "options": ["El sacerdocio y los sacrificios", "Las ciudades de refugio", "El año sabático", "El voto nazareo"],
+    "correctAnswer": 0,
+    "reference": "Hebreos 10:1"
+  },
+  {
     "id": "rp001",
     "mode": "PERSONAJES",
     "period": "Reyes, Profetas y Poetas",
@@ -2188,16 +2308,6 @@
     "options": ["Saúl", "David", "Salomón", "Roboam"],
     "correctAnswer": 1,
     "reference": "2 Samuel 12:7"
-  },
-  {
-    "id": "rp020",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué profeta fue tragado por un gran pez?",
-    "options": ["Jonás", "Oseas", "Joel", "Abdías"],
-    "correctAnswer": 0,
-    "reference": "Jonás 1:17"
   },
   {
     "id": "rp021",
@@ -3099,7 +3209,147 @@
   "correctAnswer": 2,
   "reference": "Job 2:11"
 },
+{
+    "id": "rp111",
+    "mode": "SALVACION",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué profeta anunció que el Siervo de Dios llevaría nuestras iniquidades?",
+    "options": ["Jeremías", "Ezequiel", "Isaías", "Oseas"],
+    "correctAnswer": 2,
+    "reference": "Isaías 53:5"
+  },
+  {
+    "id": "rp112",
+    "mode": "SALVACION",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué pacto prometía un nuevo corazón y espíritu?",
+    "options": ["Pacto con Abraham", "El nuevo pacto de Jeremías", "Pacto con David", "Pacto con Noé"],
+    "correctAnswer": 1,
+    "reference": "Jeremías 31:31-33"
+  },
  {
+    "id": "rp113",
+    "mode": "PERSONAJES",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "BASIC",
+    "question": "¿Quién venció a Goliat?",
+    "options": ["Saúl", "David", "Sansón", "Josué"],
+    "correctAnswer": 1,
+    "reference": "1 Samuel 17"
+  },
+  {
+    "id": "rp114",
+    "mode": "PERSONAJES",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Quién fue conocido por su gran sabiduría?",
+    "options": ["David", "Salomón", "Elías", "Jeremías"],
+    "correctAnswer": 1,
+    "reference": "1 Reyes 3"
+  },
+  {
+    "id": "rp115",
+    "mode": "PERSONAJES",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Quién fue lanzado al foso de los leones?",
+    "options": ["Daniel", "Jeremías", "Isaías", "Ezequiel"],
+    "correctAnswer": 0,
+    "reference": "Daniel 6"
+  },
+  {
+    "id": "rp116",
+    "mode": "PERSONAJES",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué mujer fue jueza en Israel?",
+    "options": ["Ester", "Rut", "Débora", "Miriam"],
+    "correctAnswer": 2,
+    "reference": "Jueces 4"
+  },
+  {
+    "id": "rp117",
+    "mode": "PERSONAJES",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué profeta confrontó al rey Acab?",
+    "options": ["Isaías", "Eliseo", "Elías", "Oseas"],
+    "correctAnswer": 2,
+    "reference": "1 Reyes 18"
+  },
+{
+    "id": "rp118",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "BASIC",
+    "question": "Completa el versículo: 'El Señor es mi pastor; nada...'",
+    "options": ["me faltará", "me turbará", "me vencerá", "me destruirá"],
+    "correctAnswer": 0,
+    "reference": "Salmo 23:1"
+  },
+  {
+    "id": "rp119",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "Completa el versículo: 'Lámpara es a mis pies tu palabra, y lumbrera a mi...'",
+    "options": ["camino", "vida", "corazón", "destino"],
+    "correctAnswer": 0,
+    "reference": "Salmo 119:105"
+  },
+{
+    "id": "rp120",
+    "mode": "DIOS",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "BASIC",
+    "question": "Según el Salmo 139, conocer todos nuestros pensamientos muestra la...",
+    "options": ["Omnisciencia", "Omnipresencia", "Santidad", "Fidelidad"],
+    "correctAnswer": 0,
+    "reference": "Salmo 139:1-4"
+  },
+{
+    "id": "rp121",
+    "mode": "DIOS",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "Cuando Isaías declara que Dios es 'Santo, santo, santo', ¿qué atributo resalta?",
+    "options": ["Santidad absoluta", "Misericordia infinita", "Sabiduría eterna", "Paciencia divina"],
+    "correctAnswer": 0,
+    "reference": "Isaías 6:3"
+  },
+{
+    "id": "rp122",
+    "mode": "MANDAMIENTOS",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué rey restauró la Ley tras hallar el libro en el templo?",
+    "options": ["Manasés", "Saúl", "Josías", "Acab"],
+    "correctAnswer": 2,
+    "reference": "2 Reyes 22:8-13"
+  },
+{
+    "id": "rp123",
+    "mode": "HISTORIA",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué ciudad fue conquistada tras rodearla siete días?",
+    "options": ["Jerusalén", "Samaria", "Jericó", "Damasco"],
+    "correctAnswer": 2,
+    "reference": "Josué 6:20"
+  },
+  {
+    "id": "rp124",
+    "mode": "HISTORIA",
+    "period": "Reyes, Profetas y Poetas",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué imperio llevó cautivo a Judá a Babilonia?",
+    "options": ["Romano", "Asirio", "Babilónico", "Persa"],
+    "correctAnswer": 2,
+    "reference": "2 Reyes 25:8-11"
+  },
+  {
   "id": "jr001",
   "mode": "HISTORIA",
   "period": "Jesús y la Redención",
@@ -4099,6 +4349,126 @@
   "correctAnswer": 1,
   "reference": "Mateo 28:18"
 },
+{
+    "id": "ex101",
+    "mode": "HISTORIA",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Bajo qué autoridad romana fue crucificado Jesús?",
+    "options": ["Herodes", "Pilato", "Nerón", "Augusto"],
+    "correctAnswer": 1,
+    "reference": "Juan 19:16"
+  },
+{
+    "id": "ex102",
+    "mode": "MANDAMIENTOS",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué declaró Jesús sobre su relación con la Ley?",
+    "options": ["La abolió", "Sin efecto", "Vino a cumplirla", "Solo para Israel"],
+    "correctAnswer": 2,
+    "reference": "Mateo 5:17"
+  },
+  {
+    "id": "ex103",
+    "mode": "MANDAMIENTOS",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Cuál mandamiento señaló Jesús como el más grande?",
+    "options": ["No matarás", "Amar a Dios sobre todo", "Día de reposo", "Honrar padres"],
+    "correctAnswer": 1,
+    "reference": "Mateo 22:37-38"
+  },
+{
+    "id": "ex104",
+    "mode": "SALVACION",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "¿Cuál es la razón principal por la que Jesús vino al mundo?",
+    "options": ["Enseñar parábolas", "Juzgar al mundo", "Buscar y salvar lo perdido", "Reinado político"],
+    "correctAnswer": 2,
+    "reference": "Lucas 19:10"
+  },
+  {
+    "id": "ex105",
+    "mode": "SALVACION",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué declaró Jesús en la cruz afirmando el cumplimiento de la obra?",
+    "options": ["Padre, perdónalos", "Tengo sed", "Consumado es", "En tus manos encomiendo"],
+    "correctAnswer": 2,
+    "reference": "Juan 19:30"
+  },
+  {
+    "id": "ex106",
+    "mode": "PERSONAJES",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué discípulo dudó hasta ver a Jesús resucitado?",
+    "options": ["Pedro", "Juan", "Tomás", "Andrés"],
+    "correctAnswer": 2,
+    "reference": "Juan 20:24-29"
+  },
+  {
+    "id": "ex107",
+    "mode": "PERSONAJES",
+    "period": "Jesús y la Redención",
+    "difficulty": "ADVANCED",
+    "question": "¿Quién fue el padre de Juan el Bautista?",
+    "options": ["Zacarías", "José", "Nicodemo", "Felipe"],
+    "correctAnswer": 0,
+    "reference": "Lucas 1:13"
+  },
+{
+    "id": "ex108",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "Completa el versículo: 'Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito...'",
+    "options": ["no se pierda, mas tenga vida eterna", "sea lleno de bendiciones", "tenga prosperidad eterna", "reciba poder espiritual"],
+    "correctAnswer": 0,
+    "reference": "Juan 3:16"
+  },
+  {
+    "id": "ex109",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "Completa el versículo: 'Buscad primeramente el reino de Dios y su justicia, y todas estas cosas...'",
+    "options": ["os serán añadidas", "os serán multiplicadas", "os serán reveladas", "os serán guardadas"],
+    "correctAnswer": 0,
+    "reference": "Mateo 6:33"
+  },
+{
+    "id": "ex110",
+    "mode": "DIOS",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "Según Juan 1:1, ¿qué se afirma acerca de Jesús?",
+    "options": ["Que era profeta solamente", "Que era un ángel poderoso", "Que era Dios", "Que fue creado primero"],
+    "correctAnswer": 2,
+    "reference": "Juan 1:1"
+  },
+  {
+    "id": "ex111",
+    "mode": "DIOS",
+    "period": "Jesús y la Redención",
+    "difficulty": "INTERMEDIATE",
+    "question": "Cuando Jesús perdonaba pecados, ¿qué atributo divino estaba demostrando?",
+    "options": ["Autoridad divina", "Debilidad humana", "Dependencia de los discípulos", "Ignorancia espiritual"],
+    "correctAnswer": 0,
+    "reference": "Marcos 2:5-7"
+  },
+{
+    "id": "ex112",
+    "mode": "DIOS",
+    "period": "Jesús y la Redención",
+    "difficulty": "BASIC",
+    "question": "Según Juan 14:6, Jesús se describe a sí mismo como:",
+    "options": ["El profeta final", "El camino, la verdad y la vida", "El maestro moral", "El libertador político"],
+    "correctAnswer": 1,
+    "reference": "Juan 14:6"
+  },
   {
     "id": "ic001",
     "mode": "HISTORIA",
@@ -5098,6 +5468,126 @@
     "options": ["Velad y orad", "Ven", "Arrepentíos", "Esperad con paciencia"],
     "correctAnswer": 1,
     "reference": "Apocalipsis 22:17"
+  },
+  {
+    "id": "ic101",
+    "mode": "MANDAMIENTOS",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué doctrina perseveraba la iglesia primitiva?",
+    "options": ["Tradición romana", "Doctrina de los apóstoles", "Rituales del templo", "Fiestas paganas"],
+    "correctAnswer": 1,
+    "reference": "Hechos 2:42"
+  },
+  {
+    "id": "ic102",
+    "mode": "MANDAMIENTOS",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "Según Pablo, ¿qué cumple toda la Ley en una sola palabra?",
+    "options": ["Fe", "Gracia", "Amor", "Justicia"],
+    "correctAnswer": 2,
+    "reference": "Gálatas 5:14"
+  },
+  {
+    "id": "ic0103",
+    "mode": "MANDAMIENTOS",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "¿Qué ordenanza instituyó Jesús en la última cena?",
+    "options": ["Bautismo", "Santa Cena", "Ayuno", "Circuncisión"],
+    "correctAnswer": 1,
+    "reference": "Lucas 22:19-20"
+  },
+{
+    "id": "ic104",
+    "mode": "SALVACION",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "Según Pablo, ¿por medio de qué somos salvos?",
+    "options": ["Obras de la ley", "Circuncisión", "Gracia mediante la fe", "Conocimiento"],
+    "correctAnswer": 2,
+    "reference": "Efesios 2:8-9"
+  },
+  {
+    "id": "ic105",
+    "mode": "SALVACION",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "¿Qué acto simboliza la identificación con la muerte y resurrección de Cristo?",
+    "options": ["Imposición de manos", "Ayuno", "Bautismo", "Unción"],
+    "correctAnswer": 2,
+    "reference": "Romanos 6:4"
+  },
+{
+    "id": "ic106",
+    "mode": "PERSONAJES",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "¿Quién reemplazó a Judas Iscariote?",
+    "options": ["Bernabé", "Matías", "Silas", "Esteban"],
+    "correctAnswer": 1,
+    "reference": "Hechos 1:26"
+  },
+  {
+    "id": "ic107",
+    "mode": "PERSONAJES",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "¿Quién fue discípulo de Pablo y pastor en Éfeso?",
+    "options": ["Tito", "Timoteo", "Lucas", "Marcos"],
+    "correctAnswer": 1,
+    "reference": "1 Timoteo 1:3"
+  },
+{
+    "id": "ic108",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "Completa el versículo: 'Todo lo puedo en...'",
+    "options": ["Cristo que me fortalece", "la fe constante", "mi esfuerzo diario", "la gracia abundante"],
+    "correctAnswer": 0,
+    "reference": "Filipenses 4:13"
+  },
+  {
+    "id": "ic109",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "Completa: 'La fe, la esperanza y el amor permanecen estos tres; pero el mayor de ellos es...'",
+    "options": ["la esperanza", "la fe", "el amor", "la gracia"],
+    "correctAnswer": 2,
+    "reference": "1 Corintios 13:13"
+  },
+  {
+    "id": "ic110",
+    "mode": "VERSICULO_FAVORITO",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "Completa el versículo: 'Si Dios es por nosotros, ¿quién...?'",
+    "options": ["contra nosotros", "nos separará", "nos juzgará", "nos vencerá"],
+    "correctAnswer": 0,
+    "reference": "Romanos 8:31"
+  },
+{
+    "id": "ic111",
+    "mode": "DIOS",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "INTERMEDIATE",
+    "question": "Según Hechos 5:3-4, mentir al Espíritu Santo es mentir a...",
+    "options": ["Un ángel", "Un apóstol", "Dios", "La iglesia"],
+    "correctAnswer": 2,
+    "reference": "Hechos 5:3-4"
+  },
+  {
+    "id": "ic112",
+    "mode": "DIOS",
+    "period": "La Iglesia Cristiana",
+    "difficulty": "ADVANCED",
+    "question": "En 2 Corintios 13:14 se menciona al Padre, Hijo y Espíritu Santo revelando la...",
+    "options": ["La Trinidad", "El politeísmo", "La encarnación", "La justificación"],
+    "correctAnswer": 0,
+    "reference": "2 Corintios 13:14"
   },
   {
     "id": "tf001",
@@ -6100,246 +6590,6 @@
     "reference": "Apocalipsis 3:12"
   },
   {
-    "id": "pb001",
-    "mode": "PERSONAJES",
-    "period": "El Principio",
-    "difficulty": "BASIC",
-    "question": "¿Quién construyó el arca?",
-    "options": ["Moisés", "Noé", "Abraham", "Pedro"],
-    "correctAnswer": 1,
-    "reference": "Génesis 6:14"
-  },
-  {
-    "id": "pb002",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "BASIC",
-    "question": "¿Quién fue tragado por un gran pez?",
-    "options": ["Jonás", "David", "Isaías", "Samuel"],
-    "correctAnswer": 0,
-    "reference": "Jonás 1:17"
-  },
-  {
-    "id": "pb003",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "BASIC",
-    "question": "¿Quién venció a Goliat?",
-    "options": ["Saúl", "David", "Sansón", "Josué"],
-    "correctAnswer": 1,
-    "reference": "1 Samuel 17"
-  },
-  {
-    "id": "pb004",
-    "mode": "PERSONAJES",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "BASIC",
-    "question": "¿Quién recibió los Diez Mandamientos?",
-    "options": ["Abraham", "Moisés", "Elías", "Daniel"],
-    "correctAnswer": 1,
-    "reference": "Éxodo 20"
-  },
-  {
-    "id": "pb005",
-    "mode": "PERSONAJES",
-    "period": "Jesús y la Redención",
-    "difficulty": "BASIC",
-    "question": "¿Quién negó a Jesús tres veces?",
-    "options": ["Juan", "Pedro", "Tomás", "Pablo"],
-    "correctAnswer": 1,
-    "reference": "Mateo 26:69-75"
-  },
-  {
-    "id": "pb006",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Quién fue el primer rey de Israel?",
-    "options": ["David", "Salomón", "Saúl", "Samuel"],
-    "correctAnswer": 2,
-    "reference": "1 Samuel 10"
-  },
-  {
-    "id": "pb007",
-    "mode": "PERSONAJES",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Quién interpretó los sueños del faraón?",
-    "options": ["José", "Daniel", "Moisés", "Isaías"],
-    "correctAnswer": 0,
-    "reference": "Génesis 41"
-  },
-  {
-    "id": "pb008",
-    "mode": "PERSONAJES",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué discípulo dudó hasta ver a Jesús resucitado?",
-    "options": ["Pedro", "Juan", "Tomás", "Andrés"],
-    "correctAnswer": 2,
-    "reference": "Juan 20:24-29"
-  },
-  {
-    "id": "pb009",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Quién fue conocido por su gran sabiduría?",
-    "options": ["David", "Salomón", "Elías", "Jeremías"],
-    "correctAnswer": 1,
-    "reference": "1 Reyes 3"
-  },
-  {
-    "id": "pb010",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Quién fue lanzado al foso de los leones?",
-    "options": ["Daniel", "Jeremías", "Isaías", "Ezequiel"],
-    "correctAnswer": 0,
-    "reference": "Daniel 6"
-  },
-  {
-    "id": "pb011",
-    "mode": "PERSONAJES",
-    "period": "Jesús y la Redención",
-    "difficulty": "ADVANCED",
-    "question": "¿Quién fue el padre de Juan el Bautista?",
-    "options": ["Zacarías", "José", "Nicodemo", "Felipe"],
-    "correctAnswer": 0,
-    "reference": "Lucas 1:13"
-  },
-  {
-    "id": "pb012",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué mujer fue jueza en Israel?",
-    "options": ["Ester", "Rut", "Débora", "Miriam"],
-    "correctAnswer": 2,
-    "reference": "Jueces 4"
-  },
-  {
-    "id": "pb013",
-    "mode": "PERSONAJES",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "¿Quién reemplazó a Judas Iscariote?",
-    "options": ["Bernabé", "Matías", "Silas", "Esteban"],
-    "correctAnswer": 1,
-    "reference": "Hechos 1:26"
-  },
-  {
-    "id": "pb014",
-    "mode": "PERSONAJES",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué profeta confrontó al rey Acab?",
-    "options": ["Isaías", "Eliseo", "Elías", "Oseas"],
-    "correctAnswer": 2,
-    "reference": "1 Reyes 18"
-  },
-  {
-    "id": "pb015",
-    "mode": "PERSONAJES",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "¿Quién fue discípulo de Pablo y pastor en Éfeso?",
-    "options": ["Tito", "Timoteo", "Lucas", "Marcos"],
-    "correctAnswer": 1,
-    "reference": "1 Timoteo 1:3"
-  },
-  {
-    "id": "vf011",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "El Principio",
-    "difficulty": "BASIC",
-    "question": "Completa el versículo: 'En el principio creó Dios los...'",
-    "options": ["cielos y la tierra", "ángeles y arcángeles", "mares y montes", "hombres y mujeres"],
-    "correctAnswer": 0,
-    "reference": "Génesis 1:1"
-  },
-  {
-    "id": "vf012",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "Completa el mandamiento: 'Honra a tu padre y a tu madre, para que tus días...'",
-    "options": ["sean largos en la tierra", "sean bendecidos en el cielo", "se multipliquen en sabiduría", "se llenen de paz"],
-    "correctAnswer": 0,
-    "reference": "Éxodo 20:12"
-  },
-  {
-    "id": "vf013",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "BASIC",
-    "question": "Completa el versículo: 'El Señor es mi pastor; nada...'",
-    "options": ["me faltará", "me turbará", "me vencerá", "me destruirá"],
-    "correctAnswer": 0,
-    "reference": "Salmo 23:1"
-  },
-  {
-    "id": "vf014",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "Completa el versículo: 'Lámpara es a mis pies tu palabra, y lumbrera a mi...'",
-    "options": ["camino", "vida", "corazón", "destino"],
-    "correctAnswer": 0,
-    "reference": "Salmo 119:105"
-  },
-  {
-    "id": "vf015",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "Jesús y la Redención",
-    "difficulty": "BASIC",
-    "question": "Completa el versículo: 'Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito...'",
-    "options": ["no se pierda, mas tenga vida eterna", "sea lleno de bendiciones", "tenga prosperidad eterna", "reciba poder espiritual"],
-    "correctAnswer": 0,
-    "reference": "Juan 3:16"
-  },
-  {
-    "id": "vf016",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "Completa el versículo: 'Buscad primeramente el reino de Dios y su justicia, y todas estas cosas...'",
-    "options": ["os serán añadidas", "os serán multiplicadas", "os serán reveladas", "os serán guardadas"],
-    "correctAnswer": 0,
-    "reference": "Mateo 6:33"
-  },
-  {
-    "id": "vf017",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "Completa el versículo: 'Todo lo puedo en...'",
-    "options": ["Cristo que me fortalece", "la fe constante", "mi esfuerzo diario", "la gracia abundante"],
-    "correctAnswer": 0,
-    "reference": "Filipenses 4:13"
-  },
-  {
-    "id": "vf018",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "Completa: 'La fe, la esperanza y el amor permanecen estos tres; pero el mayor de ellos es...'",
-    "options": ["la esperanza", "la fe", "el amor", "la gracia"],
-    "correctAnswer": 2,
-    "reference": "1 Corintios 13:13"
-  },
-  {
-    "id": "vf019",
-    "mode": "VERSICULO_FAVORITO",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "Completa el versículo: 'Si Dios es por nosotros, ¿quién...?'",
-    "options": ["contra nosotros", "nos separará", "nos juzgará", "nos vencerá"],
-    "correctAnswer": 0,
-    "reference": "Romanos 8:31"
-  },
-  {
     "id": "vf020",
     "mode": "VERSICULO_FAVORITO",
     "period": "Tiempos Finales",
@@ -6349,97 +6599,7 @@
     "correctAnswer": 0,
     "reference": "Apocalipsis 22:12"
   },
-  {
-    "id": "dg001",
-    "mode": "DIOS",
-    "period": "El Principio",
-    "difficulty": "INTERMEDIATE",
-    "question": "Según Génesis 1:1, ¿qué atributo de Dios se muestra cuando crea los cielos y la tierra?",
-    "options": ["Omnipotencia", "Omnisciencia", "Misericordia", "Justicia"],
-    "correctAnswer": 0,
-    "reference": "Génesis 1:1"
-  },
-  {
-    "id": "dg002",
-    "mode": "DIOS",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "Cuando Dios declara 'Yo soy el que soy', ¿qué atributo está revelando?",
-    "options": ["Su autoexistencia", "Su misericordia", "Su paciencia", "Su poder militar"],
-    "correctAnswer": 0,
-    "reference": "Éxodo 3:14"
-  },
-  {
-    "id": "dg003",
-    "mode": "DIOS",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "BASIC",
-    "question": "Según el Salmo 139, conocer todos nuestros pensamientos muestra la...",
-    "options": ["Omnisciencia", "Omnipresencia", "Santidad", "Fidelidad"],
-    "correctAnswer": 0,
-    "reference": "Salmo 139:1-4"
-  },
-  {
-    "id": "dg004",
-    "mode": "DIOS",
-    "period": "Jesús y la Redención",
-    "difficulty": "BASIC",
-    "question": "Según Juan 1:1, ¿qué se afirma acerca de Jesús?",
-    "options": ["Que era profeta solamente", "Que era un ángel poderoso", "Que era Dios", "Que fue creado primero"],
-    "correctAnswer": 2,
-    "reference": "Juan 1:1"
-  },
-  {
-    "id": "dg005",
-    "mode": "DIOS",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "Cuando Jesús perdonaba pecados, ¿qué atributo divino estaba demostrando?",
-    "options": ["Autoridad divina", "Debilidad humana", "Dependencia de los discípulos", "Ignorancia espiritual"],
-    "correctAnswer": 0,
-    "reference": "Marcos 2:5-7"
-  },
-  {
-    "id": "dg006",
-    "mode": "DIOS",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "Según Hechos 5:3-4, mentir al Espíritu Santo es mentir a...",
-    "options": ["Un ángel", "Un apóstol", "Dios", "La iglesia"],
-    "correctAnswer": 2,
-    "reference": "Hechos 5:3-4"
-  },
-  {
-    "id": "dg007",
-    "mode": "DIOS",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "En 2 Corintios 13:14 se menciona al Padre, Hijo y Espíritu Santo revelando la...",
-    "options": ["La Trinidad", "El politeísmo", "La encarnación", "La justificación"],
-    "correctAnswer": 0,
-    "reference": "2 Corintios 13:14"
-  },
-  {
-    "id": "dg008",
-    "mode": "DIOS",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "Cuando Isaías declara que Dios es 'Santo, santo, santo', ¿qué atributo resalta?",
-    "options": ["Santidad absoluta", "Misericordia infinita", "Sabiduría eterna", "Paciencia divina"],
-    "correctAnswer": 0,
-    "reference": "Isaías 6:3"
-  },
-  {
-    "id": "dg009",
-    "mode": "DIOS",
-    "period": "Jesús y la Redención",
-    "difficulty": "BASIC",
-    "question": "Según Juan 14:6, Jesús se describe a sí mismo como:",
-    "options": ["El profeta final", "El camino, la verdad y la vida", "El maestro moral", "El libertador político"],
-    "correctAnswer": 1,
-    "reference": "Juan 14:6"
-  },
-  {
+{
     "id": "dg010",
     "mode": "DIOS",
     "period": "Tiempos Finales",
@@ -6449,97 +6609,7 @@
     "correctAnswer": 0,
     "reference": "Apocalipsis 1:8"
   },
-  {
-    "id": "ps021",
-    "mode": "SALVACION",
-    "period": "El Principio",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué promesa en Génesis es el primer anuncio de salvación?",
-    "options": ["El arco iris", "La simiente que heriría a la serpiente", "La bendición de Adán", "La torre de Babel"],
-    "correctAnswer": 1,
-    "reference": "Génesis 3:15"
-  },
-  {
-    "id": "ps022",
-    "mode": "SALVACION",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué evento simboliza la redención por medio de la sangre?",
-    "options": ["Las tablas de la ley", "El paso del Mar Rojo", "La Pascua y la sangre en los dinteles", "El maná"],
-    "correctAnswer": 2,
-    "reference": "Éxodo 12:13"
-  },
-  {
-    "id": "ps023",
-    "mode": "SALVACION",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué sistema de la Ley apuntaba al sacrificio de Cristo?",
-    "options": ["El sacerdocio y los sacrificios", "Las ciudades de refugio", "El año sabático", "El voto nazareo"],
-    "correctAnswer": 0,
-    "reference": "Hebreos 10:1"
-  },
-  {
-    "id": "ps024",
-    "mode": "SALVACION",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué profeta anunció que el Siervo de Dios llevaría nuestras iniquidades?",
-    "options": ["Jeremías", "Ezequiel", "Isaías", "Oseas"],
-    "correctAnswer": 2,
-    "reference": "Isaías 53:5"
-  },
-  {
-    "id": "ps025",
-    "mode": "SALVACION",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué pacto prometía un nuevo corazón y espíritu?",
-    "options": ["Pacto con Abraham", "El nuevo pacto de Jeremías", "Pacto con David", "Pacto con Noé"],
-    "correctAnswer": 1,
-    "reference": "Jeremías 31:31-33"
-  },
-  {
-    "id": "ps026",
-    "mode": "SALVACION",
-    "period": "Jesús y la Redención",
-    "difficulty": "BASIC",
-    "question": "¿Cuál es la razón principal por la que Jesús vino al mundo?",
-    "options": ["Enseñar parábolas", "Juzgar al mundo", "Buscar y salvar lo perdido", "Reinado político"],
-    "correctAnswer": 2,
-    "reference": "Lucas 19:10"
-  },
-  {
-    "id": "ps027",
-    "mode": "SALVACION",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué declaró Jesús en la cruz afirmando el cumplimiento de la obra?",
-    "options": ["Padre, perdónalos", "Tengo sed", "Consumado es", "En tus manos encomiendo"],
-    "correctAnswer": 2,
-    "reference": "Juan 19:30"
-  },
-  {
-    "id": "ps028",
-    "mode": "SALVACION",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "Según Pablo, ¿por medio de qué somos salvos?",
-    "options": ["Obras de la ley", "Circuncisión", "Gracia mediante la fe", "Conocimiento"],
-    "correctAnswer": 2,
-    "reference": "Efesios 2:8-9"
-  },
-  {
-    "id": "ps029",
-    "mode": "SALVACION",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué acto simboliza la identificación con la muerte y resurrección de Cristo?",
-    "options": ["Imposición de manos", "Ayuno", "Bautismo", "Unción"],
-    "correctAnswer": 2,
-    "reference": "Romanos 6:4"
-  },
-  {
+{
     "id": "ps030",
     "mode": "SALVACION",
     "period": "Tiempos Finales",
@@ -6549,97 +6619,7 @@
     "correctAnswer": 3,
     "reference": "Apocalipsis 21:1-4"
   },
-  {
-    "id": "md031",
-    "mode": "MANDAMIENTOS",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "BASIC",
-    "question": "¿En qué monte se entregaron los Diez Mandamientos?",
-    "options": ["Monte Carmelo", "Monte Sinaí", "Monte de los Olivos", "Monte Hermón"],
-    "correctAnswer": 1,
-    "reference": "Éxodo 20:1-17"
-  },
-  {
-    "id": "md032",
-    "mode": "MANDAMIENTOS",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Cuál era el propósito de la Ley según Romanos?",
-    "options": ["Salvar al hombre", "Reemplazar la fe", "Mostrar el pecado", "Eliminar sacrificios"],
-    "correctAnswer": 2,
-    "reference": "Romanos 3:20"
-  },
-  {
-    "id": "md033",
-    "mode": "MANDAMIENTOS",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué día fue apartado como santo en el cuarto mandamiento?",
-    "options": ["Primer día", "Día de la expiación", "Día de reposo", "Luna nueva"],
-    "correctAnswer": 2,
-    "reference": "Éxodo 20:8-10"
-  },
-  {
-    "id": "md034",
-    "mode": "MANDAMIENTOS",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué rey restauró la Ley tras hallar el libro en el templo?",
-    "options": ["Manasés", "Saúl", "Josías", "Acab"],
-    "correctAnswer": 2,
-    "reference": "2 Reyes 22:8-13"
-  },
-  {
-    "id": "md035",
-    "mode": "MANDAMIENTOS",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué declaró Jesús sobre su relación con la Ley?",
-    "options": ["La abolió", "Sin efecto", "Vino a cumplirla", "Solo para Israel"],
-    "correctAnswer": 2,
-    "reference": "Mateo 5:17"
-  },
-  {
-    "id": "md036",
-    "mode": "MANDAMIENTOS",
-    "period": "Jesús y la Redención",
-    "difficulty": "ADVANCED",
-    "question": "¿Cuál mandamiento señaló Jesús como el más grande?",
-    "options": ["No matarás", "Amar a Dios sobre todo", "Día de reposo", "Honrar padres"],
-    "correctAnswer": 1,
-    "reference": "Mateo 22:37-38"
-  },
-  {
-    "id": "md037",
-    "mode": "MANDAMIENTOS",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué doctrina perseveraba la iglesia primitiva?",
-    "options": ["Tradición romana", "Doctrina de los apóstoles", "Rituales del templo", "Fiestas paganas"],
-    "correctAnswer": 1,
-    "reference": "Hechos 2:42"
-  },
-  {
-    "id": "md038",
-    "mode": "MANDAMIENTOS",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "ADVANCED",
-    "question": "Según Pablo, ¿qué cumple toda la Ley en una sola palabra?",
-    "options": ["Fe", "Gracia", "Amor", "Justicia"],
-    "correctAnswer": 2,
-    "reference": "Gálatas 5:14"
-  },
-  {
-    "id": "md039",
-    "mode": "MANDAMIENTOS",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué ordenanza instituyó Jesús en la última cena?",
-    "options": ["Bautismo", "Santa Cena", "Ayuno", "Circuncisión"],
-    "correctAnswer": 1,
-    "reference": "Lucas 22:19-20"
-  },
-  {
+{
     "id": "md040",
     "mode": "MANDAMIENTOS",
     "period": "Tiempos Finales",
@@ -6649,98 +6629,8 @@
     "correctAnswer": 1,
     "reference": "Apocalipsis 14:12"
   },
-  {
-    "id": "hb041",
-    "mode": "HISTORIA",
-    "period": "El Principio",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Dónde se estableció el arca después del diluvio?",
-    "options": ["Carmelo", "Sinaí", "Ararat", "Horeb"],
-    "correctAnswer": 2,
-    "reference": "Génesis 8:4"
-  },
-  {
-    "id": "hb042",
-    "mode": "HISTORIA",
-    "period": "El Principio",
-    "difficulty": "BASIC",
-    "question": "¿Qué ciudad intentaron construir para alcanzar el cielo?",
-    "options": ["Nínive", "Babel", "Jericó", "Ur"],
-    "correctAnswer": 1,
-    "reference": "Génesis 11:4"
-  },
-  {
-    "id": "hb043",
-    "mode": "HISTORIA",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Cuánto tiempo estuvo Israel en Egipto?",
-    "options": ["70 años", "215 años", "400 años", "600 años"],
-    "correctAnswer": 2,
-    "reference": "Éxodo 12:40"
-  },
-  {
-    "id": "hb044",
-    "mode": "HISTORIA",
-    "period": "El Pueblo de Dios y la Ley",
-    "difficulty": "BASIC",
-    "question": "¿Qué río cruzó Israel para entrar a la Tierra Prometida?",
-    "options": ["Éufrates", "Tigris", "Jordán", "Nilo"],
-    "correctAnswer": 2,
-    "reference": "Josué 3:14-17"
-  },
-  {
-    "id": "hb045",
-    "mode": "HISTORIA",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Qué ciudad fue conquistada tras rodearla siete días?",
-    "options": ["Jerusalén", "Samaria", "Jericó", "Damasco"],
-    "correctAnswer": 2,
-    "reference": "Josué 6:20"
-  },
-  {
-    "id": "hb046",
-    "mode": "HISTORIA",
-    "period": "Reyes, Profetas y Poetas",
-    "difficulty": "ADVANCED",
-    "question": "¿Qué imperio llevó cautivo a Judá a Babilonia?",
-    "options": ["Romano", "Asirio", "Babilónico", "Persa"],
-    "correctAnswer": 2,
-    "reference": "2 Reyes 25:8-11"
-  },
-  {
-    "id": "hb047",
-    "mode": "HISTORIA",
-    "period": "Jesús y la Redención",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿En qué ciudad nació Jesús?",
-    "options": ["Nazaret", "Jerusalén", "Belén", "Capernaum"],
-    "correctAnswer": 2,
-    "reference": "Mateo 2:1"
-  },
-  {
-    "id": "hb048",
-    "mode": "HISTORIA",
-    "period": "Jesús y la Redención",
-    "difficulty": "ADVANCED",
-    "question": "¿Bajo qué autoridad romana fue crucificado Jesús?",
-    "options": ["Herodes", "Pilato", "Nerón", "Augusto"],
-    "correctAnswer": 1,
-    "reference": "Juan 19:16"
-  },
-  {
-    "id": "hb049",
-    "mode": "HISTORIA",
-    "period": "La Iglesia Cristiana",
-    "difficulty": "INTERMEDIATE",
-    "question": "¿Dónde descendió el Espíritu Santo en Pentecostés?",
-    "options": ["Antioquía", "Roma", "Jerusalén", "Éfeso"],
-    "correctAnswer": 2,
-    "reference": "Hechos 2:1-4"
-  },
-  {
-    "id": "hb050",
+{
+    "id": "tf101",
     "mode": "HISTORIA",
     "period": "Tiempos Finales",
     "difficulty": "INTERMEDIATE",
@@ -6750,3 +6640,37 @@
     "reference": "Apocalipsis 1:9"
   }
 ]
+
+
+
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
