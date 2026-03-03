@@ -358,23 +358,40 @@ if (showFinalSummary) {
           </div>
 
           {/* BOTONES SOCIALES */}
-          <div className="space-y-3 pt-2">
-            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">¡Comparte tu fe!</p>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu medalla</p>
+            <div className="grid grid-cols-2 gap-2">
+              {/* WHATSAPP (VERDE) */}
               <a 
-                href={`https://wa.me/?text=${encodeURIComponent(shareMessage + " " + shareUrl)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                 target="_blank" rel="noreferrer"
-                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold"
               >
-                <MessageCircle size={18} /> <span className="text-xs font-bold">WhatsApp</span>
+                <MessageCircle size={16} /> WhatsApp
               </a>
+
+              {/* FACEBOOK (AZUL) */}
               <a 
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`}
                 target="_blank" rel="noreferrer"
-                className="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold"
               >
-                <Twitter size={18} /> <span className="text-xs font-bold">Twitter</span>
+                <div className="w-4 h-4 rounded-sm border-2 border-white flex items-center justify-center font-black text-[10px]">f</div> Facebook
               </a>
+
+              {/* INSTAGRAM / OTROS (GRADIENTE) */}
+              <button 
+                onClick={() => {
+                  if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareText);
+                    alert("¡Copiado! Ahora pégalo en tu Story de Instagram 🔥");
+                  }
+                }}
+                className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-lg"
+              >
+                <div className="w-4 h-4 rounded-full border-2 border-white" /> 
+                Copiar para Instagram / Historias
+              </button>
             </div>
           </div>
 
