@@ -251,7 +251,7 @@ const handleAnswerClick = (index: number) => {
     }
   }));
 
- if (isCorrect) {
+  if (isCorrect) {
     playSound("correct");
     confetti({
       particleCount: 100,
@@ -261,26 +261,15 @@ const handleAnswerClick = (index: number) => {
   } else {
     playSound("wrong");
   }
-setShowAnswer(true);
+
+  setShowAnswer(true);
 };
-
-// ==========================================
-// 1. PANTALLA DE RESUMEN FINAL
-// ==========================================
 if (showFinalSummary) {
-  const total = typeof getTotalStats === 'function' ? getTotalStats().total : 0;
-  const correct = typeof getTotalStats === 'function' ? getTotalStats().correct : 0;
-  const accuracy = typeof getAccuracy === 'function' ? getAccuracy() : 0;
-  const duration = typeof getDuration === 'function' ? getDuration() : 0;
+  const { total, correct } = getTotalStats();
+  const accuracy = getAccuracy();
+  const duration = getDuration();
 
-  const verses = [
-    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
-    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
-    { text: "Tu palabra es verdad.", ref: "Juan 17:17" },
-    { text: "Escudriñad las Escrituras... ellas son las que dan testimonio de mí.", ref: "Juan 5:39" }
-  ];
-  const randomVerse = verses[Math.floor(Math.random() * verses.length)];
-
+  // Configuración de la Medalla
   const getMedal = (score: number) => {
     if (score >= 90) return { icon: "🏆", label: "Maestro de la Palabra", color: "text-amber-400" };
     if (score >= 70) return { icon: "🥈", label: "Erudito Bíblico", color: "text-stone-300" };
@@ -289,113 +278,222 @@ if (showFinalSummary) {
   };
 
   const medal = getMedal(accuracy);
-  const shareUrl = "https://www.biblosgames.com"; 
-  const shareText = `📖 ¡Obtuve el rango de "${medal.label}" en Biblos Games! 🏆\n\n"${randomVerse.text}" (${randomVerse.ref})\n\n¿Qué tanto sabes tú de la Biblia? ¡Haz la prueba aquí! 👇\n${shareUrl}`;
+  const shareMessage = `¡He completado mi desafío en Biblos Games con ${accuracy}% de precisión! 🙏✨ ¿Te atreves a probar tu conocimiento bíblico?`;
+  const shareUrl = "https://www.biblosgames.com"; // Cambia por tu URL real
 
   return (
     <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] flex items-center justify-center p-4">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-        <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20">
-          <img src="/logo-biblos.png" alt="Biblos Games" className="w-48 mx-auto mb-4 object-contain" />
+        {/* ENCABEZADO CON LOGO Y MEDALLA */}
+        <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
+          <img 
+            src="/logo.png" 
+            alt="Biblos" 
+            className="w-20 h-20 mx-auto mb-4 object-contain"
+          />
           <div className="text-6xl mb-2">{medal.icon}</div>
-          <h1 className={`text-2xl font-serif font-black uppercase ${medal.color}`}>{medal.label}</h1>
-          <div className="mt-4 p-3 bg-white/5 rounded-xl italic text-[11px] text-stone-400">
-            "{randomVerse.text}"
-            <span className="block mt-1 font-bold not-italic text-amber-500/70">— {randomVerse.ref}</span>
-          </div>
+          <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
+            {medal.label}
+          </h1>
+          <p className="text-stone-500 text-[10px] uppercase tracking-widest mt-1">Resultados Finales</p>
         </div>
 
         <div className="p-6 space-y-6">
+          {/* ESTADÍSTICAS COMPACTAS */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-[#1B1A17]/50 p-3 rounded-xl text-center border border-white/5">
-              <p className="text-[9px] text-stone-500 uppercase font-bold">Aciertos</p>
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Aciertos</p>
               <p className="text-lg font-black text-emerald-400">{correct}/{total}</p>
             </div>
-            <div className="bg-[#1B1A17]/50 p-3 rounded-xl text-center border border-white/5">
-              <p className="text-[9px] text-stone-500 uppercase font-bold">Precisión</p>
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Precisión</p>
               <p className="text-lg font-black text-amber-400">{accuracy}%</p>
             </div>
-            <div className="bg-[#1B1A17]/50 p-3 rounded-xl text-center border border-white/5">
-              <p className="text-[9px] text-stone-500 uppercase font-bold">Tiempo</p>
-              <p className="text-lg font-black text-blue-400">{typeof formatTime === 'function' ? formatTime(duration) : '00:00'}</p>
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Tiempo</p>
+              <p className="text-lg font-black text-blue-400">{formatTime(duration)}</p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-              <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noreferrer" className="py-3 bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"><MessageCircle size={16} /> Estado</a>
-              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noreferrer" className="py-3 bg-black text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold border border-white/10"><Twitter size={16} /> Publicar</a>
-              <button onClick={() => { navigator.clipboard.writeText(shareText); alert("¡Copiado! Pégalo en tu Story 🔥"); }} className="col-span-2 py-3 bg-gradient-to-r from-purple-600 to-orange-500 text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"><Share2 size={16} /> Copiar para Instagram</button>
+          {/* LISTA SIMPLIFICADA DE PERIODOS */}
+          <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+            <p className="text-[10px] font-bold text-stone-600 uppercase tracking-widest text-center mb-3">Rendimiento por periodo</p>
+            {Object.entries(gameStats).map(([period, stats]) => {
+              if (stats.total === 0) return null;
+              const periodAccuracy = Math.round((stats.correct / stats.total) * 100);
+              return (
+                <div key={period} className="flex justify-between items-center text-sm border-b border-white/5 pb-1">
+                  <span className="text-stone-400 font-medium">{period}</span>
+                  <span className={`font-bold ${getColor(periodAccuracy)}`}>{periodAccuracy}%</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* BOTONES SOCIALES */}
+          <div className="space-y-3 pt-2">
+            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">¡Comparte tu fe!</p>
+            <div className="flex gap-2">
+              <a 
+                href={`https://wa.me/?text=${encodeURIComponent(shareMessage + " " + shareUrl)}`}
+                target="_blank" rel="noreferrer"
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                <MessageCircle size={18} /> <span className="text-xs font-bold">WhatsApp</span>
+              </a>
+              <a 
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`}
+                target="_blank" rel="noreferrer"
+                className="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                <Twitter size={18} /> <span className="text-xs font-bold">Twitter</span>
+              </a>
             </div>
           </div>
 
-          <button onClick={() => { setShowFinalSummary(false); if (typeof resetGame === 'function') resetGame(); }} className="w-full py-4 border-2 border-stone-700 text-stone-500 rounded-xl uppercase text-[10px] font-bold tracking-widest hover:border-amber-500 hover:text-amber-500 transition-all">
-            <RotateCcw size={14} className="inline mr-2" /> Nueva Partida
+          {/* BOTÓN REINICIAR */}
+          <button
+            onClick={() => { setShowFinalSummary(false); resetGame(); }}
+            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-[#1B1A17] font-black rounded-xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-lg shadow-amber-500/10"
+          >
+            <RotateCcw size={18} /> Nueva Partida
           </button>
         </div>
       </motion.div>
     </div>
   );
 }
+  // Projection View Component
+  if (isProjectionMode && currentQuestion) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center px-8 transition-all duration-500">
+        <button 
+          onClick={toggleProjection}
+          className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <ChevronLeft size={32} />
+        </button>
 
-// ==========================================
-// 2. VISTA DE MODO PROYECCIÓN
-// ==========================================
-if (isProjectionMode && currentQuestion) {
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-8 relative">
-      <button onClick={toggleProjection} className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20"><ChevronLeft size={32} /></button>
-      <div className="max-w-6xl w-full text-center space-y-12">
-        <div className="space-y-4">
-          <span className="text-amber-500 font-serif italic text-2xl uppercase tracking-widest">{currentQuestion.period}</span>
-          <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">{currentQuestion.question}</h1>
+        <div className="absolute bottom-8 right-8 flex flex-col items-end opacity-30">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-red-600 font-serif">β</span>
+            <span className="text-lg font-bold tracking-tight">Biblos Games</span>
+          </div>
+          <p className="text-xs font-serif italic">El Juego de la Biblia</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {currentQuestion.options.map((option, idx) => (
-            <div key={idx} className={`p-8 rounded-2xl border-2 text-3xl text-left ${showAnswer ? (idx === currentQuestion.correctAnswer ? 'bg-emerald-600 border-emerald-400' : 'opacity-40 border-white/10') : 'border-white/20'}`}>
-              <span className="mr-4 opacity-50">{String.fromCharCode(65 + idx)})</span> {option}
-            </div>
-          ))}
-        </div>
-        <div className="pt-8">
-          {!showAnswer ? (
-            <button onClick={() => setShowAnswer(true)} className="px-12 py-4 bg-amber-500 text-black rounded-full text-2xl font-bold">REVELAR RESPUESTA</button>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-amber-400 text-3xl font-serif italic">Referencia: {currentQuestion.reference}</p>
-              <button onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')} className="px-8 py-3 bg-white/10 rounded-full text-xl">Siguiente Pregunta</button>
-            </div>
-          )}
+
+        <div className="max-w-6xl w-full space-y-12 text-center">
+          <div className="space-y-4">
+            <span className="text-bible-gold font-serif italic text-2xl tracking-widest uppercase">
+              {currentQuestion.period}
+            </span>
+            <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">
+              {currentQuestion.question}
+            </h1>
+          </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                  {currentQuestion.options.map((option, idx) => {
+                    const isCorrect = idx === currentQuestion.correctAnswer;
+                    return (
+                      <button 
+                        key={idx}
+                        disabled={showAnswer}
+                        onClick={() => handleAnswerClick(idx)}
+                        className={`
+                          p-8 rounded-2xl border-2 text-3xl font-medium transition-all duration-500 text-left
+                          ${showAnswer 
+                            ? isCorrect 
+                              ? 'bg-emerald-600 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-105' 
+                              : 'bg-white/5 border-white/10 opacity-40'
+                            : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40 active:scale-95'
+                          }
+                        `}
+                      >
+                        <span className="mr-4 opacity-50">{String.fromCharCode(65 + idx)})</span>
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+
+          <div className="pt-8 flex flex-col items-center gap-6">
+            {!showAnswer ? (
+              <button 
+                onClick={() => setShowAnswer(true)}
+                className="group relative px-12 py-4 bg-bible-gold text-white rounded-full text-2xl font-bold overflow-hidden transition-all hover:scale-105 active:scale-95"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                REVELAR RESPUESTA
+              </button>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <p className="text-bible-gold text-3xl font-serif italic">
+                  Referencia: {currentQuestion.reference}
+                </p>
+                <button 
+                  onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')}
+                  className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-xl transition-colors"
+                >
+                  Siguiente Pregunta
+                </button>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ==========================================
-// 3. PANTALLA DE BIENVENIDA
-// ==========================================
+    );
+  }
 if (showWelcome) {
   return (
-    <div className="fixed inset-0 w-full h-full bg-black">
-      <img src="/fondo-biblos.jpg" alt="Background" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-24 text-center px-6">
-        <img src="/logo-biblos.png" alt="Biblos Games" className="w-72 md:w-[500px] drop-shadow-2xl mb-12" />
-        <button onClick={() => { playSound("select"); setShowWelcome(false); }} className="px-12 py-5 bg-amber-500 text-black font-black rounded-2xl shadow-xl uppercase tracking-widest text-lg">Comenzar Desafío</button>
+    <div>
+
+
+      <div className="fixed inset-0 w-full h-full">
+        <img
+          src="/fondo-biblos.jpg"
+          alt="Biblos Background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
+          <img
+            src="/logo-biblos.png"
+            alt="Biblos Games"
+            className="w-72 md:w-[500px] drop-shadow-2xl"
+          />
+
+          <button
+            onClick={() => {
+              playSound("select");
+              setShowWelcome(false);
+            }}
+            className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
+          >
+            Comenzar
+          </button>
+        </div>
       </div>
+
     </div>
   );
 }
-
-// ==========================================
-// 4. RENDER PRINCIPAL DEL JUEGO
-// ==========================================
-return (
-  <div className={`min-h-screen flex flex-col transition-all duration-500 ${isProjectionMode ? "bg-black text-white" : "bg-[#1B1A17]"}`}>
+  return (
+  <div
+    className={`min-h-screen flex flex-col transition-all duration-500 ${
+      isProjectionMode
+        ? "bg-black text-white"
+        : "bg-[#1B1A17]"
+    }`}
+  >
 
     {/* HEADER */}
 
