@@ -984,7 +984,7 @@ if (showWelcome) {
                           <span className={`
                             w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2
                             ${showAnswer 
-                              ? isCorrect ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300'
+                              ? isCorrect ? 'bg-emerald-501 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300'
                               : 'bg-stone-50 border-stone-200 text-stone-400 group-hover:border-bible-gold group-hover:text-bible-gold'
                             }
                           `}>
