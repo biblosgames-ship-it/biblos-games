@@ -25,6 +25,14 @@ import {
   ScrollText,
   Landmark
 } from 'lucide-react';
+const verses = [
+    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
+    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
+    { text: "Tu palabra es verdad.", ref: "Juan 17:17" }
+  ];
+
+  // Seleccionamos uno simple sin useMemo para evitar errores de importación
+  const randomVerse = verses[Math.floor(Math.random() * verses.length)];
 import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
