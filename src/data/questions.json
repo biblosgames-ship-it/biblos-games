@@ -1001,7 +1001,7 @@
   },
   {
     "id": "ep103",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "El Principio",
     "difficulty": "BASIC",
     "question": "Completa el versículo: 'En el principio creó Dios los...'",
@@ -2081,7 +2081,7 @@
   },
 {
     "id": "ex106",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "El Pueblo de Dios y la Ley",
     "difficulty": "INTERMEDIATE",
     "question": "Completa el mandamiento: 'Honra a tu padre y a tu madre, para que tus días...'",
@@ -3281,7 +3281,7 @@
   },
 {
     "id": "rp118",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "Reyes, Profetas y Poetas",
     "difficulty": "BASIC",
     "question": "Completa el versículo: 'El Señor es mi pastor; nada...'",
@@ -3291,7 +3291,7 @@
   },
   {
     "id": "rp119",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "Reyes, Profetas y Poetas",
     "difficulty": "ADVANCED",
     "question": "Completa el versículo: 'Lámpara es a mis pies tu palabra, y lumbrera a mi...'",
@@ -4421,7 +4421,7 @@
   },
 {
     "id": "ex108",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "Jesús y la Redención",
     "difficulty": "BASIC",
     "question": "Completa el versículo: 'Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito...'",
@@ -4431,7 +4431,7 @@
   },
   {
     "id": "ex109",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "Jesús y la Redención",
     "difficulty": "INTERMEDIATE",
     "question": "Completa el versículo: 'Buscad primeramente el reino de Dios y su justicia, y todas estas cosas...'",
@@ -5541,7 +5541,7 @@
   },
 {
     "id": "ic108",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "La Iglesia Cristiana",
     "difficulty": "INTERMEDIATE",
     "question": "Completa el versículo: 'Todo lo puedo en...'",
@@ -5551,7 +5551,7 @@
   },
   {
     "id": "ic109",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "La Iglesia Cristiana",
     "difficulty": "ADVANCED",
     "question": "Completa: 'La fe, la esperanza y el amor permanecen estos tres; pero el mayor de ellos es...'",
@@ -5561,7 +5561,7 @@
   },
   {
     "id": "ic110",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "La Iglesia Cristiana",
     "difficulty": "INTERMEDIATE",
     "question": "Completa el versículo: 'Si Dios es por nosotros, ¿quién...?'",
@@ -6591,7 +6591,7 @@
   },
   {
     "id": "vf020",
-    "mode": "VERSICULO_FAVORITO",
+    "mode": "VERSICULOS",
     "period": "Tiempos Finales",
     "difficulty": "ADVANCED",
     "question": "Completa el versículo: 'He aquí yo vengo pronto, y mi galardón conmigo...'",
