@@ -879,7 +879,7 @@ if (showWelcome) {
               ))}
             </div>
 
-         <div className="pt-2 px-4"> 
+          <div className="pt-2 px-4"> 
   <button
     onClick={handleSurprise}
     className="
@@ -887,41 +887,38 @@ if (showWelcome) {
       relative
       overflow-hidden
       rounded-2xl
-      bg-gradient-to-br from-indigo-600 to-blue-800
-      hover:from-indigo-500 hover:to-blue-700
+      border-2 border-stone-200/60
+      bg-white/50
+      hover:border-bible-gold
+      hover:bg-bible-gold/[0.03]
       transition-all duration-300
-      shadow-[0_4px_20px_-5px_rgba(79,70,229,0.5)]
-      hover:shadow-[0_8px_25px_-5px_rgba(79,70,229,0.6)]
-      hover:-translate-y-1
-      flex items-center justify-center gap-4
-      px-6 py-5
+      shadow-sm hover:shadow-lg hover:-translate-y-0.5
+      flex items-center justify-center gap-3
+      px-6 py-4
       group
-      border-b-4 border-indigo-900/50 active:border-b-0 active:translate-y-0
     "
   >
-    {/* Efecto de brillo que recorre el botón */}
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
+    {/* Destello sutil de fondo */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-bible-gold/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
 
-    <div className="flex items-center justify-center bg-white/10 p-2 rounded-xl group-hover:bg-white/20 transition-colors">
-      <Sparkles 
-        className="text-amber-300 group-hover:rotate-12 transition-transform duration-500" 
-        size={28} 
-      />
-    </div>
+    <Sparkles 
+      className="text-stone-400 group-hover:text-bible-gold group-hover:scale-110 transition-all duration-300" 
+      size={24} 
+    />
     
-    <div className="flex flex-col items-start">
-      <span className="font-sans font-black text-lg tracking-wider text-white drop-shadow-md">
-        MODO SORPRESA
+    <div className="flex flex-col items-center">
+      <span className="font-serif font-black text-xl tracking-tight text-stone-700 group-hover:text-bible-gold transition-colors">
+        PREGUNTA SORPRESA
       </span>
-      <span className="text-[11px] font-medium text-blue-100/80 uppercase tracking-widest italic">
-        Explora toda la Biblia
+      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] group-hover:text-bible-gold/70 transition-colors">
+        Modo Aleatorio Global
       </span>
     </div>
 
-    {/* Icono decorativo de flecha que aparece al hacer hover */}
-    <div className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-      <ChevronRight className="text-amber-300" size={24} />
-    </div>
+    <Sparkles 
+      className="text-stone-400/0 group-hover:text-bible-gold/40 group-hover:scale-110 transition-all duration-300" 
+      size={20} 
+    />
   </button>
 </div>
           </div>
@@ -984,7 +981,7 @@ if (showWelcome) {
                           <span className={`
                             w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2
                             ${showAnswer 
-                              ? isCorrect ? 'bg-emerald-501 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300'
+                              ? isCorrect ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300'
                               : 'bg-stone-50 border-stone-200 text-stone-400 group-hover:border-bible-gold group-hover:text-bible-gold'
                             }
                           `}>
