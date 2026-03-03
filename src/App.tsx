@@ -261,11 +261,12 @@ const handleAnswerClick = (index: number) => {
   } else {
     playSound("wrong");
   }
-
-  setShowAnswer(true);
+setShowAnswer(true);
 };
 
-// --- PANTALLA DE RESUMEN FINAL ---
+// ==========================================
+// 1. PANTALLA DE RESUMEN FINAL
+// ==========================================
 if (showFinalSummary) {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
@@ -297,7 +298,6 @@ if (showFinalSummary) {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-        {/* ENCABEZADO CON LOGO COMERCIAL */}
         <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
           <img 
             src="/logo-biblos.png" 
@@ -308,34 +308,31 @@ if (showFinalSummary) {
           <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
             {medal.label}
           </h1>
-          <div className="mt-4 p-3 bg-white/5 rounded-xl italic text-[11px] text-stone-400 leading-relaxed">
+          <div className="mt-4 p-3 bg-white/5 rounded-xl italic text-[11px] text-stone-400 leading-relaxed text-center">
             "{randomVerse.text}"
             <span className="block mt-1 font-bold not-italic text-amber-500/70">— {randomVerse.ref}</span>
           </div>
         </div>
 
         <div className="p-6 space-y-6">
-          {/* STATS */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
-              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold">Aciertos</p>
+              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold italic">Aciertos</p>
               <p className="text-lg font-black text-emerald-400">{correct}/{total}</p>
             </div>
             <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
-              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold">Precisión</p>
+              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold italic">Precisión</p>
               <p className="text-lg font-black text-amber-400">{accuracy}%</p>
             </div>
             <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
-              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold">Tiempo</p>
+              <p className="text-[9px] text-stone-500 uppercase mb-1 font-bold italic">Tiempo</p>
               <p className="text-lg font-black text-blue-400">{formatTime(duration)}</p>
             </div>
           </div>
 
-          {/* SOCIAL SHARING SECCIÓN */}
           <div className="space-y-3">
             <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu medalla en redes</p>
             <div className="grid grid-cols-2 gap-2">
-              {/* WHATSAPP STATUS */}
               <a 
                 href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                 target="_blank" rel="noreferrer"
@@ -343,7 +340,6 @@ if (showFinalSummary) {
               >
                 <MessageCircle size={16} /> Estado
               </a>
-              {/* TWITTER / X */}
               <a 
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                 target="_blank" rel="noreferrer"
@@ -351,7 +347,6 @@ if (showFinalSummary) {
               >
                 <Twitter size={16} /> Publicar
               </a>
-              {/* COPIAR PARA INSTAGRAM/FACEBOOK */}
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(shareText);
@@ -364,7 +359,6 @@ if (showFinalSummary) {
             </div>
           </div>
 
-          {/* REINICIAR */}
           <button
             onClick={() => { setShowFinalSummary(false); resetGame(); }}
             className="w-full py-4 bg-transparent border-2 border-stone-700 hover:border-amber-500 text-stone-500 hover:text-amber-500 rounded-xl transition-all flex items-center justify-center gap-2 uppercase text-[10px] font-bold tracking-[0.2em]"
@@ -376,91 +370,94 @@ if (showFinalSummary) {
     </div>
   );
 }
-  // Projection View Component
-  if (isProjectionMode && currentQuestion) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center px-8 transition-all duration-500">
-        <button 
-          onClick={toggleProjection}
-          className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-        >
-          <ChevronLeft size={32} />
-        </button>
 
-        <div className="absolute bottom-8 right-8 flex flex-col items-end opacity-30">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-red-600 font-serif">β</span>
-            <span className="text-lg font-bold tracking-tight">Biblos Games</span>
-          </div>
-          <p className="text-xs font-serif italic">El Juego de la Biblia</p>
+// ==========================================
+// 2. VISTA DE MODO PROYECCIÓN
+// ==========================================
+if (isProjectionMode && currentQuestion) {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-8 transition-all duration-500 relative">
+      <button 
+        onClick={toggleProjection}
+        className="absolute top-8 left-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+      >
+        <ChevronLeft size={32} />
+      </button>
+
+      <div className="absolute bottom-8 right-8 flex flex-col items-end opacity-30">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold text-red-600 font-serif">β</span>
+          <span className="text-lg font-bold tracking-tight">Biblos Games</span>
+        </div>
+        <p className="text-xs font-serif italic">El Juego de la Biblia</p>
+      </div>
+
+      <div className="max-w-6xl w-full space-y-12 text-center">
+        <div className="space-y-4">
+          <span className="text-amber-500 font-serif italic text-2xl tracking-widest uppercase">
+            {currentQuestion.period}
+          </span>
+          <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">
+            {currentQuestion.question}
+          </h1>
         </div>
 
-        <div className="max-w-6xl w-full space-y-12 text-center">
-          <div className="space-y-4">
-            <span className="text-bible-gold font-serif italic text-2xl tracking-widest uppercase">
-              {currentQuestion.period}
-            </span>
-            <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">
-              {currentQuestion.question}
-            </h1>
-          </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                  {currentQuestion.options.map((option, idx) => {
-                    const isCorrect = idx === currentQuestion.correctAnswer;
-                    return (
-                      <button 
-                        key={idx}
-                        disabled={showAnswer}
-                        onClick={() => handleAnswerClick(idx)}
-                        className={`
-                          p-8 rounded-2xl border-2 text-3xl font-medium transition-all duration-500 text-left
-                          ${showAnswer 
-                            ? isCorrect 
-                              ? 'bg-emerald-600 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-105' 
-                              : 'bg-white/5 border-white/10 opacity-40'
-                            : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40 active:scale-95'
-                          }
-                        `}
-                      >
-                        <span className="mr-4 opacity-50">{String.fromCharCode(65 + idx)})</span>
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-
-          <div className="pt-8 flex flex-col items-center gap-6">
-            {!showAnswer ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {currentQuestion.options.map((option, idx) => {
+            const isCorrect = idx === currentQuestion.correctAnswer;
+            return (
               <button 
-                onClick={() => setShowAnswer(true)}
-                className="group relative px-12 py-4 bg-bible-gold text-white rounded-full text-2xl font-bold overflow-hidden transition-all hover:scale-105 active:scale-95"
+                key={idx}
+                disabled={showAnswer}
+                onClick={() => handleAnswerClick(idx)}
+                className={`
+                  p-8 rounded-2xl border-2 text-3xl font-medium transition-all duration-500 text-left
+                  ${showAnswer 
+                    ? isCorrect 
+                      ? 'bg-emerald-600 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-105' 
+                      : 'bg-white/5 border-white/10 opacity-40'
+                    : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40 active:scale-95'
+                  }
+                `}
               >
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                REVELAR RESPUESTA
+                <span className="mr-4 opacity-50">{String.fromCharCode(65 + idx)})</span>
+                {option}
               </button>
-            ) : (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
+            );
+          })}
+        </div>
+
+        <div className="pt-8 flex flex-col items-center gap-6">
+          {!showAnswer ? (
+            <button 
+              onClick={() => setShowAnswer(true)}
+              className="group relative px-12 py-4 bg-amber-500 text-black rounded-full text-2xl font-bold overflow-hidden transition-all hover:scale-105 active:scale-95"
+            >
+              REVELAR RESPUESTA
+            </button>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              <p className="text-amber-400 text-3xl font-serif italic">
+                Referencia: {currentQuestion.reference}
+              </p>
+              <button 
+                onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')}
+                className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-xl transition-colors"
               >
-                <p className="text-bible-gold text-3xl font-serif italic">
-                  Referencia: {currentQuestion.reference}
-                </p>
-                <button 
-                  onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')}
-                  className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-xl transition-colors"
-                >
-                  Siguiente Pregunta
-                </button>
-              </motion.div>
-            )}
-          </div>
+                Siguiente Pregunta
+              </button>
+            </motion.div>
+          )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 if (showWelcome) {
   return (
     <div>
