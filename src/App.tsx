@@ -743,7 +743,11 @@ if (showWelcome) {
             setGameMode(mode.id as any);
 
             if (mode.id === 'KIDS') {
-              setGameLevel('PRINCIPIANTE');
+            setGameLevel('PRINCIPIANTE');
+            }
+
+            if (mode.id === 'TABLERO') {
+              setGameLevel('PRINCIPIANTE'); // neutro, no se usará realmente
             }
           }}
           className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] 
@@ -767,7 +771,7 @@ if (showWelcome) {
     </div>
   </motion.div>
 
-) : !gameLevel ? (
+) : (!gameLevel && gameMode !== 'TABLERO' && gameMode !== 'KIDS') ? (
 
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
