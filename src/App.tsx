@@ -907,13 +907,13 @@ if (showWelcome) {
     />
     
     <div className="flex flex-col items-center">
-      <span className="font-serif font-black text-xl tracking-tight text-stone-700 group-hover:text-bible-gold transition-colors">
+      <span className="font-serif font-black text-xl tracking-tight text-stone-700 group-hover:text-blue-700 transition-colors">
         PREGUNTA SORPRESA
+        </span>
+      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] group-hover:text-blue-600/70 transition-colors">
+      Modo Aleatorio Global
       </span>
-      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] group-hover:text-bible-gold/70 transition-colors">
-        Modo Aleatorio Global
-      </span>
-    </div>
+  </div>
 
     <Sparkles 
       className="text-stone-400/0 group-hover:text-bible-gold/40 group-hover:scale-110 transition-all duration-300" 
