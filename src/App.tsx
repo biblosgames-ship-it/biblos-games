@@ -361,36 +361,36 @@ if (showFinalSummary) {
           <div className="space-y-3">
             <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu medalla</p>
             <div className="grid grid-cols-2 gap-2">
-              {/* WHATSAPP (VERDE) */}
+              
+              {/* WHATSAPP */}
               <a 
                 href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                 target="_blank" rel="noreferrer"
-                className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold"
+                className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-sm"
               >
-                <MessageCircle size={16} /> WhatsApp
+                <span className="text-lg">💬</span> WhatsApp
               </a>
 
-              {/* FACEBOOK (AZUL) */}
+              {/* FACEBOOK */}
               <a 
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
                 target="_blank" rel="noreferrer"
-                className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold"
+                className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-sm"
               >
-                <div className="w-4 h-4 rounded-sm border-2 border-white flex items-center justify-center font-black text-[10px]">f</div> Facebook
+                <span className="w-5 h-5 bg-white text-[#1877F2] rounded-full flex items-center justify-center font-black text-[12px] leading-none">f</span> Facebook
               </a>
 
-              {/* INSTAGRAM / OTROS (GRADIENTE) */}
+              {/* INSTAGRAM / HISTORIAS */}
               <button 
                 onClick={() => {
                   if (navigator.clipboard) {
                     navigator.clipboard.writeText(shareText);
-                    alert("¡Copiado! Ahora pégalo en tu Story de Instagram 🔥");
+                    alert("¡Copiado! Pégalo ahora en tus Historias de Instagram 🔥");
                   }
                 }}
-                className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-lg"
+                className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-md"
               >
-                <div className="w-4 h-4 rounded-full border-2 border-white" /> 
-                Copiar para Instagram / Historias
+                <span className="text-lg">📸</span> Copiar para Instagram / Historias
               </button>
             </div>
           </div>
