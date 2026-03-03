@@ -139,7 +139,7 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
-  cconst getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
+  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
     
     let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
