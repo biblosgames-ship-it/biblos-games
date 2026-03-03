@@ -50,16 +50,32 @@ export default function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(new Set());
-  const [showWelcome, setShowWelcome] = useState(true);
 
+  // --- Versión mejorada y segura ---
+  const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('biblos_used_questions');
+      // Si hay algo guardado, lo convertimos en un Conjunto (Set), si no, empezamos vacío
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch (error) {
+      // Si algo falla al leer, empezamos vacío para que no se rompa la App
+      return new Set();
+    }
+  });
+
+  useEffect(() => {
+    // Guardamos la lista de IDs en la memoria del navegador
+    localStorage.setItem('biblos_used_questions', JSON.stringify(Array.from(usedQuestionIds)));
+  }, [usedQuestionIds]);
+  // ---------------------------------
+
+  const [showWelcome, setShowWelcome] = useState(true);
   const [isSoundOn, setIsSoundOn] = useState(true);
   const [showFinalSummary, setShowFinalSummary] = useState(false);
   const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [globalAverage, setGlobalAverage] = useState<number | null>(null);
-
 useEffect(() => {
   const initialStats: Record<string, { total: number; correct: number }> = {};
 
@@ -134,7 +150,7 @@ const getColor = (accuracy: number) => {
       if (gameMode === 'KIDS') {
         available = available.filter(q => q.difficulty === Difficulty.BASIC);
       } else {
-        available = available.filter(q => q.mode === gameMode);
+        available = available.filter(q => q.mode.includes(gameMode));
       }
     }
 
@@ -179,18 +195,21 @@ const getColor = (accuracy: number) => {
 
     if (available.length === 0) return;
 
-    // 4. SELECCIÓN ALEATORIA
-    const randomIndex = Math.floor(Math.random() * available.length);
-    const selected = available[randomIndex];
+    // 4. SELECCIÓN ALEATORIA CON MEZCLA
+    if (available.length === 0) return;
+
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    const selected = shuffled[0];
     
-    // ... viene de la parte anterior
     setCurrentQuestion(selected);
+
     setUsedQuestionIds(prev => {
       const next = new Set(prev);
-      if (next.size > 1000) next.clear(); // Limpieza de seguridad
+      if (next.size > 1000) next.clear(); 
       next.add(selected.id);
       return next;
     });
+
     setShowAnswer(false);
   }; // <--- Aquí termina getRandomQuestion
 
