@@ -25,6 +25,7 @@ import {
   ScrollText,
   Landmark
 } from 'lucide-react';
+import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
@@ -250,7 +251,7 @@ const handleAnswerClick = (index: number) => {
     }
   }));
 
-  if (isCorrect) {
+ if (isCorrect) {
     playSound("correct");
     confetti({
       particleCount: 100,
@@ -264,56 +265,100 @@ const handleAnswerClick = (index: number) => {
   setShowAnswer(true);
 };
 
+// --- PANTALLA DE RESUMEN FINAL ---
 if (showFinalSummary) {
   const { total, correct } = getTotalStats();
   const accuracy = getAccuracy();
   const duration = getDuration();
 
+  // Lista de versículos inspiradores
+  const verses = [
+    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
+    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
+    { text: "Tu palabra es verdad.", ref: "Juan 17:17" },
+    { text: "Escudriñad las Escrituras... ellas son las que dan testimonio de mí.", ref: "Juan 5:39" }
+  ];
+  const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+
+  const getMedal = (score: number) => {
+    if (score >= 90) return { icon: "🏆", label: "Maestro de la Palabra", color: "text-amber-400" };
+    if (score >= 70) return { icon: "🥈", label: "Erudito Bíblico", color: "text-stone-300" };
+    if (score >= 50) return { icon: "🥉", label: "Discípulo en Camino", color: "text-orange-500" };
+    return { icon: "📖", label: "Sembrador de Conocimiento", color: "text-stone-400" };
+  };
+
+  const medal = getMedal(accuracy);
+  const shareMessage = `📖 Biblos Games: ¡Obtuve el rango de "${medal.label}" con ${accuracy}% de aciertos! 🏆\n\n"${randomVerse.text}" (${randomVerse.ref})\n\n¿Y tú? ¡Haz la prueba y descubre cuánto sabes realmente de la Biblia! 🔥`;
+  const shareUrl = "https://www.biblosgames.com";
+
   return (
-      <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] p-8 space-y-8 text-center">
-        <h1 className="text-3xl font-bold">Resumen Final</h1>
-
-        <div className="space-y-2">
-          <p>Total preguntas: {total}</p>
-          <p>Correctas: {correct}</p>
-          <p>Precisión: {accuracy}%</p>
-          <p>Duración: {formatTime(duration)}</p>
-        </div>
-<div className="mt-8 space-y-4">
-  <h2 className="text-xl font-bold">Resumen por Período</h2>
-
-  {Object.entries(gameStats).map(([period, stats]) => {
-    if (stats.total === 0) return null;
-
-    const periodAccuracy =
-      stats.total === 0
-        ? 0
-        : Math.round((stats.correct / stats.total) * 100);
-
-    return (
-      <div
-        key={period}
-        className="p-4 rounded-xl bg-[#2A2621] border border-[#3A342C]"
+    <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-        <p className="font-bold">{period}</p>
-        <p>Preguntas: {stats.total}</p>
-        <p>Correctas: {stats.correct}</p>
-        <p className={getColor(periodAccuracy)}>
-          Precisión: {periodAccuracy}%
-        </p>
-      </div>
-    );
-  })}
-</div>
+        <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
+          <img src="/logo.png" alt="Biblos" className="w-16 h-16 mx-auto mb-4 object-contain" />
+          <div className="text-6xl mb-2">{medal.icon}</div>
+          <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
+            {medal.label}
+          </h1>
+          <div className="mt-4 p-3 bg-white/5 rounded-xl italic text-xs text-stone-400 leading-relaxed">
+            "{randomVerse.text}"
+            <span className="block mt-1 font-bold not-italic text-amber-500/70">— {randomVerse.ref}</span>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Aciertos</p>
+              <p className="text-lg font-black text-emerald-400">{correct}/{total}</p>
+            </div>
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Precisión</p>
+              <p className="text-lg font-black text-amber-400">{accuracy}%</p>
+            </div>
+            <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
+              <p className="text-[9px] text-stone-500 uppercase mb-1">Tiempo</p>
+              <p className="text-lg font-black text-blue-400">{formatTime(duration)}</p>
+            </div>
+          </div>
+
+          <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+            {Object.entries(gameStats).map(([period, stats]) => {
+              if (stats.total === 0) return null;
+              const pAcc = Math.round((stats.correct / stats.total) * 100);
+              return (
+                <div key={period} className="flex justify-between items-center text-[11px] border-b border-white/5 pb-1 uppercase tracking-wider">
+                  <span className="text-stone-500 font-bold">{period}</span>
+                  <span className={`font-black ${getColor(pAcc)}`}>{pAcc}%</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <div className="flex gap-2">
+              <a 
+                href={`https://wa.me/?text=${encodeURIComponent(shareMessage + " " + shareUrl)}`}
+                target="_blank" rel="noreferrer"
+                className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
+              >
+                <MessageCircle size={20} /> <span className="text-sm font-bold">WhatsApp</span>
+              </a>
+            </div>
+          </div>
+
           <button
-            onClick={() => {
-              setShowFinalSummary(false);
-              resetGame();
-            }}
-            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl"
+            onClick={() => { setShowFinalSummary(false); resetGame(); }}
+            className="w-full py-4 bg-transparent border-2 border-stone-700 hover:border-amber-500 text-stone-400 hover:text-amber-500 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase text-[10px] font-bold tracking-[0.2em]"
           >
-        Volver al inicio
-      </button>
+            <RotateCcw size={16} /> Jugar de nuevo
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
