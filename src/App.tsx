@@ -123,56 +123,7 @@ const getColor = (accuracy: number) => {
   if (accuracy >= 60) return "text-yellow-500";
   return "text-red-600";
 };
-  const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
-    const activeLevel = levelOverride || gameLevel;
-    
-    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
-    
-    // Filter by game level
-    if (activeLevel === 'PRINCIPIANTE') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC);
-    } else if (activeLevel === 'INTERMEDIO') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
-    } else if (activeLevel === 'AVANZADO') {
-      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
-    }
-
-    if (period !== 'SURPRISE') {
-      available = available.filter(q => q.period === period);
-    }
-
-    // If no questions left in this filtered set, reset for this period/level
-    if (available.length === 0) {
-      let resetSet = ALL_QUESTIONS.filter(q => period === 'SURPRISE' ? true : q.period === period);
-      
-      if (activeLevel === 'PRINCIPIANTE') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
-      } else if (activeLevel === 'INTERMEDIO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
-      } else if (activeLevel === 'AVANZADO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
-      }
-
-      const newUsed = new Set(usedQuestionIds);
-      resetSet.forEach(q => newUsed.delete(q.id));
-      setUsedQuestionIds(newUsed);
-      available = resetSet;
-    }
-
-    if (available.length === 0) return;
-
-    const randomIndex = Math.floor(Math.random() * available.length);
-    const selected = available[randomIndex];
-    
-    setCurrentQuestion(selected);
-    setUsedQuestionIds(prev => {
-      const next = new Set(prev);
-      if (next.size > 1000) next.clear(); // Safety reset
-      next.add(selected.id);
-      return next;
-    });
-    setShowAnswer(false);
-  };
+ const getRandomQuestion = (
 
   const handleSelectPeriod = (period: Period) => {
     setCurrentPeriod(period);
