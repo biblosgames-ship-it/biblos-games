@@ -23,6 +23,7 @@ import {
   Crown,
   Cross,
   ScrollText,
+  MapPin,
   Landmark
 } from 'lucide-react';
 import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
