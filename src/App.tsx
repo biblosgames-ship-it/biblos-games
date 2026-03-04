@@ -6,6 +6,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
+  MessageCircle, 
+  Facebook,
+  Share2,
   BookOpen, 
   RotateCcw, 
   ChevronLeft, 
