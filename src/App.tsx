@@ -26,6 +26,7 @@ import {
   Landmark
 } from 'lucide-react';
 import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { MessageCircle, Facebook, Share2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
@@ -335,41 +336,49 @@ if (showFinalSummary) {
 
           {/* BOTONES SOCIALES */}
           <div className="space-y-3">
-  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Comparte tu resultado</p>
-  <div className="grid grid-cols-2 gap-2">
-    
-    {/* WHATSAPP */}
-    <a 
-      href={`https://wa.me/?text=${encodeURIComponent(shareMessage)}`}
-      target="_blank" rel="noreferrer"
-      className="py-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
-    >
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-4 h-4 invert" alt="wa" /> 
-      WhatsApp
-    </a>
+  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu Medalla</p>
+  
+  {/* Definimos el texto que se va a compartir con los datos del juego */}
+  {(() => {
+    const textoCompartir = `¡Logré el rango de ${medal.label} en Biblos Games! 🏆\n🎯 Precisión: ${accuracy}%\n✅ Aciertos: ${correct}/${total}\n🙏 ¡Prueba tu conocimiento bíblico aquí!`;
+    const urlJuego = "https://biblosgames.com"; // Cambia esto por tu link real
 
-    {/* FACEBOOK */}
-    <a 
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-      target="_blank" rel="noreferrer"
-      className="py-3 bg-[#1877F2] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
-    >
-      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" className="w-4 h-4" alt="fb" /> 
-      Facebook
-    </a>
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        {/* WHATSAPP */}
+        <a 
+          href={`https://wa.me/?text=${encodeURIComponent(textoCompartir + " " + urlJuego)}`}
+          target="_blank" rel="noreferrer"
+          className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-green-900/20"
+        >
+          <MessageCircle size={18} />
+          <span className="text-xs font-bold uppercase tracking-tighter">WhatsApp</span>
+        </a>
 
-    {/* INSTAGRAM (Botón de copiado) */}
-    <button 
-      onClick={() => {
-        navigator.clipboard.writeText(shareMessage);
-        alert("¡Copiado! Pégalo en tu Story de Instagram");
-      }}
-      className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
-    >
-      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" className="w-4 h-4 invert" alt="ig" /> 
-      Copiar para Instagram
-    </button>
-  </div>
+        {/* FACEBOOK */}
+        <a 
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlJuego)}&quote=${encodeURIComponent(textoCompartir)}`}
+          target="_blank" rel="noreferrer"
+          className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-blue-900/20"
+        >
+          <Facebook size={18} />
+          <span className="text-xs font-bold uppercase tracking-tighter">Facebook</span>
+        </a>
+
+        {/* INSTAGRAM (COPIAR TEXTO) */}
+        <button 
+          onClick={() => {
+            navigator.clipboard.writeText(textoCompartir + " " + urlJuego);
+            alert("¡Resultados copiados! Pégalos en tu Story de Instagram 🔥");
+          }}
+          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-orange-900/20"
+        >
+          <Share2 size={18} />
+          <span className="text-xs font-bold uppercase tracking-widest">Copiar resultados para Instagram</span>
+        </button>
+      </div>
+    );
+  })()}
 </div>
 
           {/* BOTÓN REINICIAR */}
