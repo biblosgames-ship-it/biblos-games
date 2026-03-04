@@ -804,7 +804,7 @@ if (showWelcome) {
     { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
     { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
     { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
-    { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades sagradas', icon: MapPin },
+    { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades Biblicas', icon: MapPin },
   ].map((mode) => (
     <button
       key={mode.id}

@@ -31,7 +31,7 @@
   },
   {
     "id": "ep004",
-    "mode": "HISTORIA",
+    "mode": ["HISTORIA", "GEOGRAFIA"]
     "period": "El Principio",
     "difficulty": "BASIC",
     "question": "¿Dónde colocó Dios al hombre después de crearlo?",
@@ -211,7 +211,7 @@
   },
   {
     "id": "ep023",
-    "mode": "HISTORIA",
+    "mode": ["HISTORIA", "GEOGRAFIA"]
     "period": "El Principio",
     "difficulty": "INTERMEDIATE",
     "question": "¿Sobre qué montes reposó el arca?",
