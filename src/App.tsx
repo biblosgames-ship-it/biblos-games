@@ -7,6 +7,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
+  HelpCircle,
   RotateCcw, 
   ChevronLeft, 
   Eye, 
@@ -615,11 +616,10 @@ if (showWelcome) {
               className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto parchment-shadow border border-stone-200"
               onClick={e => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white/90 backdrop-blur-md p-6 border-b border-stone-100 flex items-center justify-between z-10">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="text-bible-gold" size={24} />
-                  <h2 className="text-2xl font-sans font-bold">Instrucciones del Juego</h2>
-                </div>
+              <div className="flex items-center gap-3">
+              <HelpCircle className="text-bible-gold" size={24} /> {/* Cambiado BookOpen por HelpCircle */}
+              <h2 className="text-2xl font-sans font-bold">Instrucciones del Juego</h2>
+              </div>
                 <button 
                   onClick={() => setShowInstructions(false)}
                   className="p-2 hover:bg-stone-100 rounded-full transition-colors"
