@@ -338,43 +338,55 @@ if (showFinalSummary) {
           <div className="space-y-3">
   <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu Medalla</p>
   
-  {/* Definimos el texto que se va a compartir con los datos del juego */}
   {(() => {
-    const textoCompartir = `¡Logré el rango de ${medal.label} en Biblos Games! 🏆\n🎯 Precisión: ${accuracy}%\n✅ Aciertos: ${correct}/${total}\n🙏 ¡Prueba tu conocimiento bíblico aquí!`;
-    const urlJuego = "https://biblosgames.com"; // Cambia esto por tu link real
+    // Generamos un "dibujo" con emojis que parece una tarjeta de resultados
+    const dibujoPuntos = accuracy >= 80 ? "status: 🟩🟩🟩🟩🟩" : accuracy >= 50 ? "status: 🟩🟩🟩⬜⬜" : "status: 🟥⬜⬜⬜⬜";
+    
+    const textoVisual = `
+✨ BIBLOS GAMES ✨
+━━━━━━━━━━━━━━
+${medal.icon} Rango: ${medal.label}
+${dibujoPuntos}
+🎯 Precisión: ${accuracy}%
+✅ Aciertos: ${correct}/${total}
+⏱️ Tiempo: ${formatTime(duration)}
+━━━━━━━━━━━━━━
+¡Desafía tu conocimiento aquí! 👇
+`;
+    const urlJuego = "https://biblosgames.com";
 
     return (
       <div className="grid grid-cols-2 gap-2">
         {/* WHATSAPP */}
         <a 
-          href={`https://wa.me/?text=${encodeURIComponent(textoCompartir + " " + urlJuego)}`}
+          href={`https://wa.me/?text=${encodeURIComponent(textoVisual + urlJuego)}`}
           target="_blank" rel="noreferrer"
-          className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-green-900/20"
+          className="py-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
         >
           <MessageCircle size={18} />
-          <span className="text-xs font-bold uppercase tracking-tighter">WhatsApp</span>
+          <span className="text-xs font-bold uppercase">WhatsApp</span>
         </a>
 
         {/* FACEBOOK */}
         <a 
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlJuego)}&quote=${encodeURIComponent(textoCompartir)}`}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlJuego)}&quote=${encodeURIComponent(textoVisual)}`}
           target="_blank" rel="noreferrer"
-          className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-blue-900/20"
+          className="py-3 bg-[#1877F2] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
         >
           <Facebook size={18} />
-          <span className="text-xs font-bold uppercase tracking-tighter">Facebook</span>
+          <span className="text-xs font-bold uppercase">Facebook</span>
         </a>
 
         {/* INSTAGRAM (COPIAR TEXTO) */}
         <button 
           onClick={() => {
-            navigator.clipboard.writeText(textoCompartir + " " + urlJuego);
-            alert("¡Resultados copiados! Pégalos en tu Story de Instagram 🔥");
+            navigator.clipboard.writeText(textoVisual + urlJuego);
+            alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
           }}
-          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-orange-900/20"
+          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
         >
           <Share2 size={18} />
-          <span className="text-xs font-bold uppercase tracking-widest">Copiar resultados para Instagram</span>
+          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
         </button>
       </div>
     );
