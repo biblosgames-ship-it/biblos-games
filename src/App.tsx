@@ -222,30 +222,16 @@ const getColor = (accuracy: number) => {
   };
 
   const handleSurprise = () => {
-    playSound("select"); // <--- Sonido de acción
-    
-    // Elegimos un modo y nivel al azar para que la sorpresa sea total
-    const modos = ['PERSONAJES', 'HISTORIA', 'GEOGRAFIA', 'DIOS', 'SALVACION', 'MANDAMIENTOS'];
-    const modoAzar = modos[Math.floor(Math.random() * modos.length)];
-    const niveles = ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO'];
-    const nivelAzar = niveles[Math.floor(Math.random() * niveles.length)];
-    
-    setGameMode(modoAzar as any);
-    setGameLevel(nivelAzar as any);
     setCurrentPeriod(null);
-    setStartTime(Date.now());
-    getRandomQuestion(); 
+    getRandomQuestion('SURPRISE');
   };
 
   const resetGame = () => {
-    playSound("select"); // <--- Sonido al volver al inicio
     setUsedQuestionIds(new Set());
     setCurrentPeriod(null);
     setCurrentQuestion(null);
     setGameLevel(null);
-    setGameMode(null); // Importante: resetear el modo para volver al menú principal
     setShowAnswer(false);
-    setStartTime(null);
   };
 
   const toggleProjection = () => {
