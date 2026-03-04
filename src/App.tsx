@@ -797,7 +797,6 @@ if (showWelcome) {
 
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-      {[
     const GAME_MODES = [
   { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
   { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
