@@ -790,42 +790,49 @@ if (showWelcome) {
         Selecciona el modo de juego
       </h2>
       <p className="text-stone-400 text-sm italic">
-        Escoge cómo deseas jugar
+        Escoge la tematica biblica que deseas jugar
       </p>
     </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
       {[
-        { id: 'TABLERO', label: 'Tablero Fisico', icon: LayoutGrid },
-        { id: 'KIDS', label: 'Kids', icon: Baby },
-        { id: 'VERSICULOS', label: 'Versículos Favoritos', icon: BookOpen },
-        { id: 'PERSONAJES', label: 'Personajes Biblicos', icon: Users },
-        { id: 'DIOS', label: 'Modo Dios', icon: Crown },
-        { id: 'SALVACION', label: 'Salvación', icon: Cross },
-        { id: 'MANDAMIENTOS', label: 'Mandamientos', icon: ScrollText },
-        { id: 'HISTORIA', label: 'Historia Biblica', icon: Landmark },
-      ].map((mode) => (
-        <button
-          key={mode.id}
-          onClick={() => setGameMode(mode.id as any)}
-          className="rounded-2xl p-6 bg-[#2A2621] border-2 border-[#3A342C] 
-                      hover:border-[#C2B280] hover:bg-[#332E27] 
-                      transition-all shadow-lg 
-                      flex items-center justify-between text-left"
-        >
-          <div>
-            <h3 className="text-lg font-bold text-amber-200">
-              {mode.label}
-            </h3>
-            <p className="text-xs text-stone-400 uppercase tracking-wider">
-              Toca para continuar
-            </p>
-          </div>
-
-          <mode.icon className="w-8 h-8 text-amber-200 shrink-0" />
-        </button>
-      ))}
+    const GAME_MODES = [
+  { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
+  { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
+  { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
+  { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
+  { id: 'DIOS', label: 'Modo Dios', desc: 'Desafíos sobre Su poder y atributos', icon: Crown },
+  { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
+  { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
+  { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
+  { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades sagradas', icon: MapPin },
+];
+      {GAME_MODES.map((mode) => (
+  <button
+    key={mode.id}
+    onClick={() => {
+      playSound("select");
+      setGameMode(mode.id);
+    }}
+    className="relative group overflow-hidden bg-[#2A2621] p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 transition-all active:scale-95 text-left"
+  >
+    <div className="flex items-start gap-3">
+      <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
+        <mode.icon size={20} />
+      </div>
+      <div>
+        <h3 className="text-sm font-bold text-stone-200 uppercase tracking-tight">
+          {mode.label}
+        </h3>
+        {/* AQUÍ VA LA DESCRIPCIÓN EN LUGAR DEL TEXTO ANTERIOR */}
+        <p className="text-[10px] text-stone-500 leading-tight mt-1 group-hover:text-stone-300 transition-colors">
+          {mode.desc}
+        </p>
+      </div>
+    </div>
+  </button>
+))}
 
     </div>
   </motion.div>
