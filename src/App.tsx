@@ -4,11 +4,8 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Asegúrate que sea 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react';
 import { 
-  MessageCircle, 
-  Facebook,
-  Share2,
   BookOpen, 
   RotateCcw, 
   ChevronLeft, 
@@ -28,6 +25,7 @@ import {
   ScrollText,
   Landmark
 } from 'lucide-react';
+import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
@@ -35,61 +33,25 @@ import questionsData from './data/questions.json';
 const ALL_QUESTIONS = questionsData as Question[];
 
 export default function App() {
-  // 1. ESTADOS PRINCIPALES (Ordenados para evitar errores)
-  const [showFinalSummary, setShowFinalSummary] = useState(false);
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [gameLevel, setGameLevel] = useState<'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null>(null);
   const [gameMode, setGameMode] = useState<
-    | 'TABLERO'
-    | 'KIDS'
-    | 'VERSICULOS'
-    | 'PERSONAJES'
-    | 'DIOS'
-    | 'SALVACION'
-    | 'MANDAMIENTOS'
-    | 'HISTORIA'
-    | null
-  >(null);
-  
+  | 'TABLERO'
+  | 'KIDS'
+  | 'VERSICULOS'
+  | 'PERSONAJES'
+  | 'DIOS'
+  | 'SALVACION'
+  | 'MANDAMIENTOS'
+  | 'HISTORIA'
+  | null
+>(null);
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [isSoundOn, setIsSoundOn] = useState(true);
 
-  // 2. LÓGICA DE VERSÍCULOS (Depende de showFinalSummary)
-  const verses = useMemo(() => [
-    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
-    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
-    { text: "Tu palabra es verdad.", ref: "Juan 17:17" },
-    { text: "Escudriñad las Escrituras... ellas son las que dan testimonio de mí.", ref: "Juan 5:39" },
-    { text: "Tu palabra me da vida.", ref: "Salmos 119:50" }
-  ], []);
-
-  const randomVerse = useMemo(() => {
-    return verses[Math.floor(Math.random() * verses.length)];
-  }, [showFinalSummary, verses]);
-
-  // 3. PERSISTENCIA DE PREGUNTAS Y ESTADÍSTICAS (BLOQUE ÚNICO)
-  const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
-    try {
-      const saved = localStorage.getItem('biblos_used_questions');
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch (e) { 
-      return new Set(); 
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('biblos_used_questions', JSON.stringify(Array.from(usedQuestionIds)));
-  }, [usedQuestionIds]);
-
-  const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [endTime, setEndTime] = useState<number | null>(null);
-  
   // --- Versión mejorada y segura ---
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
     try {
@@ -326,33 +288,18 @@ if (showFinalSummary) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-       {/* ENCABEZADO CON LOGO, MEDALLA Y TEXTO BÍBLICO */}
+        {/* ENCABEZADO CON LOGO Y MEDALLA */}
         <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
           <img 
-            src="/logo-biblos.png" 
-            alt="Biblos Games" 
-            className="w-48 mx-auto mb-6 object-contain drop-shadow-xl" 
+            src="/logo.png" 
+            alt="Biblos" 
+            className="w-20 h-20 mx-auto mb-4 object-contain"
           />
-          
           <div className="text-6xl mb-2">{medal.icon}</div>
           <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
             {medal.label}
           </h1>
-
-          {/* ESTE ES EL TEXTO BÍBLICO ALEATORIO */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-4 p-4 bg-white/5 rounded-2xl border border-white/5"
-          >
-            <p className="text-[11px] text-stone-400 italic leading-relaxed">
-              "{randomVerse.text}"
-            </p>
-            <span className="block mt-2 text-[10px] font-bold text-amber-500/70 uppercase tracking-widest">
-              — {randomVerse.ref}
-            </span>
-          </motion.div>
+          <p className="text-stone-500 text-[10px] uppercase tracking-widest mt-1">Resultados Finales</p>
         </div>
 
         <div className="p-6 space-y-6">
@@ -388,40 +335,23 @@ if (showFinalSummary) {
           </div>
 
           {/* BOTONES SOCIALES */}
-          <div className="space-y-3">
-            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu medalla</p>
-            <div className="grid grid-cols-2 gap-2">
-              
-              {/* WHATSAPP */}
+          <div className="space-y-3 pt-2">
+            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">¡Comparte tu fe!</p>
+            <div className="flex gap-2">
               <a 
-                href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(shareMessage + " " + shareUrl)}`}
                 target="_blank" rel="noreferrer"
-                className="py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-sm"
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
               >
-                <span className="text-lg">💬</span> WhatsApp
+                <MessageCircle size={18} /> <span className="text-xs font-bold">WhatsApp</span>
               </a>
-
-              {/* FACEBOOK */}
               <a 
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`}
                 target="_blank" rel="noreferrer"
-                className="py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-sm"
+                className="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
               >
-                <span className="w-5 h-5 bg-white text-[#1877F2] rounded-full flex items-center justify-center font-black text-[12px] leading-none">f</span> Facebook
+                <Twitter size={18} /> <span className="text-xs font-bold">Twitter</span>
               </a>
-
-              {/* INSTAGRAM / HISTORIAS */}
-              <button 
-                onClick={() => {
-                  if (navigator.clipboard) {
-                    navigator.clipboard.writeText(shareText);
-                    alert("¡Copiado! Pégalo ahora en tus Historias de Instagram 🔥");
-                  }
-                }}
-                className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-xs font-bold shadow-md"
-              >
-                <span className="text-lg">📸</span> Copiar para Instagram / Historias
-              </button>
             </div>
           </div>
 
