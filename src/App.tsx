@@ -829,7 +829,6 @@ if (showWelcome) {
       </div>
     </button>
   ))}
-</div>
     </div>
   </motion.div>
 
