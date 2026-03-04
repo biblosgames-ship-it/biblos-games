@@ -848,34 +848,37 @@ if (showWelcome) {
 
     </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
-{[
-        { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros Pasos en la Palabra' },
-        { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el Conocimiento' },
-        { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los Maestros' },
-        { id: 'MIXTO', label: 'Mixto', sub: 'Todos los Niveles' }, // <--- El nuevo integrante
-      ].map((level) => (
-        <button
-          key={level.id}
-          onClick={() => setGameLevel(level.id as any)}
-          className={`
-            rounded-2xl p-6 
-            transition-all shadow-lg border-2
-            ${level.id === 'MIXTO' 
-              ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-amber-300/40 hover:border-amber-300' 
-              : 'bg-[#2A2621] border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27]'}
-          `}
-        >
-          <h3 className={`text-lg font-bold ${level.id === 'MIXTO' ? 'text-amber-300' : 'text-amber-200'}`}>
-            {level.label}
-          </h3>
-          <p className="text-xs text-stone-400 uppercase tracking-wider mt-2">
-            {level.sub}
-          </p>
-        </button>
-      ))}
-
-            </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6">
+  {[
+    { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros Pasos en la Palabra' },
+    { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el Conocimiento' },
+    { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los Maestros' },
+    { id: 'MIXTO', label: 'Mixto', sub: 'Todos los Niveles' },
+  ].map((level) => (
+    <button
+      key={level.id}
+      onClick={() => {
+        playSound("select"); // <--- SONIDO AL TOCAR
+        setGameLevel(level.id as any);
+        setStartTime(Date.now()); // <--- INICIA EL TIEMPO
+      }}
+      className={`
+        text-left rounded-2xl p-5 
+        transition-all shadow-lg border-2
+        ${level.id === 'MIXTO' 
+          ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-amber-300/40 hover:border-amber-300 active:scale-95' 
+          : 'bg-[#2A2621] border-white/5 hover:border-amber-500/50 hover:bg-[#332E27] active:scale-95'}
+      `}
+    >
+      <h3 className="text-lg font-black text-stone-100 uppercase tracking-wider leading-none">
+        {level.label}
+      </h3>
+      <p className="text-[10px] text-stone-500 mt-1 font-medium group-hover:text-stone-300 transition-colors uppercase">
+        {level.sub}
+      </p>
+    </button>
+  ))}
+</div>
 
             <div className="pt-8 flex justify-center">
   <button
