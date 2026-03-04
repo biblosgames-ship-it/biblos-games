@@ -288,20 +288,19 @@ if (showFinalSummary) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-        {/* ENCABEZADO CON LOGO Y MEDALLA */}
-        <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
-          <img 
-            src="/logo.png" 
-            alt="Biblos" 
-            className="w-20 h-20 mx-auto mb-4 object-contain"
-          />
-          <div className="text-6xl mb-2">{medal.icon}</div>
-          <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
-            {medal.label}
-          </h1>
-          <p className="text-stone-500 text-[10px] uppercase tracking-widest mt-1">Resultados Finales</p>
-        </div>
-
+       {/* ENCABEZADO CON LOGO Y MEDALLA */}
+<div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
+  <img 
+    src="/logo-biblos.png"  /* <--- Cambiado al logo comercial de la entrada */
+    alt="Biblos Games" 
+    className="w-48 mx-auto mb-6 object-contain drop-shadow-xl" 
+  />
+  <div className="text-6xl mb-2">{medal.icon}</div>
+  <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
+    {medal.label}
+  </h1>
+  {/* Quitamos el texto pequeño para que el logo y la medalla sean los protagonistas */}
+</div>
         <div className="p-6 space-y-6">
           {/* ESTADÍSTICAS COMPACTAS */}
           <div className="grid grid-cols-3 gap-3">
