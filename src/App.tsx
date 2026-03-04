@@ -334,25 +334,43 @@ if (showFinalSummary) {
           </div>
 
           {/* BOTONES SOCIALES */}
-          <div className="space-y-3 pt-2">
-            <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">¡Comparte tu fe!</p>
-            <div className="flex gap-2">
-              <a 
-                href={`https://wa.me/?text=${encodeURIComponent(shareMessage + " " + shareUrl)}`}
-                target="_blank" rel="noreferrer"
-                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              >
-                <MessageCircle size={18} /> <span className="text-xs font-bold">WhatsApp</span>
-              </a>
-              <a 
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(shareUrl)}`}
-                target="_blank" rel="noreferrer"
-                className="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              >
-                <Twitter size={18} /> <span className="text-xs font-bold">Twitter</span>
-              </a>
-            </div>
-          </div>
+          <div className="space-y-3">
+  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Comparte tu resultado</p>
+  <div className="grid grid-cols-2 gap-2">
+    
+    {/* WHATSAPP */}
+    <a 
+      href={`https://wa.me/?text=${encodeURIComponent(shareMessage)}`}
+      target="_blank" rel="noreferrer"
+      className="py-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
+    >
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-4 h-4 invert" alt="wa" /> 
+      WhatsApp
+    </a>
+
+    {/* FACEBOOK */}
+    <a 
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+      target="_blank" rel="noreferrer"
+      className="py-3 bg-[#1877F2] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
+    >
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" className="w-4 h-4" alt="fb" /> 
+      Facebook
+    </a>
+
+    {/* INSTAGRAM (Botón de copiado) */}
+    <button 
+      onClick={() => {
+        navigator.clipboard.writeText(shareMessage);
+        alert("¡Copiado! Pégalo en tu Story de Instagram");
+      }}
+      className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
+    >
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" className="w-4 h-4 invert" alt="ig" /> 
+      Copiar para Instagram
+    </button>
+  </div>
+</div>
 
           {/* BOTÓN REINICIAR */}
           <button
