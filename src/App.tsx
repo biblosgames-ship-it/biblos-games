@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion'; // Asegúrate que sea 'framer-motion'
 import { 
   MessageCircle, 
   Facebook,
@@ -28,15 +28,6 @@ import {
   ScrollText,
   Landmark
 } from 'lucide-react';
-const verses = [
-    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
-    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
-    { text: "Tu palabra es verdad.", ref: "Juan 17:17" }
-  ];
-
-  // Seleccionamos uno simple sin useMemo para evitar errores de importación
-  const randomVerse = verses[Math.floor(Math.random() * verses.length)];
-import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
@@ -44,25 +35,61 @@ import questionsData from './data/questions.json';
 const ALL_QUESTIONS = questionsData as Question[];
 
 export default function App() {
+  // 1. ESTADOS PRINCIPALES (Ordenados para evitar errores)
+  const [showFinalSummary, setShowFinalSummary] = useState(false);
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [gameLevel, setGameLevel] = useState<'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null>(null);
   const [gameMode, setGameMode] = useState<
-  | 'TABLERO'
-  | 'KIDS'
-  | 'VERSICULOS'
-  | 'PERSONAJES'
-  | 'DIOS'
-  | 'SALVACION'
-  | 'MANDAMIENTOS'
-  | 'HISTORIA'
-  | null
->(null);
+    | 'TABLERO'
+    | 'KIDS'
+    | 'VERSICULOS'
+    | 'PERSONAJES'
+    | 'DIOS'
+    | 'SALVACION'
+    | 'MANDAMIENTOS'
+    | 'HISTORIA'
+    | null
+  >(null);
+  
   const [isProjectionMode, setIsProjectionMode] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [isSoundOn, setIsSoundOn] = useState(true);
 
+  // 2. LÓGICA DE VERSÍCULOS (Depende de showFinalSummary)
+  const verses = useMemo(() => [
+    { text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
+    { text: "La exposición de tus palabras alumbra; hace entender a los simples.", ref: "Salmos 119:130" },
+    { text: "Tu palabra es verdad.", ref: "Juan 17:17" },
+    { text: "Escudriñad las Escrituras... ellas son las que dan testimonio de mí.", ref: "Juan 5:39" },
+    { text: "Tu palabra me da vida.", ref: "Salmos 119:50" }
+  ], []);
+
+  const randomVerse = useMemo(() => {
+    return verses[Math.floor(Math.random() * verses.length)];
+  }, [showFinalSummary, verses]);
+
+  // 3. PERSISTENCIA DE PREGUNTAS Y ESTADÍSTICAS (BLOQUE ÚNICO)
+  const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('biblos_used_questions');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch (e) { 
+      return new Set(); 
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('biblos_used_questions', JSON.stringify(Array.from(usedQuestionIds)));
+  }, [usedQuestionIds]);
+
+  const [gameStats, setGameStats] = useState<Record<string, { total: number; correct: number }>>({});
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  
   // --- Versión mejorada y segura ---
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
     try {
