@@ -56,6 +56,38 @@ const BOARD_DATA = [
   // ... (puedes completar el resto siguiendo este formato hasta el id 75)
 ];
 
+function BoardGameMode({ onExit }: { onExit: () => void }) {
+  const [position, setPosition] = useState(0);
+  const [dice, setDice] = useState(0);
+
+  const rollDice = () => {
+    const roll = Math.floor(Math.random() * 10) + 1;
+    setDice(roll);
+    setPosition(prev => Math.min(prev + roll, 75));
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-[#1B1A17] flex flex-col items-center">
+      <div className="absolute top-4 left-4 z-10">
+        <button onClick={onExit} className="p-3 bg-amber-600 text-white rounded-full"><ChevronLeft /></button>
+      </div>
+      
+      {/* Tablero (Asegúrate de que la imagen se llame tablero.jpg en /public) */}
+      <img src="/tablero.jpg" alt="Tablero" className="w-full h-[60vh] object-contain mt-16" />
+
+      <div className="mt-auto p-8 w-full bg-[#2A2621] rounded-t-3xl flex justify-between items-center">
+        <div className="text-white">
+          <p className="text-xs text-stone-400 uppercase">Posición</p>
+          <p className="text-2xl font-black">{position}</p>
+        </div>
+        <button onClick={rollDice} className="px-10 py-4 bg-amber-500 rounded-2xl font-black text-xl shadow-lg">
+          🎲 {dice || "Lanzar Dado"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -505,35 +537,45 @@ ${dibujoPuntos}
   }
 if (showWelcome) {
   return (
-    <div>
+    <div className="fixed inset-0 w-full h-full z-50">
+      <img
+        src="/fondo-biblos.jpg"
+        alt="Biblos Background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
-
-      <div className="fixed inset-0 w-full h-full">
+      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-end pb-20 text-center px-6">
         <img
-          src="/fondo-biblos.jpg"
-          alt="Biblos Background"
-          className="absolute inset-0 w-full h-full object-cover"
+          src="/logo-biblos.png"
+          alt="Biblos Games"
+          className="w-72 md:w-[500px] drop-shadow-2xl mb-12"
         />
 
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
-          <img
-            src="/logo-biblos.png"
-            alt="Biblos Games"
-            className="w-72 md:w-[500px] drop-shadow-2xl"
-          />
-
+        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+          {/* OPCIÓN 1: MODO TRIVIA (Tu lógica existente) */}
           <button
             onClick={() => {
               playSound("select");
               setShowWelcome(false);
             }}
-            className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
+            className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
           >
-            Comenzar
+            Modo Trivia
+          </button>
+
+          {/* OPCIÓN 2: TABLERO DIGITAL */}
+          <button
+            onClick={() => {
+              playSound("select");
+              setGameMode('TABLERO');
+              setShowWelcome(false);
+            }}
+            className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+          >
+            Tablero Digital
           </button>
         </div>
       </div>
-
     </div>
   );
 }
