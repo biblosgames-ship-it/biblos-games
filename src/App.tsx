@@ -5,13 +5,12 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  BookOpen, 
-  MessageCircle,
-  RotateCcw, 
-  ChevronLeft, 
-  Eye, 
-  EyeOff, 
+import {
+  BookOpen,
+  RotateCcw,
+  ChevronLeft,
+  Eye,
+  EyeOff,
   Sparkles,
   Info,
   CheckCircle2,
@@ -25,8 +24,11 @@ import {
   Cross,
   ScrollText,
   MapPin,
-  Landmark
-import { , ,  } from 'lucide-react';
+  Landmark,
+  MessageCircle,
+  Facebook,
+  Share2
+} from "lucide-react";
 import { MessageCircle, Facebook, Share2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
