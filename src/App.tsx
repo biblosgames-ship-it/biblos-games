@@ -108,6 +108,10 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [screen, setScreen] = useState<'MENU' | 'TABLERO'>('MENU');
+  
+  if (screen === 'TABLERO') {
+  return <BoardGameMode onExit={() => setScreen('MENU')} />;
+}
 
   // --- Versión mejorada y segura ---
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
