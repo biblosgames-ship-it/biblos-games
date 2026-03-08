@@ -34,6 +34,60 @@ import questionsData from './data/questions.json';
 
 const ALL_QUESTIONS = questionsData as Question[];
 
+const BOARD_DATA = [
+  { id: 0, description: "Salida", effect: null },
+  { id: 1, description: "Dios crea el día y la noche", effect: null },
+  { id: 2, description: "Dios crea el cielo y el mar", effect: null },
+  { id: 3, description: "Dios crea las plantas", effect: null },
+  { id: 4, description: "Dios crea el Sol, la luna y las estrellas", effect: "QUESTION" },
+  { id: 5, description: "Dios crea las aves y los peces", effect: null },
+  { id: 6, description: "Dios crea los animales y los seres humanos", effect: null },
+  { id: 7, description: "Dios descansó", effect: "SKIP_TURN" },
+  { id: 8, description: "En el Edén", effect: "QUESTION" },
+  { id: 9, description: "Has pecado", effect: "GOTO_0" },
+  { id: 10, description: "Tendrás que salir del Huerto", effect: "MOVE_2" },
+  { id: 11, description: "Caín mata a Abel", effect: null },
+  { id: 12, description: "El Gran Diluvio", effect: "QUESTION" },
+  { id: 13, description: "Sobreviviste al Diluvio", effect: null },
+  { id: 14, description: "Llegaste a la Torre de Babel", effect: "QUESTION" },
+  { id: 15, description: "Dios llama a Abraham", effect: null },
+  { id: 16, description: "Abraham y el hijo de la promesa", effect: null },
+  { id: 17, description: "Jacob y Esaú", effect: "QUESTION" },
+  // ... (puedes completar el resto siguiendo este formato hasta el id 75)
+];
+
+function BoardGameMode({ onExit }: { onExit: () => void }) {
+  const [position, setPosition] = useState(0);
+  const [dice, setDice] = useState(0);
+
+  const rollDice = () => {
+    const roll = Math.floor(Math.random() * 10) + 1;
+    setDice(roll);
+    setPosition(prev => Math.min(prev + roll, 75));
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-[#1B1A17] flex flex-col items-center">
+      <div className="absolute top-4 left-4 z-10">
+        <button onClick={onExit} className="p-3 bg-amber-600 text-white rounded-full"><ChevronLeft /></button>
+      </div>
+      
+      {/* Tablero (Asegúrate de que la imagen se llame tablero.jpg en /public) */}
+      <img src="/tablero.jpg" alt="Tablero" className="w-full h-[60vh] object-contain mt-16" />
+
+      <div className="mt-auto p-8 w-full bg-[#2A2621] rounded-t-3xl flex justify-between items-center">
+        <div className="text-white">
+          <p className="text-xs text-stone-400 uppercase">Posición</p>
+          <p className="text-2xl font-black">{position}</p>
+        </div>
+        <button onClick={rollDice} className="px-10 py-4 bg-amber-500 rounded-2xl font-black text-xl shadow-lg">
+          🎲 {dice || "Lanzar Dado"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -377,7 +431,7 @@ ${dibujoPuntos}
           className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
         >
           <Share2 size={18} />
-          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
+          <span className="text-xs font-bold uppercase">Copia y comparte tus resultados</span>
         </button>
       </div>
     );
@@ -483,35 +537,45 @@ ${dibujoPuntos}
   }
 if (showWelcome) {
   return (
-    <div>
+    <div className="fixed inset-0 w-full h-full z-50">
+      <img
+        src="/fondo-biblos.jpg"
+        alt="Biblos Background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
-
-      <div className="fixed inset-0 w-full h-full">
+      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-end pb-20 text-center px-6">
         <img
-          src="/fondo-biblos.jpg"
-          alt="Biblos Background"
-          className="absolute inset-0 w-full h-full object-cover"
+          src="/logo-biblos.png"
+          alt="Biblos Games"
+          className="w-72 md:w-[500px] drop-shadow-2xl mb-12"
         />
 
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
-          <img
-            src="/logo-biblos.png"
-            alt="Biblos Games"
-            className="w-72 md:w-[500px] drop-shadow-2xl"
-          />
-
+        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+          {/* OPCIÓN 1: MODO TRIVIA (Tu lógica existente) */}
           <button
             onClick={() => {
               playSound("select");
               setShowWelcome(false);
             }}
-            className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
+            className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
           >
-            Comenzar
+            Modo Trivia
+          </button>
+
+          {/* OPCIÓN 2: TABLERO DIGITAL */}
+          <button
+            onClick={() => {
+              playSound("select");
+              setGameMode('TABLERO');
+              setShowWelcome(false);
+            }}
+            className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+          >
+            Tablero Digital
           </button>
         </div>
       </div>
-
     </div>
   );
 }
