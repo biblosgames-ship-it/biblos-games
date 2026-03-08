@@ -107,9 +107,9 @@ export default function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [screen, setScreen] = useState<'MENU' | 'TABLERO'>('MENU');
+  const [screen, setScreen] = useState<'WELCOME' | 'MENU' | 'TABLERO'>('WELCOME');
 
-  if (screen === 'TABLERO') {
+if (screen === 'TABLERO' && !showWelcome) {
   return <BoardGameMode onExit={() => setScreen('MENU')} />;
 }
 
@@ -572,8 +572,10 @@ if (showWelcome) {
           <button
             onClick={() => {
             playSound("select");
-            setScreen('TABLERO');
             setShowWelcome(false);
+            setTimeout(() => {
+            setScreen('TABLERO');
+            }, 50);
             }}
             className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
           >
