@@ -337,7 +337,7 @@ if (showFinalSummary) {
 
           {/* BOTONES SOCIALES */}
           <div className="space-y-3">
-  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu Medalla</p>
+  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Comparte tu Medalla</p>
   
   {(() => {
     // Generamos un "dibujo" con emojis que parece una tarjeta de resultados
@@ -346,18 +346,18 @@ if (showFinalSummary) {
     const textoVisual = `
 ✨ BIBLOS GAMES ✨
 ━━━━━━━━━━━━━━
-${medal.icon} Rango: ${medal.label}
+${medal.icon} Titulo Obtenido: ${medal.label}
 ${dibujoPuntos}
 🎯 Precisión: ${accuracy}%
 ✅ Aciertos: ${correct}/${total}
 ⏱️ Tiempo: ${formatTime(duration)}
 ━━━━━━━━━━━━━━
-¡Desafía tu conocimiento aquí! 👇
+¡Desafía tu conocimiento aquí! Accede a neustra app y descubre la manera mas divertida de estudiar la Biblia 👇
 `;
     const urlJuego = "https://biblosgames.com";
 
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2">
         {/* WHATSAPP */}
         <a 
           href={`https://wa.me/?text=${encodeURIComponent(textoVisual + urlJuego)}`}
@@ -370,15 +370,16 @@ ${dibujoPuntos}
 
         {/* INSTAGRAM (COPIAR TEXTO) */}
         <button 
-          onClick={() => {
-            navigator.clipboard.writeText(textoVisual + urlJuego);
-            alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
-          }}
-          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
-        >
-          <Share2 size={18} />
-          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
-        </button>
+  onClick={() => {
+    playSound("select");
+    navigator.clipboard.writeText(textoVisual + urlJuego);
+    alert("¡Tarjeta de resultados copiada!");
+  }}
+  className="w-full py-4 bg-[#2A2621] border border-amber-900/40 text-amber-500 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-amber-900/20 transition-all shadow-md active:scale-95"
+>
+  <Copy size={18} />
+  <span className="text-xs font-bold uppercase tracking-widest">Copiar Resultados</span>
+</button>
       </div>
     );
   })()}
