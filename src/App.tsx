@@ -370,16 +370,15 @@ ${dibujoPuntos}
 
         {/* INSTAGRAM (COPIAR TEXTO) */}
         <button 
-  onClick={() => {
-    playSound("select");
-    navigator.clipboard.writeText(textoVisual + urlJuego);
-    alert("¡Tarjeta de resultados copiada!");
-  }}
-  className="w-full py-4 bg-[#2A2621] border border-amber-900/40 text-amber-500 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-amber-900/20 transition-all shadow-md active:scale-95"
->
-  <Copy size={18} />
-  <span className="text-xs font-bold uppercase tracking-widest">Copiar Resultados</span>
-</button>
+          onClick={() => {
+            navigator.clipboard.writeText(textoVisual + urlJuego);
+            alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
+          }}
+          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
+        >
+          <Share2 size={18} />
+          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
+        </button>
       </div>
     );
   })()}
