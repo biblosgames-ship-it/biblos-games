@@ -108,7 +108,7 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [screen, setScreen] = useState<'MENU' | 'TABLERO'>('MENU');
-  
+
   if (screen === 'TABLERO') {
   return <BoardGameMode onExit={() => setScreen('MENU')} />;
 }
@@ -414,10 +414,6 @@ ${dibujoPuntos}
 ¡Desafía tu conocimiento aquí! Accede a neustra app y descubre la manera mas divertida de estudiar la Biblia 👇
 `;
     const urlJuego = "https://biblosgames.com";
-
-if (screen === 'TABLERO') {
-    return <BoardGameMode onExit={() => setScreen('MENU')} />;
-  }
 
     return (
       <div className="flex flex-col gap-2">
