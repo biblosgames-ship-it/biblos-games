@@ -833,34 +833,31 @@ if (showWelcome) {
       </AnimatePresence>
 
     <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
-
-  {/* A. Si el modo es TABLERO, muestra el tablero y nada más */}
+  
+  {/* 1. INTERRUPTOR PRINCIPAL: Si es tablero, muestra el tablero. Si no, muestra el resto. */}
   {gameMode === 'TABLERO' ? (
     <BoardGameMode onExit={() => setGameMode(null)} />
   ) : (
-    /* B. Si NO es tablero, sigue con toda tu lógica original intacta */
-    
-    !gameMode ? (
-      /* TU BLOQUE ORIGINAL DE SELECCIÓN DE MODOS */
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10 py-6">
-        {/* ... (Aquí va todo tu código de los botones de Trivia que ya tenías) ... */}
-      </motion.div>
-    ) : !gameLevel ? (
-      /* TU BLOQUE ORIGINAL DE NIVELES */
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 py-6">
-        {/* ... (Aquí va todo tu código de selección de niveles que ya tenías) ... */}
-      </motion.div>
-    ) : !currentQuestion ? (
-      /* TU BLOQUE ORIGINAL DE PERIODOS */
-      <div className="space-y-2">
-        {/* ... (Aquí va todo tu código de periodos que ya tenías) ... */}
-      </div>
-    ) : (
-      /* TU BLOQUE ORIGINAL DE PREGUNTAS */
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-        {/* ... (Aquí va todo tu código de preguntas que ya tenías) ... */}
-      </motion.div>
-    )
+    /* 2. SI NO ES TABLERO, AQUI ENTRA TODA TU LÓGICA ORIGINAL */
+    <>
+      {!gameMode ? (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10 py-6">
+          {/* ... (Aquí va todo tu código de los botones de Trivia que ya tenías) ... */}
+        </motion.div>
+      ) : !gameLevel ? (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 py-6">
+           {/* ... (Aquí va tu código de selección de niveles) ... */}
+        </motion.div>
+      ) : !currentQuestion ? (
+        <div className="space-y-2">
+           {/* ... (Aquí va tu código de periodos) ... */}
+        </div>
+      ) : (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+           {/* ... (Aquí va tu código de preguntas) ... */}
+        </motion.div>
+      )}
+    </>
   )}
 
 </main>
