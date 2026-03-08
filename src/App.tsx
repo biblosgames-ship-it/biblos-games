@@ -107,6 +107,7 @@ export default function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [screen, setScreen] = useState<'MENU' | 'TABLERO'>('MENU');
 
   // --- Versión mejorada y segura ---
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
@@ -410,6 +411,10 @@ ${dibujoPuntos}
 `;
     const urlJuego = "https://biblosgames.com";
 
+if (screen === 'TABLERO') {
+    return <BoardGameMode onExit={() => setScreen('MENU')} />;
+  }
+
     return (
       <div className="flex flex-col gap-2">
         {/* WHATSAPP */}
@@ -566,13 +571,13 @@ if (showWelcome) {
           {/* OPCIÓN 2: TABLERO DIGITAL */}
           <button
             onClick={() => {
-              playSound("select");
-              setGameMode('TABLERO');
-              setShowWelcome(false);
+            playSound("select");
+            setScreen('TABLERO');
+            setShowWelcome(false);
             }}
             className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
           >
-            Tablero Digital
+          Tablero Digital
           </button>
         </div>
       </div>
