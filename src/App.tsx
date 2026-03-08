@@ -834,31 +834,38 @@ if (showWelcome) {
 
     <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
   
-  {/* 1. INTERRUPTOR PRINCIPAL: Si es tablero, muestra el tablero. Si no, muestra el resto. */}
-  {gameMode === 'TABLERO' ? (
+  {/* A. MODO TABLERO (Prioridad máxima) */}
+  {gameMode === 'TABLERO' && (
     <BoardGameMode onExit={() => setGameMode(null)} />
-  ) : (
-    /* 2. SI NO ES TABLERO, AQUI ENTRA TODA TU LÓGICA ORIGINAL */
+  )}
+
+  {/* B. MODO TRIVIA (Solo se muestra si NO estamos en Tablero) */}
+  {gameMode !== 'TABLERO' && (
     <>
       {!gameMode ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10 py-6">
-          {/* ... (Aquí va todo tu código de los botones de Trivia que ya tenías) ... */}
+           {/* AQUÍ VA TU CÓDIGO DE SELECCIÓN DE MODOS */}
         </motion.div>
       ) : !gameLevel ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 py-6">
-           {/* ... (Aquí va tu código de selección de niveles) ... */}
+           {/* AQUÍ VA TU CÓDIGO DE NIVELES */}
         </motion.div>
       ) : !currentQuestion ? (
         <div className="space-y-2">
-           {/* ... (Aquí va tu código de periodos) ... */}
+           {/* AQUÍ VA TU CÓDIGO DE PERIODOS */}
         </div>
       ) : (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-           {/* ... (Aquí va tu código de preguntas) ... */}
+           {/* AQUÍ VA TU CÓDIGO DE PREGUNTAS */}
         </motion.div>
       )}
     </>
   )}
+
+  {/* C. FOOTER (Fuera de la lógica, se queda siempre abajo) */}
+  <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
+    Total de Preguntas: {ALL_QUESTIONS.length}
+  </footer>
 
 </main>
 
