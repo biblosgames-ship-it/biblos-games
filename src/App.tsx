@@ -832,165 +832,382 @@ if (showWelcome) {
         )}
       </AnimatePresence>
 
-     <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+{!gameMode ? (
 
-  {/* 1. MODO TABLERO (Prioridad máxima) */}
-  {gameMode === 'TABLERO' ? (
-    <BoardGameMode onExit={() => setGameMode(null)} />
-  ) : (
-    
-    /* 2. MODO TRIVIA (Se ejecuta si NO es tablero) */
-    !gameMode ? (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-10 py-6"
-      >
-        <div className="text-center space-y-3">
-          <h2 className="text-base font-sans font-medium">Selecciona el modo de juego</h2>
-          <p className="text-stone-400 text-sm italic">Escoge la tematica biblica que deseas jugar</p>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-10 py-6"
+  >
+    <div className="text-center space-y-3">
+      <h2 className="text-base font-sans font-medium">
+        Selecciona el modo de juego
+      </h2>
+      <p className="text-stone-400 text-sm italic">
+        Escoge la tematica biblica que deseas jugar
+      </p>
+    </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  {[
+    { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
+    { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
+    { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
+    { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
+    { id: 'DIOS', label: 'Modo Dios', desc: 'Desafíos sobre Su poder y atributos', icon: Crown },
+    { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
+    { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
+    { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
+    { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades Biblicas', icon: MapPin },
+  ].map((mode) => (
+    <button
+      key={mode.id}
+      onClick={() => {
+        playSound("select");
+        setGameMode(mode.id as any);
+      }}
+      className="relative group overflow-hidden bg-[#2A2621] p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 transition-all active:scale-95 text-left"
+    >
+      <div className="flex items-start gap-3">
+        <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
+          <mode.icon size={20} />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
-            { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
-            { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
-            { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
-            { id: 'DIOS', label: 'Modo Dios', desc: 'Desafíos sobre Su poder y atributos', icon: Crown },
-            { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
-            { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
-            { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
-            { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades Biblicas', icon: MapPin },
-          ].map((mode) => (
-            <button
-              key={mode.id}
-              onClick={() => {
-                playSound("select");
-                setGameMode(mode.id as any);
-              }}
-              className="relative group overflow-hidden bg-[#2A2621] p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 transition-all active:scale-95 text-left"
-            >
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
-                  <mode.icon size={20} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-stone-200 uppercase tracking-tight">
-                    {mode.label}
-                  </h3>
-                  <p className="text-[10px] text-stone-500 leading-tight mt-1 group-hover:text-stone-300 transition-colors">
-                    {mode.desc}
-                  </p>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </motion.div>
-    ) : !gameLevel ? (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-8 py-6"
-      >
-        <div className="text-center space-y-6">
-          <p className="text-stone-200 italic">Selecciona el Nivel de Complejidad</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6">
-          {[
-            { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros Pasos en la Palabra' },
-            { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el Conocimiento' },
-            { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los Maestros' },
-            { id: 'MIXTO', label: 'Mixto', sub: 'Todos los Niveles' },
-          ].map((level) => (
-            <button
-              key={level.id}
-              onClick={() => {
-                playSound("select");
-                setGameLevel(level.id as any);
-                setStartTime(Date.now());
-              }}
-              className={`text-left rounded-2xl p-5 transition-all shadow-lg border-2 ${level.id === 'MIXTO' ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-amber-300/40 hover:border-amber-300 active:scale-95' : 'bg-[#2A2621] border-white/5 hover:border-amber-500/50 hover:bg-[#332E27] active:scale-95'}`}
-            >
-              <h3 className="text-lg font-black text-stone-100 uppercase tracking-wider leading-none">{level.label}</h3>
-              <p className="text-[10px] text-stone-500 mt-1 font-medium group-hover:text-stone-300 transition-colors uppercase">{level.sub}</p>
-            </button>
-          ))}
-        </div>
-        <div className="pt-8 flex justify-center">
-          <button
-            onClick={() => { setGameLevel(null); setGameMode(null); }}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#2A2621] border-2 border-[#3A342C] hover:border-amber-400 hover:bg-[#332E27] transition-all shadow-md text-stone-300 hover:text-amber-200"
-          >
-            <ChevronLeft size={18} /> Volver a modos de juego
-          </button>
-        </div>
-      </motion.div>
-    ) : !currentQuestion ? (
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <button onClick={() => setGameLevel(null)} className="flex items-center gap-2 text-stone-400 hover:text-stone-800 transition-colors font-medium text-sm">
-            <ChevronLeft size={16} /> Cambiar Nivel
-          </button>
-          <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${gameLevel === 'PRINCIPIANTE' ? 'bg-emerald-100 text-emerald-700' : gameLevel === 'INTERMEDIO' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-            Modo {gameLevel}
-          </div>
-        </div>
-        <div className="text-center space-y-0 mb-1">
-          <h2 className="text-base font-serif font-semibold tracking-wide">SELECCIONAR UN PERIODO</h2>
-          <p className="text-stone-400 text-xs">Toca para generar preguntas</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-          {Object.values(Period).map((period) => (
-            <button key={period} onClick={() => { playSound("select"); handleSelectPeriod(period); }} className={`relative overflow-hidden min-h-[75px] rounded-2xl py-0 px-3 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10 ${PERIOD_COLORS[period]} text-white group`}>
-              <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500"><img src={PERIOD_ICONS[period]} alt={period} className="w-32 h-32 object-contain" /></div>
-              <div className="relative z-10 flex items-center gap-3"><img src={PERIOD_ICONS[period]} alt="" className="w-10 h-10 object-contain" /><div><h3 className="font-serif font-bold text-base leading-tight">{period}</h3><p className="text-[9px] opacity-70 uppercase tracking-wider">Toca para jugar</p></div></div>
-            </button>
-          ))}
-        </div>
-        <div className="pt-2 px-4"> 
-          <button onClick={handleSurprise} className="w-full relative overflow-hidden rounded-2xl border-2 border-stone-200/60 bg-white/50 hover:border-bible-gold transition-all shadow-sm flex items-center justify-center gap-3 px-6 py-4 group">
-            <Sparkles className="text-stone-400" size={24} />
-            <div className="flex flex-col items-center"><span className="font-serif font-black text-xl text-amber-300">PREGUNTA SORPRESA</span><span className="text-[10px] font-bold text-stone-700 uppercase tracking-[0.2em] group-hover:text-blue-600/70 transition-colors">Modo Aleatorio Global</span></div>
-          </button>
+        <div>
+          <h3 className="text-sm font-bold text-stone-200 uppercase tracking-tight">
+            {mode.label}
+          </h3>
+          <p className="text-[10px] text-stone-500 leading-tight mt-1 group-hover:text-stone-300 transition-colors">
+            {mode.desc}
+          </p>
         </div>
       </div>
-    ) : (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-        <div className="flex items-center justify-between"><button onClick={() => setCurrentQuestion(null)} className="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors font-medium"><ChevronLeft size={20} /> Volver al Tablero</button><div className="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em]">{currentQuestion.difficulty}</div></div>
-        <div className="bg-[#F1E6CF] text-[#2B2B2B] rounded-[2rem] overflow-hidden border border-[#C2B280] shadow-2xl">
-          <div className={`p-6 text-white flex justify-between items-center ${PERIOD_COLORS[currentQuestion.period]}`}><div className="flex items-center gap-3"><img src={PERIOD_ICONS[currentQuestion.period]} alt="" className="w-8 h-8 object-contain" /><span className="font-serif font-bold tracking-tight">{currentQuestion.period}</span></div><div className="text-xs font-mono opacity-80 font-bold">ITEM #{currentQuestion.id.toUpperCase()}</div></div>
-          <div className="px-8 pt-4 pb-8 md:px-12 md:pt-6 md:pb-10 space-y-4">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold leading-tight text-slate-900 text-balance">{currentQuestion.question}</h2>
-            <div className="grid grid-cols-1 gap-2">
-              {currentQuestion.options.map((option, idx) => {
-                const isCorrect = idx === currentQuestion.correctAnswer;
-                return (
-                  <button key={idx} disabled={showAnswer} onClick={() => handleAnswerClick(idx)} className={`w-full py-3 px-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group ${showAnswer ? isCorrect ? 'bg-emerald-50 border-emerald-500 text-emerald-900' : 'bg-stone-50 border-stone-100 text-stone-300' : 'bg-white border-stone-200 hover:border-bible-gold hover:bg-stone-50 active:scale-[0.98]'}`}>
-                    <div className="flex items-center gap-5"><span className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 ${showAnswer ? isCorrect ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-400 group-hover:border-bible-gold group-hover:text-bible-gold'}`}>{String.fromCharCode(65 + idx)}</span><span className="text-base font-medium">{option}</span></div>
-                    {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-500" size={28} />}
-                    {showAnswer && !isCorrect && <XCircle className="text-stone-200" size={28} />}
-                  </button>
-                );
-              })}
+    </button>
+  ))}
+    </div>
+  </motion.div>
+
+) : !gameLevel ? (
+
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-8 py-6"
+  >
+
+    <div className="text-center space-y-6">
+
+      <p className="text-stone-200 italic">
+        Selecciona el Nivel de Complejidad
+      </p>
+
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6">
+  {[
+    { id: 'PRINCIPIANTE', label: 'Principiante', sub: 'Primeros Pasos en la Palabra' },
+    { id: 'INTERMEDIO', label: 'Intermedio', sub: 'Fortaleciendo el Conocimiento' },
+    { id: 'AVANZADO', label: 'Avanzado', sub: 'Sabiduría de los Maestros' },
+    { id: 'MIXTO', label: 'Mixto', sub: 'Todos los Niveles' },
+  ].map((level) => (
+    <button
+      key={level.id}
+      onClick={() => {
+        playSound("select"); // <--- SONIDO AL TOCAR
+        setGameLevel(level.id as any);
+        setStartTime(Date.now()); // <--- INICIA EL TIEMPO
+      }}
+      className={`
+        text-left rounded-2xl p-5 
+        transition-all shadow-lg border-2
+        ${level.id === 'MIXTO' 
+          ? 'bg-gradient-to-br from-[#2A2621] to-[#3a2c3a] border-amber-300/40 hover:border-amber-300 active:scale-95' 
+          : 'bg-[#2A2621] border-white/5 hover:border-amber-500/50 hover:bg-[#332E27] active:scale-95'}
+      `}
+    >
+      <h3 className="text-lg font-black text-stone-100 uppercase tracking-wider leading-none">
+        {level.label}
+      </h3>
+      <p className="text-[10px] text-stone-500 mt-1 font-medium group-hover:text-stone-300 transition-colors uppercase">
+        {level.sub}
+      </p>
+    </button>
+  ))}
+</div>
+
+            <div className="pt-8 flex justify-center">
+  <button
+    onClick={() => {
+      setGameLevel(null);
+      setGameMode(null);
+    }}
+    className="flex items-center gap-2
+                px-6 py-3
+                rounded-2xl
+                bg-[#2A2621]
+                border-2 border-[#3A342C]
+                hover:border-amber-400
+                hover:bg-[#332E27]
+                transition-all
+                shadow-md
+                text-stone-300 hover:text-amber-200"
+  >
+    <ChevronLeft size={18} />
+    Volver a modos de juego
+  </button>
+</div>
+
+          </motion.div>
+
+        ) : !currentQuestion ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <button 
+                onClick={() => setGameLevel(null)}
+                className="flex items-center gap-2 text-stone-400 hover:text-stone-800 transition-colors font-medium text-sm"
+              >
+                <ChevronLeft size={16} />
+                Cambiar Nivel
+              </button>
+              <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                gameLevel === 'PRINCIPIANTE' ? 'bg-emerald-100 text-emerald-700' :
+                gameLevel === 'INTERMEDIO' ? 'bg-blue-100 text-blue-700' :
+                'bg-purple-100 text-purple-700'
+              }`}>
+                Modo {gameLevel}
+              </div>
             </div>
-            {showAnswer && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-8 border-t border-stone-100 space-y-6">
-                <div className="bg-stone-50 p-6 rounded-2xl border border-stone-100 flex items-start gap-4"><div className="w-12 h-12 rounded-full bg-bible-gold/10 flex items-center justify-center shrink-0"><BookOpen className="text-bible-gold" size={24} /></div><div><p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Referencia Bíblica</p><p className="text-2xl font-serif italic text-stone-800">{currentQuestion.reference}</p></div></div>
-                <div className="flex flex-col sm:flex-row gap-4"><button onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')} className="flex-1 py-5 bg-stone-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2">Siguiente <Sparkles size={20} /></button><button onClick={() => setCurrentQuestion(null)} className="flex-1 sm:flex-none px-8 py-5 bg-stone-100 text-stone-600 rounded-2xl font-bold hover:bg-stone-200 transition-colors flex items-center justify-center"><RotateCcw size={24} /></button></div>
-              </motion.div>
-            )}
-            {!showAnswer && <button onClick={() => setShowAnswer(true)} className="w-full py-6 bg-bible-gold text-white rounded-2xl font-bold hover:bg-amber-600 transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-3"><Eye size={24} /> <span className="text-xl">Revelar Respuesta</span></button>}
-            {Object.values(gameStats).some(stat => stat.total > 0) && (
-              <button onClick={() => { setEndTime(Date.now()); setShowFinalSummary(true); }} className="w-full mt-6 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl">Finalizar Partida</button>
-            )}
+
+            <div className="text-center space-y-0 mb-1">
+              <h2 className="text-base font-serif font-semibold tracking-wide">
+                SELECCIONAR UN PERIODO
+              </h2>
+              <p className="text-stone-400 text-xs">
+                Toca para generar preguntas
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              {Object.values(Period).map((period) => (
+                <button
+                  key={period}
+                  onClick={() => {
+                    playSound("select");
+                    handleSelectPeriod(period);
+                  }}
+                  className={`
+                    relative overflow-hidden min-h-[75px] rounded-2xl py-0 px-3 text-left transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-xl border border-white/10
+                    ${PERIOD_COLORS[period]} text-white group
+                  `}
+                >
+                  <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                    <img
+                      src={PERIOD_ICONS[period]}
+                      alt={period}
+                      className="w-32 h-32 object-contain"
+                    />
+                  </div>
+                  <div className="relative z-10 flex items-center gap-3">
+                    <img
+                      src={PERIOD_ICONS[period]}
+                      alt=""
+                      className="w-10 h-10 object-contain"
+                    />
+
+                    <div>
+                      <h3 className="font-serif font-bold text-base leading-tight">
+                        {period}
+                      </h3>
+                      <p className="text-[9px] opacity-70 uppercase tracking-wider">
+                        Toca para jugar
+                      </p>
+                  </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+          <div className="pt-2 px-4"> 
+  <button
+    onClick={handleSurprise}
+    className="
+      w-full
+      relative
+      overflow-hidden
+      rounded-2xl
+      border-2 border-stone-200/60
+      bg-white/50
+      hover:border-bible-gold
+      hover:bg-bible-gold/[0.03]
+      transition-all duration-300
+      shadow-sm hover:shadow-lg hover:-translate-y-0.5
+      flex items-center justify-center gap-3
+      px-6 py-4
+      group
+    "
+  >
+    {/* Destello sutil de fondo */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-bible-gold/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+
+    <Sparkles 
+      className="text-stone-400 group-hover:text-bible-gold group-hover:scale-110 transition-all duration-300" 
+      size={24} 
+    />
+    
+    <div className="flex flex-col items-center">
+      <span className="font-serif font-black text-xl tracking-tight text-amber-300 group-hover:text-amber-300 transition-colors">
+        PREGUNTA SORPRESA
+        </span>
+      <span className="text-[10px] font-bold text-stone-700 uppercase tracking-[0.2em] group-hover:text-blue-600/70 transition-colors">
+      Modo Aleatorio Global
+      </span>
+  </div>
+
+    <Sparkles 
+      className="text-stone-400/0 group-hover:text-bible-gold/40 group-hover:scale-110 transition-all duration-300" 
+      size={20} 
+    />
+  </button>
+</div>
           </div>
-        </div>
-      </motion.div>
-    )
-  )}
-  <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">Total de Preguntas: {ALL_QUESTIONS.length}</footer>
-</main>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <button 
+                onClick={() => setCurrentQuestion(null)}
+                className="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors font-medium"
+              >
+                <ChevronLeft size={20} />
+                Volver al Tablero
+              </button>
+              <div className="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em]">
+                {currentQuestion.difficulty}
+              </div>
+            </div>
+
+            <div className="bg-[#F1E6CF] text-[#2B2B2B] rounded-[2rem] overflow-hidden border border-[#C2B280] shadow-2xl">
+              <div className={`p-6 text-white flex justify-between items-center ${PERIOD_COLORS[currentQuestion.period]}`}>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={PERIOD_ICONS[currentQuestion.period]}
+                    alt=""
+                    className="w-8 h-8 object-contain"
+                  />
+                  <span className="font-serif font-bold tracking-tight">{currentQuestion.period}</span>
+                </div>
+                <div className="text-xs font-mono opacity-80 font-bold">ITEM #{currentQuestion.id.toUpperCase()}</div>
+              </div>
+              
+              <div className="px-8 pt-4 pb-8 md:px-12 md:pt-6 md:pb-10 space-y-4">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold leading-tight text-slate-900 text-balance">
+                  {currentQuestion.question}
+                </h2>
+
+                <div className="grid grid-cols-1 gap-2">
+                  {currentQuestion.options.map((option, idx) => {
+                    const isCorrect = idx === currentQuestion.correctAnswer;
+                    return (
+                      <button
+                        key={idx}
+                        disabled={showAnswer}
+                        onClick={() => handleAnswerClick(idx)}
+                        className={`
+                          w-full py-3 px-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group
+                          ${showAnswer 
+                            ? isCorrect 
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-900' 
+                              : 'bg-stone-50 border-stone-100 text-stone-300'
+                            : 'bg-white border-stone-200 hover:border-bible-gold hover:bg-stone-50 active:scale-[0.98]'
+                          }
+                        `}
+                      >
+                        <div className="flex items-center gap-5">
+                          <span className={`
+                            w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2
+                            ${showAnswer 
+                              ? isCorrect ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-stone-100 border-stone-200 text-stone-300'
+                              : 'bg-stone-50 border-stone-200 text-stone-400 group-hover:border-bible-gold group-hover:text-bible-gold'
+                            }
+                          `}>
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="text-base font-medium">{option}</span>
+                        </div>
+                        {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-500" size={28} />}
+                        {showAnswer && !isCorrect && <XCircle className="text-stone-200" size={28} />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <AnimatePresence>
+                  {showAnswer && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="pt-8 border-t border-stone-100 space-y-6"
+                    >
+                      <div className="bg-stone-50 p-6 rounded-2xl border border-stone-100 flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-bible-gold/10 flex items-center justify-center shrink-0">
+                          <BookOpen className="text-bible-gold" size={24} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Referencia Bíblica</p>
+                          <p className="text-2xl font-serif italic text-stone-800">{currentQuestion.reference}</p>
+                          <p className="text-xs text-stone-400 mt-1">Reina Valera 1960</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <button 
+                          onClick={() => getRandomQuestion(currentPeriod || 'SURPRISE')}
+                          className="flex-1 py-5 bg-stone-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
+                        >
+                          Siguiente Pregunta
+                          <Sparkles size={20} />
+                        </button>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => setCurrentQuestion(null)}
+                            className="flex-1 sm:flex-none px-8 py-5 bg-stone-100 text-stone-600 rounded-2xl font-bold hover:bg-stone-200 transition-colors flex items-center justify-center"
+                            title="Cerrar"
+                          >
+                            <RotateCcw size={24} />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {!showAnswer && (
+                  <button 
+                    onClick={() => setShowAnswer(true)}
+                    className="w-full py-6 bg-bible-gold text-white rounded-2xl font-bold hover:bg-amber-600 transition-all shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-3"
+                  >
+                    <Eye size={24} />
+                    <span className="text-xl">Revelar Respuesta</span>
+                  </button>
+                )}
+                {Object.values(gameStats).some(stat => stat.total > 0) && (
+                  <button
+                    onClick={() => {
+                    setEndTime(Date.now());
+                    setShowFinalSummary(true);
+                  }}
+                  className="w-full mt-6 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
+                >
+                  Finalizar Partida
+                </button>
+              )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </main>
 
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
