@@ -833,11 +833,6 @@ if (showWelcome) {
       </AnimatePresence>
 
       <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
-
-{gameMode === 'TABLERO' ? (
-  <BoardGameMode onExit={() => setGameMode(null)} />
-) : (
-  <>
 {!gameMode ? (
 
   <motion.div
@@ -1211,9 +1206,8 @@ if (showWelcome) {
               </div>
             </div>
           </motion.div>
-        </> 
-      )}
-</main>
+        )}
+      </main>
 
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
