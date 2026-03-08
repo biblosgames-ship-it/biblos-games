@@ -271,6 +271,7 @@ if (showFinalSummary) {
   const accuracy = getAccuracy();
   const duration = getDuration();
 
+  // Configuración de la Medalla
   const getMedal = (score: number) => {
     if (score >= 90) return { icon: "🏆", label: "Maestro de la Palabra", color: "text-amber-400" };
     if (score >= 70) return { icon: "🥈", label: "Erudito Bíblico", color: "text-stone-300" };
@@ -279,6 +280,8 @@ if (showFinalSummary) {
   };
 
   const medal = getMedal(accuracy);
+  const shareMessage = `¡He completado mi desafío en Biblos Games con ${accuracy}% de precisión! 🙏✨ ¿Te atreves a probar tu conocimiento bíblico?`;
+  const shareUrl = "https://www.biblosgames.com"; // Cambia por tu URL real
 
   return (
     <div className="min-h-screen bg-[#1B1A17] text-[#D6D0C4] flex items-center justify-center p-4">
@@ -287,15 +290,21 @@ if (showFinalSummary) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-[#2A2621] rounded-[2.5rem] border-2 border-amber-900/30 overflow-hidden shadow-2xl"
       >
-        <div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
-          <img src="/logo-biblos.png" alt="Biblos Games" className="w-48 mx-auto mb-6 object-contain drop-shadow-xl" />
-          <div className="text-6xl mb-2">{medal.icon}</div>
-          <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
-            {medal.label}
-          </h1>
-        </div>
-
+       {/* ENCABEZADO CON LOGO Y MEDALLA */}
+<div className="bg-[#1B1A17] p-8 text-center border-b border-amber-900/20 relative">
+  <img 
+    src="/logo-biblos.png"  /* <--- Cambiado al logo comercial de la entrada */
+    alt="Biblos Games" 
+    className="w-48 mx-auto mb-6 object-contain drop-shadow-xl" 
+  />
+  <div className="text-6xl mb-2">{medal.icon}</div>
+  <h1 className={`text-2xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
+    {medal.label}
+  </h1>
+  {/* Quitamos el texto pequeño para que el logo y la medalla sean los protagonistas */}
+</div>
         <div className="p-6 space-y-6">
+          {/* ESTADÍSTICAS COMPACTAS */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-[#1B1A17]/50 p-3 rounded-xl border border-white/5 text-center">
               <p className="text-[9px] text-stone-500 uppercase mb-1">Aciertos</p>
@@ -311,44 +320,71 @@ if (showFinalSummary) {
             </div>
           </div>
 
+          {/* LISTA SIMPLIFICADA DE PERIODOS */}
           <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
             <p className="text-[10px] font-bold text-stone-600 uppercase tracking-widest text-center mb-3">Rendimiento por periodo</p>
-            {Object.entries(gameStats).map(([period, stats]: any) => {
+            {Object.entries(gameStats).map(([period, stats]) => {
               if (stats.total === 0) return null;
               const periodAccuracy = Math.round((stats.correct / stats.total) * 100);
               return (
                 <div key={period} className="flex justify-between items-center text-sm border-b border-white/5 pb-1">
                   <span className="text-stone-400 font-medium">{period}</span>
-                  <span className={`font-bold ${periodAccuracy >= 70 ? 'text-emerald-400' : 'text-amber-400'}`}>{periodAccuracy}%</span>
+                  <span className={`font-bold ${getColor(periodAccuracy)}`}>{periodAccuracy}%</span>
                 </div>
               );
             })}
           </div>
 
-          {/* BOTONES ELEGANTES DE COMPARTIR Y COPIAR */}
-          {(() => {
-            const textoVisual = `✨ BIBLOS GAMES ✨\n━━━━━━━━━━━━━━\n${medal.icon} Rango: ${medal.label}\n🎯 Precisión: ${accuracy}%\n✅ Aciertos: ${correct}/${total}\n⏱️ Tiempo: ${formatTime(duration)}\n━━━━━━━━━━━━━━\n¡Desafía tu conocimiento aquí! 👇\nhttps://biblosgames.com`;
-            
-            return (
-              <div className="space-y-3 mt-6">
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => { playSound("select"); navigator.clipboard.writeText(textoVisual); alert("¡Copiado!"); }}
-                    className="flex-1 py-3 bg-stone-100 text-stone-700 rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-stone-200 transition-all text-xs uppercase"
-                  >
-                    <Copy size={16} /> Copiar
-                  </button>
-                  <button
-                    onClick={() => { playSound("select"); if (navigator.share) navigator.share({ text: textoVisual }); }}
-                    className="flex-1 py-3 bg-amber-500 text-white rounded-2xl flex items-center justify-center gap-2 font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all text-xs uppercase"
-                  >
-                    <Share2 size={16} /> Compartir
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
+          {/* BOTONES SOCIALES */}
+          <div className="space-y-3">
+  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu Medalla</p>
+  
+  {(() => {
+    // Generamos un "dibujo" con emojis que parece una tarjeta de resultados
+    const dibujoPuntos = accuracy >= 80 ? "status: 🟩🟩🟩🟩🟩" : accuracy >= 50 ? "status: 🟩🟩🟩⬜⬜" : "status: 🟥⬜⬜⬜⬜";
+    
+    const textoVisual = `
+✨ BIBLOS GAMES ✨
+━━━━━━━━━━━━━━
+${medal.icon} Rango: ${medal.label}
+${dibujoPuntos}
+🎯 Precisión: ${accuracy}%
+✅ Aciertos: ${correct}/${total}
+⏱️ Tiempo: ${formatTime(duration)}
+━━━━━━━━━━━━━━
+¡Desafía tu conocimiento aquí! 👇
+`;
+    const urlJuego = "https://biblosgames.com";
 
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        {/* WHATSAPP */}
+        <a 
+          href={`https://wa.me/?text=${encodeURIComponent(textoVisual + urlJuego)}`}
+          target="_blank" rel="noreferrer"
+          className="py-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
+        >
+          <MessageCircle size={18} />
+          <span className="text-xs font-bold uppercase">WhatsApp</span>
+        </a>
+
+        {/* INSTAGRAM (COPIAR TEXTO) */}
+        <button 
+          onClick={() => {
+            navigator.clipboard.writeText(textoVisual + urlJuego);
+            alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
+          }}
+          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
+        >
+          <Share2 size={18} />
+          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
+        </button>
+      </div>
+    );
+  })()}
+</div>
+
+          {/* BOTÓN REINICIAR */}
           <button
             onClick={() => { setShowFinalSummary(false); resetGame(); }}
             className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-[#1B1A17] font-black rounded-xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-lg shadow-amber-500/10"
@@ -360,7 +396,6 @@ if (showFinalSummary) {
     </div>
   );
 }
-
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
