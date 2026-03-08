@@ -563,11 +563,11 @@ if (showWelcome) {
             Modo Trivia
           </button>
 
-         {/* OPCIÓN 2: TABLERO DIGITAL */}
+          {/* OPCIÓN 2: TABLERO DIGITAL */}
           <button
             onClick={() => {
               playSound("select");
-              setGameMode('TABLERO'); // <-- ASEGÚRATE QUE SEA 'TABLERO' (no PERIODOS)
+              setGameMode('TABLERO');
               setShowWelcome(false);
             }}
             className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
@@ -580,66 +580,77 @@ if (showWelcome) {
   );
 }
   return (
-    <div
-      className={`min-h-screen flex flex-col transition-all duration-500 ${
-        isProjectionMode
-          ? "bg-black text-white"
-          : "bg-[#1B1A17]"
-      }`}
-    >
-      {/* --- AQUÍ ABRE LA PUERTA --- */}
-      {gameMode === 'TABLERO' ? (
-        <BoardGameMode onExit={() => setGameMode(null)} />
-      ) : (
-        <>
-          {/* --- A PARTIR DE AQUÍ VA TODO TU CÓDIGO ORIGINAL --- */}
+  <div
+    className={`min-h-screen flex flex-col transition-all duration-500 ${
+      isProjectionMode
+        ? "bg-black text-white"
+        : "bg-[#1B1A17]"
+    }`}
+  >
 
-          {/* HEADER */}
-          <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
-            <div className="flex items-center">
-              <img src="/logo-header.png" alt="Biblos Games" className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
-            </div>
-            <div className="absolute bottom-1 left-1/2 -translate-x-1/2">
-              <p className="text-white text-[10px] tracking-[0.3em] uppercase font-light">El Juego de la Biblia</p>
-            </div>
-            <div className="flex items-center justify-end gap-1 sm:gap-2">
-              <button onClick={() => { setShowInstructions(true); setShowAbout(false); }} className="p-2 rounded-lg hover:bg-stone-100 text-amber-200 transition-colors" title="Instrucciones">
-                <BookOpen size={22} strokeWidth={2.5} />
-              </button>
-              <button onClick={() => { setShowAbout(true); setShowInstructions(false); }} className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors" title="Acerca de">
-                <Info size={20} />
-              </button>
-              <button onClick={() => setIsSoundOn(!isSoundOn)} className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors" title="Activar / Desactivar sonido">
-                {isSoundOn ? <Volume2 size={20} /> : <VolumeX size={20} />}
-              </button>
-              <div className="w-px h-6 bg-stone-200 mx-1 hidden sm:block" />
-              <button onClick={resetGame} className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors" title="Reiniciar">
-                <RotateCcw size={20} />
-              </button>
-            </div>
-          </header>
+    {/* HEADER */}
 
-          {/* Instrucciones y About Modals */}
-          <AnimatePresence>
-            {showInstructions && <div /* ... tu modal instrucciones ... */ />}
-            {showAbout && <div /* ... tu modal about ... */ />}
-          </AnimatePresence>
+      {/* Header */}
+      <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+        {/* Left: Logo & Title */}
+        <div className="flex items-center">
+          <img
+            src="/logo-header.png"
+            alt="Biblos Games"
+            className="h-14 md:h-16 w-auto object-contain drop-shadow-lg"
+          />
+        </div>
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2">
+          <p className="text-white text-[10px] tracking-[0.3em] uppercase font-light">
+            El Juego de la Biblia
+          </p>
+        </div>
+        {/* Right: Actions */}
+        <div className="flex items-center justify-end gap-1 sm:gap-2">
 
-          {/* MAIN */}
-          <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
-            {/* ... TU CÓDIGO DE TRIVIA AQUÍ ... */}
-          </main>
+          <button 
+            onClick={() => {
+              setShowInstructions(true);
+              setShowAbout(false);
+            }}
+            className="p-2 rounded-lg hover:bg-stone-100 text-amber-200 transition-colors"
+            title="Instrucciones"
+          >
+            <BookOpen size={22} strokeWidth={2.5} />
+          </button>
 
-          {/* FOOTER */}
-          <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
-            Total de Preguntas: {ALL_QUESTIONS.length}
-          </footer>
+          <button 
+            onClick={() => {
+              setShowAbout(true);
+              setShowInstructions(false);
+            }}
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
+            title="Acerca de"
+          >
+            <Info size={20} />
+          </button>
 
-        {/* --- AQUÍ CIERRA LA PUERTA --- */}
-        </>
-      )}
-    </div>
-  );
+          {/* 🔊 NUEVA BOCINA */}
+          <button
+            onClick={() => setIsSoundOn(!isSoundOn)}
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
+            title="Activar / Desactivar sonido"
+          >
+            {isSoundOn ? <Volume2 size={20} /> : <VolumeX size={20} />}
+          </button>
+
+          <div className="w-px h-6 bg-stone-200 mx-1 hidden sm:block" />
+
+          <button 
+            onClick={resetGame}
+            className="p-2 rounded-lg hover:bg-white/10 text-amber-200 hover:text-amber-400 transition-colors"
+            title="Reiniciar"
+          >
+            <RotateCcw size={20} />
+          </button>
+
+          </div>
+      </header>
 
       {/* Instructions Modal */}
       <AnimatePresence>
@@ -822,6 +833,11 @@ if (showWelcome) {
       </AnimatePresence>
 
       <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+
+{gameMode === 'TABLERO' ? (
+  <BoardGameMode onExit={() => setGameMode(null)} />
+) : (
+  <>
 {!gameMode ? (
 
   <motion.div
@@ -1195,8 +1211,9 @@ if (showWelcome) {
               </div>
             </div>
           </motion.div>
-        )}
-      </main>
+        </> 
+      )}
+</main>
 
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
