@@ -56,38 +56,6 @@ const BOARD_DATA = [
   // ... (puedes completar el resto siguiendo este formato hasta el id 75)
 ];
 
-function BoardGameMode({ onExit }: { onExit: () => void }) {
-  const [position, setPosition] = useState(0);
-  const [dice, setDice] = useState(0);
-
-  const rollDice = () => {
-    const roll = Math.floor(Math.random() * 10) + 1;
-    setDice(roll);
-    setPosition(prev => Math.min(prev + roll, 75));
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-[#1B1A17] flex flex-col items-center">
-      <div className="absolute top-4 left-4 z-10">
-        <button onClick={onExit} className="p-3 bg-amber-600 text-white rounded-full"><ChevronLeft /></button>
-      </div>
-      
-      {/* Tablero (Asegúrate de que la imagen se llame tablero.jpg en /public) */}
-      <img src="/tablero.jpg" alt="Tablero" className="w-full h-[60vh] object-contain mt-16" />
-
-      <div className="mt-auto p-8 w-full bg-[#2A2621] rounded-t-3xl flex justify-between items-center">
-        <div className="text-white">
-          <p className="text-xs text-stone-400 uppercase">Posición</p>
-          <p className="text-2xl font-black">{position}</p>
-        </div>
-        <button onClick={rollDice} className="px-10 py-4 bg-amber-500 rounded-2xl font-black text-xl shadow-lg">
-          🎲 {dice || "Lanzar Dado"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const [currentPeriod, setCurrentPeriod] = useState<Period | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -537,45 +505,35 @@ ${dibujoPuntos}
   }
 if (showWelcome) {
   return (
-    <div className="fixed inset-0 w-full h-full z-50">
-      <img
-        src="/fondo-biblos.jpg"
-        alt="Biblos Background"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <div>
 
-      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-end pb-20 text-center px-6">
+
+      <div className="fixed inset-0 w-full h-full">
         <img
-          src="/logo-biblos.png"
-          alt="Biblos Games"
-          className="w-72 md:w-[500px] drop-shadow-2xl mb-12"
+          src="/fondo-biblos.jpg"
+          alt="Biblos Background"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-          {/* OPCIÓN 1: MODO TRIVIA (Tu lógica existente) */}
-          <button
-            onClick={() => {
-              playSound("select");
-              setShowWelcome(false);
-            }}
-            className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
-          >
-            Modo Trivia
-          </button>
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-end pb-20 text-center px-6">
+          <img
+            src="/logo-biblos.png"
+            alt="Biblos Games"
+            className="w-72 md:w-[500px] drop-shadow-2xl"
+          />
 
-          {/* OPCIÓN 2: TABLERO DIGITAL */}
           <button
             onClick={() => {
               playSound("select");
-              setGameMode('TABLERO');
               setShowWelcome(false);
             }}
-            className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+            className="mt-10 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-lg transition-all duration-300"
           >
-            Tablero Digital
+            Comenzar
           </button>
         </div>
       </div>
+
     </div>
   );
 }
@@ -832,72 +790,68 @@ if (showWelcome) {
         )}
       </AnimatePresence>
 
-<main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
-  
-  {/* A. MODO TABLERO */}
-  {gameMode === 'TABLERO' ? (
-    <BoardGameMode onExit={() => setGameMode(null)} />
-  ) : (
-    
-    /* B. LÓGICA DE TRIVIA (Solo si NO es tablero) */
-    <>
-      {!gameMode ? (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10 py-6">
-          <div className="text-center space-y-3">
-            <h2 className="text-base font-sans font-medium">Selecciona el modo de juego</h2>
-            <p className="text-stone-400 text-sm italic">Escoge la tematica biblica que deseas jugar</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
-              { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
-              { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
-              { id: 'DIOS', label: 'Modo Dios', desc: 'Desafíos sobre Su poder y atributos', icon: Crown },
-              { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
-              { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
-              { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
-              { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades Biblicas', icon: MapPin },
-            ].map((mode) => (
-              <button
-                key={mode.id}
-                onClick={() => { playSound("select"); setGameMode(mode.id as any); }}
-                className="relative group overflow-hidden bg-[#2A2621] p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 transition-all active:scale-95 text-left"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
-                    <mode.icon size={20} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-stone-200 uppercase tracking-tight">{mode.label}</h3>
-                    <p className="text-[10px] text-stone-500 leading-tight mt-1 group-hover:text-stone-300 transition-colors">{mode.desc}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      ) : !gameLevel ? (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 py-6">
-          {/* Aquí va tu código de selección de niveles que ya tenías */}
-        </motion.div>
-      ) : !currentQuestion ? (
-        <div className="space-y-2">
-           {/* Aquí va tu código de selección de periodos */}
+      <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+{!gameMode ? (
+
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-10 py-6"
+  >
+    <div className="text-center space-y-3">
+      <h2 className="text-base font-sans font-medium">
+        Selecciona el modo de juego
+      </h2>
+      <p className="text-stone-400 text-sm italic">
+        Escoge la tematica biblica que deseas jugar
+      </p>
+    </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  {[
+    { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
+    { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
+    { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
+    { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
+    { id: 'DIOS', label: 'Modo Dios', desc: 'Desafíos sobre Su poder y atributos', icon: Crown },
+    { id: 'SALVACION', label: 'Salvación', desc: 'El plan de redención paso a paso', icon: Cross },
+    { id: 'MANDAMIENTOS', label: 'Mandamientos', desc: 'La ley y preceptos divinos', icon: ScrollText },
+    { id: 'HISTORIA', label: 'Historia', desc: 'Línea de tiempo del pueblo de Dios', icon: Landmark },
+    { id: 'GEOGRAFIA', label: 'Geografía', desc: 'Montes, ríos y ciudades Biblicas', icon: MapPin },
+  ].map((mode) => (
+    <button
+      key={mode.id}
+      onClick={() => {
+        playSound("select");
+        setGameMode(mode.id as any);
+      }}
+      className="relative group overflow-hidden bg-[#2A2621] p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 transition-all active:scale-95 text-left"
+    >
+      <div className="flex items-start gap-3">
+        <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
+          <mode.icon size={20} />
         </div>
-      ) : (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-           {/* Aquí va tu código de pantalla de preguntas */}
-        </motion.div>
-      )}
-    </>
-  )}
+        <div>
+          <h3 className="text-sm font-bold text-stone-200 uppercase tracking-tight">
+            {mode.label}
+          </h3>
+          <p className="text-[10px] text-stone-500 leading-tight mt-1 group-hover:text-stone-300 transition-colors">
+            {mode.desc}
+          </p>
+        </div>
+      </div>
+    </button>
+  ))}
+    </div>
+  </motion.div>
 
-  {/* C. FOOTER */}
-  <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
-    Total de Preguntas: {ALL_QUESTIONS.length}
-  </footer>
+) : !gameLevel ? (
 
-</main>
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-8 py-6"
+  >
+
     <div className="text-center space-y-6">
 
       <p className="text-stone-200 italic">
