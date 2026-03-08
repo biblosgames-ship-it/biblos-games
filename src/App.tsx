@@ -7,6 +7,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
+  MessageCircle,
   RotateCcw, 
   ChevronLeft, 
   Eye, 
@@ -25,8 +26,7 @@ import {
   ScrollText,
   MapPin,
   Landmark
-} from 'lucide-react';
-import { MessageCircle, Twitter, RotateCcw, ChevronLeft, Sparkles, BookOpen, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { , ,  } from 'lucide-react';
 import { MessageCircle, Facebook, Share2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
@@ -109,8 +109,8 @@ export default function App() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [screen, setScreen] = useState<'WELCOME' | 'MENU' | 'TABLERO'>('WELCOME');
 
-if (screen === 'TABLERO' && !showWelcome) {
-  return <BoardGameMode onExit={() => setScreen('MENU')} />;
+if (screen === 'TABLERO') {
+  return <BoardGameMode onExit={() => setScreen('WELCOME')} />;
 }
 
   // --- Versión mejorada y segura ---
