@@ -579,14 +579,36 @@ if (showWelcome) {
     </div>
   );
 }
-  return (
-  <div
-    className={`min-h-screen flex flex-col transition-all duration-500 ${
-      isProjectionMode
-        ? "bg-black text-white"
-        : "bg-[#1B1A17]"
-    }`}
-  >
+return (
+  <div className={`min-h-screen flex flex-col transition-all duration-500 ${isProjectionMode ? "bg-black text-white" : "bg-[#1B1A17]"}`}>
+    
+    {/* 1. BIENVENIDA (Si la necesitas, mantén tu lógica original aquí) */}
+    {showWelcome && (
+      /* ... (tu código de bienvenida actual) ... */
+    )}
+
+    {/* 2. EL INTERRUPTOR: Tablero vs Trivia */}
+    {gameMode === 'TABLERO' ? (
+      /* Si es tablero, solo renderiza el componente del tablero */
+      <BoardGameMode onExit={() => setGameMode(null)} />
+    ) : (
+      /* Si NO es tablero, renderiza todo el resto de la aplicación */
+      <>
+        {/* Tu Header */}
+        <header> ... </header> 
+        
+        {/* Tu Main (con tu lógica actual de selección de niveles y preguntas) */}
+        <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-8 bg-[#1B1A17] text-[#D6D0C4]">
+           {/* ... aquí va todo tu código original de trivia ... */}
+        </main>
+        
+        {/* Tu Footer */}
+        <footer> ... </footer>
+      </>
+    )}
+
+  </div>
+);
 
     {/* HEADER */}
 
