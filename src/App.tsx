@@ -361,18 +361,6 @@ if (showFinalSummary) {
   );
 }
 
-          {/* BOTÓN REINICIAR */}
-          <button
-            onClick={() => { setShowFinalSummary(false); resetGame(); }}
-            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-[#1B1A17] font-black rounded-xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-lg shadow-amber-500/10"
-          >
-            <RotateCcw size={18} /> Nueva Partida
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
   // Projection View Component
   if (isProjectionMode && currentQuestion) {
     return (
