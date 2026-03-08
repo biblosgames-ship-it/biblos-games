@@ -93,7 +93,7 @@ export default function App() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [gameLevel, setGameLevel] = useState<'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null>(null);
   const [gameMode, setGameMode] = useState<
-  | 'TABLERO'
+  | 'PERIODOS'
   | 'KIDS'
   | 'VERSICULOS'
   | 'PERSONAJES'
@@ -202,7 +202,7 @@ const getColor = (accuracy: number) => {
     let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
 
     // 1. FILTRADO POR MODO DE JUEGO
-    if (gameMode && gameMode !== 'TABLERO') {
+    if (gameMode && gameMode !== 'PERIODOS') {
       if (gameMode === 'KIDS') {
         available = available.filter(q => q.difficulty === Difficulty.BASIC);
       } else {
@@ -229,7 +229,7 @@ const getColor = (accuracy: number) => {
     if (available.length === 0) {
       let resetSet = ALL_QUESTIONS.filter(q => {
         const matchesPeriod = period === 'SURPRISE' ? true : q.period === period;
-        const matchesMode = (gameMode === 'TABLERO' || !gameMode) ? true : 
+        const matchesMode = (gameMode === 'PERIODOS' || !gameMode) ? true : 
                             (gameMode === 'KIDS' ? q.difficulty === Difficulty.BASIC : q.mode.includes(gameMode));
         return matchesPeriod && matchesMode;
       });
@@ -567,7 +567,7 @@ if (showWelcome) {
           <button
             onClick={() => {
               playSound("select");
-              setGameMode('TABLERO');
+              setGameMode('PERIODOS');
               setShowWelcome(false);
             }}
             className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
@@ -850,7 +850,7 @@ if (showWelcome) {
     </div>
 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
   {[
-    { id: 'TABLERO', label: 'Tablero', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
+    { id: 'PERIODOS', label: 'Períodos Biblicos', desc: 'Sigue la ruta del tablero físico', icon: LayoutGrid },
     { id: 'KIDS', label: 'Kids', desc: 'Preguntas sencillas para pequeños', icon: Baby },
     { id: 'VERSICULOS', label: 'Versículos', desc: 'Completa y memoriza la Palabra', icon: BookOpen },
     { id: 'PERSONAJES', label: 'Personajes', desc: '¿Quién es quién en la Biblia?', icon: Users },
