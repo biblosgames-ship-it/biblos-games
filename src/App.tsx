@@ -335,64 +335,53 @@ if (showFinalSummary) {
             })}
           </div>
 
-          {/* BOTONES SOCIALES */}
-          <div className="space-y-3">
-  <p className="text-center text-[10px] text-stone-500 font-bold uppercase tracking-widest">Presume tu Medalla</p>
-  
-  {(() => {
-    // Generamos un "dibujo" con emojis que parece una tarjeta de resultados
-    const dibujoPuntos = accuracy >= 80 ? "status: 🟩🟩🟩🟩🟩" : accuracy >= 50 ? "status: 🟩🟩🟩⬜⬜" : "status: 🟥⬜⬜⬜⬜";
-    
-    const textoVisual = `
-✨ BIBLOS GAMES ✨
-━━━━━━━━━━━━━━
-${medal.icon} Rango: ${medal.label}
-${dibujoPuntos}
-🎯 Precisión: ${accuracy}%
-✅ Aciertos: ${correct}/${total}
-⏱️ Tiempo: ${formatTime(duration)}
-━━━━━━━━━━━━━━
-¡Desafía tu conocimiento aquí! 👇
-`;
-    const urlJuego = "https://biblosgames.com";
+{/* 1. Lógica del texto (Colócalo antes de los botones) */}
+{(() => {
+  const dibujoPuntos = accuracy >= 80 ? "status: 🟩🟩🟩🟩🟩" : accuracy >= 50 ? "status: 🟩🟩🟩⬜⬜" : "status: 🟥⬜⬜⬜⬜";
+  const textoVisual = `✨ BIBLOS GAMES ✨\n━━━━━━━━━━━━━━\n${medal.icon} Rango: ${medal.label}\n${dibujoPuntos}\n🎯 Precisión: ${accuracy}%\n✅ Aciertos: ${correct}/${total}\n⏱️ Tiempo: ${formatTime(duration)}\n━━━━━━━━━━━━━━\n`;
+  const urlJuego = "https://biblosgames.com";
 
-    return (
-      <div className="grid grid-cols-2 gap-2">
-        {/* WHATSAPP */}
-        <a 
-          href={`https://wa.me/?text=${encodeURIComponent(textoVisual + urlJuego)}`}
-          target="_blank" rel="noreferrer"
-          className="py-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
-        >
-          <MessageCircle size={18} />
-          <span className="text-xs font-bold uppercase">WhatsApp</span>
-        </a>
-
-        {/* FACEBOOK */}
-        <a 
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlJuego)}&quote=${encodeURIComponent(textoVisual)}`}
-          target="_blank" rel="noreferrer"
-          className="py-3 bg-[#1877F2] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
-        >
-          <Facebook size={18} />
-          <span className="text-xs font-bold uppercase">Facebook</span>
-        </a>
-
-        {/* INSTAGRAM (COPIAR TEXTO) */}
-        <button 
+  return (
+    <div className="space-y-3 mt-6">
+      <p className="text-center text-[10px] text-stone-400 font-bold uppercase tracking-widest">Presume tu Medalla</p>
+      
+      <div className="flex gap-3">
+        {/* BOTÓN COPIAR */}
+        <button
           onClick={() => {
+            playSound("select");
             navigator.clipboard.writeText(textoVisual + urlJuego);
-            alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
+            alert("¡Copiado! Pégalo en tu Story o chat 🔥");
           }}
-          className="col-span-2 py-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white rounded-xl flex items-center justify-center gap-2 shadow-lg"
+          className="flex-1 py-3 bg-stone-100 text-stone-700 rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-stone-200 transition-all"
+        >
+          <Copy size={18} />
+          Copiar
+        </button>
+
+        {/* BOTÓN COMPARTIR (NATIVO) */}
+        <button
+          onClick={() => {
+            playSound("select");
+            if (navigator.share) {
+              navigator.share({
+                title: 'Mi Resultado en Biblos Games',
+                text: textoVisual,
+                url: urlJuego,
+              }).catch(() => {});
+            } else {
+              alert("Tu navegador no soporta compartir nativo.");
+            }
+          }}
+          className="flex-1 py-3 bg-amber-500 text-white rounded-2xl flex items-center justify-center gap-2 font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all"
         >
           <Share2 size={18} />
-          <span className="text-xs font-bold uppercase">Copiar Tarjeta Visual para Historias</span>
+          Compartir
         </button>
       </div>
-    );
-  })()}
-</div>
+    </div>
+  );
+})()}
 
           {/* BOTÓN REINICIAR */}
           <button
