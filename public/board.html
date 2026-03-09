@@ -2,67 +2,79 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero Digital Biblos</title>
     <style>
-        body {
-            margin: 0;
-            background: #1B1A17; /* Mismo color que tu App */
-            color: #D6D0C4;      /* Color de texto de tu App */
-            font-family: sans-serif;
+        body { background: #1B1A17; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        
+        /* La cuadrícula del tablero */
+        #tablero {
+            display: grid;
+            grid-template-columns: repeat(10, 50px); /* 10 columnas de 50px */
+            gap: 5px;
+            margin: 20px;
+        }
+
+        /* Cada casilla */
+        .casilla {
+            width: 50px;
+            height: 50px;
+            background: #2A2621;
+            border: 1px solid #3A342C;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            font-size: 12px;
+            color: #777;
         }
 
-        /* Botón de Volver */
-        .btn-back {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: #2A2621;
-            color: #D6D0C4;
-            border: 1px solid #3A342C;
-            border-radius: 12px;
-            text-decoration: none;
+        /* Clase que se activa cuando el jugador está en la casilla */
+        .jugador {
+            background: #D97706 !important; /* Ámbar */
+            color: black !important;
             font-weight: bold;
+            box-shadow: 0 0 10px #D97706;
         }
-
-        /* Botón Tirar Dado */
-        .btn-dice {
-            padding: 20px 40px;
-            font-size: 20px;
-            background: #D97706; /* Color ámbar de tu app */
-            color: black;
-            border: none;
-            border-radius: 16px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .btn-dice:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <a href="/" class="btn-back">← Volver</a>
+    <h1>Tablero Digital Biblos</h1>
+    
+    <div id="tablero"></div>
 
-    <h1>Tablero Digital</h1>
-    <p>Modo de juego activo</p>
-
-    <button class="btn-dice" onclick="tirarDado()">🎲 Tirar dado</button>
-    <h2 id="resultado" style="font-size: 3rem; margin-top: 20px;">🎲</h2>
+    <button onclick="moverJugador()">🎲 Tirar dado</button>
+    <h2 id="info">Posición: 0</h2>
 
     <script>
-        function tirarDado(){
-            const numero = Math.floor(Math.random()*6)+1;
-            document.getElementById("resultado").innerText = "🎲 " + numero;
+        let posicionActual = 0;
+        const totalCasillas = 70; // Ajusta según tu tablero
+
+        // 1. Crear el tablero al cargar
+        const tableroDiv = document.getElementById('tablero');
+        for (let i = 0; i <= totalCasillas; i++) {
+            const div = document.createElement('div');
+            div.className = 'casilla';
+            div.id = 'casilla-' + i;
+            div.innerText = i;
+            tableroDiv.appendChild(div);
+        }
+
+        // 2. Pintar la casilla inicial
+        document.getElementById('casilla-0').classList.add('jugador');
+
+        // 3. Función de movimiento
+        function moverJugador() {
+            // Quitar clase jugador de la casilla anterior
+            document.getElementById('casilla-' + posicionActual).classList.remove('jugador');
+
+            // Calcular nuevo movimiento
+            const dado = Math.floor(Math.random() * 6) + 1;
+            posicionActual = Math.min(posicionActual + dado, totalCasillas);
+
+            // Pintar la nueva casilla
+            document.getElementById('casilla-' + posicionActual).classList.add('jugador');
+            
+            document.getElementById('info').innerText = "Posición: " + posicionActual;
         }
     </script>
-
 </body>
 </html>
