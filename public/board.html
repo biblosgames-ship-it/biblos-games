@@ -8,14 +8,18 @@
         body { background: #1B1A17; color: #D6D0C4; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         
         #tablero-container {
-            position: relative;
-            width: fit-content;
-            margin: 20px auto;
-            border: 4px solid #3A342C;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
+    position: relative;
+    width: 2250px; /* Forzamos el ancho original */
+    height: 2250px; /* Forzamos el alto original */
+    margin: 20px auto;
+    border: 4px solid red; /* Ponemos un borde rojo para ver el contenedor */
+}
 
-        #tablero-img { max-width: 90vw; height: auto; display: block; }
+#tablero-img {
+    width: 2250px; /* Forzamos que la imagen mida lo original */
+    height: 2250px;
+    display: block;
+}
         
         #jugador-ficha {
             position: absolute;
