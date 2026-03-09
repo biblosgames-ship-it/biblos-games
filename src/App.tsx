@@ -540,52 +540,66 @@ ${dibujoPuntos}
       </div>
     );
   }
-if (showWelcome) {
-  return (
-    <div className="fixed inset-0 w-full h-full z-50">
-      <img
-        src="/fondo-biblos.jpg"
-        alt="Biblos Background"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-
-      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-end pb-20 text-center px-6">
+return (
+  <>
+    {/* PANTALLA DE INICIO */}
+    {showWelcome && (
+      <div className="fixed inset-0 w-full h-full z-50">
         <img
-          src="/logo-biblos.png"
-          alt="Biblos Games"
-          className="w-72 md:w-[500px] drop-shadow-2xl mb-12"
+          src="/fondo-biblos.jpg"
+          alt="Biblos Background"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-          {/* OPCIÓN 1: MODO TRIVIA (Tu lógica existente) */}
-          <button
-            onClick={() => {
-              playSound("select");
-              setShowWelcome(false);
-            }}
-            className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
-          >
-            Modo Trivia
-          </button>
+        <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-end pb-20 text-center px-6">
+          <img
+            src="/logo-biblos.png"
+            alt="Biblos Games"
+            className="w-72 md:w-[500px] drop-shadow-2xl mb-12"
+          />
 
-          {/* OPCIÓN 2: TABLERO DIGITAL */}
-          <button
-            onClick={() => {
-            playSound("select");
-            setShowWelcome(false);
-            setTimeout(() => {
-            setScreen('TABLERO');
-            }, 50);
-            }}
-            className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
-          >
-          Tablero Digital
-          </button>
+          <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+
+            {/* TRIVIA */}
+            <button
+              onClick={() => {
+                playSound("select");
+                setScreen("TRIVIA");
+                setShowWelcome(false);
+              }}
+              className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
+            >
+              Modo Trivia
+            </button>
+
+            {/* TABLERO */}
+            <button
+              onClick={() => {
+                playSound("select");
+                setScreen("TABLERO");
+                setShowWelcome(false);
+              }}
+              className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+            >
+              Tablero Digital
+            </button>
+
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    )}
+
+    {/* MODO TRIVIA */}
+    {!showWelcome && screen === "TRIVIA" && (
+      <TriviaMode />
+    )}
+
+    {/* TABLERO DIGITAL */}
+    {!showWelcome && screen === "TABLERO" && (
+      <BoardGameMode onExit={() => setShowWelcome(true)} />
+    )}
+  </>
+);
   return (
   <div
     className={`min-h-screen flex flex-col transition-all duration-500 ${
