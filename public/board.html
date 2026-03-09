@@ -45,36 +45,60 @@
     <h2 id="info">Posición: 0</h2>
 
     <script>
-        let posicionActual = 0;
-        const totalCasillas = 70; // Ajusta según tu tablero
+    // 1. Aquí defines los datos de las 75 estaciones
+    const estaciones = [
+        { id: 0, desc: "Salida", tipo: "normal" },
+        { id: 1, desc: "Creación: Día y Noche", tipo: "normal" },
+        { id: 2, desc: "Creación: Cielo y Mar", tipo: "normal" },
+        { id: 3, desc: "Creación: Plantas", tipo: "normal" },
+        { id: 4, desc: "Creación: Sol y Estrellas", tipo: "pregunta" },
+        { id: 5, desc: "Creación: Aves y Peces", tipo: "normal" },
+        { id: 6, desc: "Creación: Animales y Hombre", tipo: "normal" },
+        { id: 7, desc: "Dios descansó", tipo: "skip" },
+        { id: 8, desc: "En el Edén", tipo: "pregunta" },
+        { id: 9, desc: "Has pecado", tipo: "retrocede" },
+        { id: 10, desc: "Salida del Huerto", tipo: "avanza" },
+        { id: 11, desc: "Caín y Abel", tipo: "normal" },
+        { id: 12, desc: "El Gran Diluvio", tipo: "pregunta" },
+        { id: 13, desc: "Sobreviviste al Diluvio", tipo: "normal" },
+        { id: 14, desc: "Torre de Babel", tipo: "pregunta" },
+        { id: 15, desc: "Dios llama a Abraham", tipo: "normal" },
+        { id: 16, desc: "El hijo de la promesa", tipo: "normal" },
+        { id: 17, desc: "Jacob y Esaú", tipo: "pregunta" },
+        // ... (Aquí irían tus estaciones 18 al 74) ...
+        { id: 75, desc: "META: Cielo nuevo y tierra nueva", tipo: "meta" }
+    ];
 
-        // 1. Crear el tablero al cargar
-        const tableroDiv = document.getElementById('tablero');
-        for (let i = 0; i <= totalCasillas; i++) {
-            const div = document.createElement('div');
-            div.className = 'casilla';
-            div.id = 'casilla-' + i;
-            div.innerText = i;
-            tableroDiv.appendChild(div);
-        }
+    // 2. Aquí generas el tablero automáticamente
+    const tableroDiv = document.getElementById('tablero');
+    estaciones.forEach(estacion => {
+        const div = document.createElement('div');
+        div.className = 'casilla ' + estacion.tipo;
+        div.id = 'casilla-' + estacion.id;
+        div.innerText = estacion.id;
+        div.title = estacion.desc; 
+        tableroDiv.appendChild(div);
+    });
 
-        // 2. Pintar la casilla inicial
-        document.getElementById('casilla-0').classList.add('jugador');
+    // 3. Posición inicial
+    let posicionActual = 0;
+    document.getElementById('casilla-0').classList.add('jugador');
 
-        // 3. Función de movimiento
-        function moverJugador() {
-            // Quitar clase jugador de la casilla anterior
-            document.getElementById('casilla-' + posicionActual).classList.remove('jugador');
+    // 4. Lógica del dado
+    function tirarDado(){
+        // Quitar al jugador de donde esté
+        document.getElementById('casilla-' + posicionActual).classList.remove('jugador');
 
-            // Calcular nuevo movimiento
-            const dado = Math.floor(Math.random() * 6) + 1;
-            posicionActual = Math.min(posicionActual + dado, totalCasillas);
+        // Mover
+        const dado = Math.floor(Math.random() * 6) + 1;
+        posicionActual = Math.min(posicionActual + dado, 75); // Límite 75
 
-            // Pintar la nueva casilla
-            document.getElementById('casilla-' + posicionActual).classList.add('jugador');
-            
-            document.getElementById('info').innerText = "Posición: " + posicionActual;
-        }
-    </script>
+        // Poner al jugador en la nueva posición
+        document.getElementById('casilla-' + posicionActual).classList.add('jugador');
+        
+        document.getElementById('resultado').innerText = "🎲 " + dado;
+        document.getElementById('info').innerText = "Posición: " + posicionActual;
+    }
+</script>
 </body>
 </html>
