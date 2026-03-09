@@ -26,10 +26,12 @@ import {
   MapPin,
   Landmark,
   MessageCircle,
+  Share2,
+  MessageCircle,
+  Facebook,
   Facebook,
   Share2
 } from "lucide-react";
-import { MessageCircle, Facebook, Share2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
