@@ -49,9 +49,83 @@
     // --- 1. DATOS ---
     // Aquí irán tus coordenadas. Si ya tienes algunas, puedes dejarlas pegadas.
     const coordenadas = [
-        {x: 50, y: 50}, // Casilla 0
-        // ... (Aquí irás pegando el resultado de tus clics)
-    ];
+    {x: 193, y: 585}, // Casilla 0
+    {x: 124, y: 593}, // Casilla 1
+    {x: 88, y: 592}, // Casilla 2
+    {x: 51, y: 573}, // Casilla 3
+    {x: 60, y: 536}, // Casilla 4
+    {x: 53, y: 492}, // Casilla 5
+    {x: 74, y: 466}, // Casilla 6
+    {x: 115, y: 462}, // Casilla 7
+    {x: 169, y: 471}, // Casilla 8
+    {x: 211, y: 466}, // Casilla 9
+    {x: 256, y: 473}, // Casilla 10
+    {x: 305, y: 469}, // Casilla 11
+    {x: 353, y: 465}, // Casilla 12
+    {x: 399, y: 468}, // Casilla 13
+    {x: 447, y: 475}, // Casilla 14
+    {x: 490, y: 470}, // Casilla 15
+    {x: 516, y: 447}, // Casilla 16
+    {x: 519, y: 404}, // Casilla 17
+    {x: 484, y: 358}, // Casilla 18
+    {x: 441, y: 374}, // Casilla 19
+    {x: 340, y: 370}, // Casilla 20
+    {x: 347, y: 376}, // Casilla 21
+    {x: 302, y: 374}, // Casilla 22
+    {x: 256, y: 375}, // Casilla 23
+    {x: 207, y: 372}, // Casilla 24
+    {x: 158, y: 378}, // Casilla 25
+    {x: 109, y: 376}, // Casilla 26
+    {x: 68, y: 339}, // Casilla 27
+    {x: 66, y: 285}, // Casilla 28
+    {x: 108, y: 258}, // Casilla 29
+    {x: 161, y: 261}, // Casilla 30
+    {x: 213, y: 264}, // Casilla 31
+    {x: 264, y: 265}, // Casilla 32
+    {x: 311, y: 264}, // Casilla 33
+    {x: 361, y: 265}, // Casilla 34
+    {x: 406, y: 263}, // Casilla 35
+    {x: 454, y: 262}, // Casilla 36
+    {x: 491, y: 260}, // Casilla 37
+    {x: 515, y: 230}, // Casilla 38
+    {x: 521, y: 191}, // Casilla 39
+    {x: 493, y: 163}, // Casilla 40
+    {x: 447, y: 166}, // Casilla 41
+    {x: 391, y: 167}, // Casilla 42
+    {x: 339, y: 173}, // Casilla 43
+    {x: 287, y: 166}, // Casilla 44
+    {x: 236, y: 170}, // Casilla 45
+    {x: 186, y: 169}, // Casilla 46
+    {x: 138, y: 169}, // Casilla 47
+    {x: 89, y: 162}, // Casilla 48
+    {x: 55, y: 118}, // Casilla 49
+    {x: 79, y: 69}, // Casilla 50
+    {x: 138, y: 63}, // Casilla 51
+    {x: 191, y: 66}, // Casilla 52
+    {x: 248, y: 68}, // Casilla 53
+    {x: 300, y: 71}, // Casilla 54
+    {x: 353, y: 67}, // Casilla 55
+    {x: 410, y: 68}, // Casilla 56
+    {x: 462, y: 67}, // Casilla 57
+    {x: 515, y: 70}, // Casilla 58
+    {x: 567, y: 71}, // Casilla 59
+    {x: 592, y: 98}, // Casilla 60
+    {x: 594, y: 141}, // Casilla 61
+    {x: 591, y: 177}, // Casilla 62
+    {x: 589, y: 214}, // Casilla 63
+    {x: 588, y: 251}, // Casilla 64
+    {x: 590, y: 289}, // Casilla 65
+    {x: 587, y: 324}, // Casilla 66
+    {x: 589, y: 361}, // Casilla 67
+    {x: 586, y: 396}, // Casilla 68
+    {x: 590, y: 435}, // Casilla 69
+    {x: 590, y: 473}, // Casilla 70
+    {x: 592, y: 511}, // Casilla 71
+    {x: 596, y: 555}, // Casilla 72
+    {x: 559, y: 579}, // Casilla 73
+    {x: 514, y: 570}, // Casilla 74
+    {x: 442, y: 576}  // Casilla 75
+];
 
     let posicionActual = 0;
     
@@ -77,23 +151,6 @@
         document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
     }
 
-    // --- 3. AYUDANTE DE MAPEO (SOLO PARA DESARROLLO) ---
-    // Este contador es independiente del juego, así no se descontrola
-    let contadorMapeo = 0; 
-
-    document.getElementById('tablero-img').addEventListener('click', function(e) {
-        const rect = e.target.getBoundingClientRect();
-        const x = Math.round(e.clientX - rect.left);
-        const y = Math.round(e.clientY - rect.top);
-        
-        // Imprime en consola para copiar masivamente
-        console.log(`{x: ${x}, y: ${y}}, // Casilla ${contadorMapeo}`);
-        
-        // Alerta visual para confirmar
-        alert("Casilla " + contadorMapeo + " mapeada. Revisa la consola.");
-        
-        contadorMapeo++; // Aumenta automáticamente para la siguiente vez que hagas clic
-    });
 </script>
 </body>
 </html>
