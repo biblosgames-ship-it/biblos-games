@@ -111,7 +111,7 @@ export default function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [screen, setScreen] = useState<'WELCOME' | 'TRIVIA' | 'TABLERO'>('WELCOME');
+  const [screen, setScreen] = useState<'WELCOME' | 'MENU' | 'TABLERO'>('WELCOME');
 
   // --- Versión mejorada y segura ---
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<string>>(() => {
@@ -563,9 +563,9 @@ return (
             {/* TRIVIA */}
             <button
               onClick={() => {
-              playSound("select");
-              setScreen("TRIVIA");
-              setShowWelcome(false);
+                playSound("select");
+                setScreen("TRIVIA");
+                setShowWelcome(false);
               }}
               className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
             >
@@ -591,15 +591,13 @@ return (
 
     {/* MODO TRIVIA */}
     {!showWelcome && screen === "TRIVIA" && (
-  <div className="w-full h-full">
-    {/* Aquí sigue tu código actual del juego de trivia */}
-  </div>
-)}
+      <TriviaMode />
+    )}
 
     {/* TABLERO DIGITAL */}
     {!showWelcome && screen === "TABLERO" && (
-  <BoardGameMode onExit={() => setShowWelcome(true)} />
-)}
+      <BoardGameMode onExit={() => setShowWelcome(true)} />
+    )}
   </>
 );
   return (
