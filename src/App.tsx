@@ -560,10 +560,10 @@ return (
             {/* TRIVIA */}
             <button
               onClick={() => {
-  playSound("select");
-  setScreen("TRIVIA");
-  setShowWelcome(false);
-}}
+                playSound("select");
+                setScreen("TRIVIA");
+                setShowWelcome(false);
+              }}
               className="px-6 py-4 bg-amber-500 hover:bg-amber-600 text-black font-black rounded-2xl shadow-lg transition-all active:scale-95"
             >
               Modo Trivia
@@ -572,10 +572,10 @@ return (
             {/* TABLERO */}
             <button
               onClick={() => {
-  playSound("select");
-  setScreen("TABLERO");
-  setShowWelcome(false);
-}}
+                playSound("select");
+                setScreen("TABLERO");
+                setShowWelcome(false);
+              }}
               className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
             >
               Tablero Digital
@@ -588,34 +588,14 @@ return (
 
     {/* MODO TRIVIA */}
     {!showWelcome && screen === "TRIVIA" && (
-
-  <div
-    className={`min-h-screen flex flex-col transition-all duration-500 ${
-      isProjectionMode
-        ? "bg-black text-white"
-        : "bg-[#1B1A17]"
-    }`}
-  >
-
-    {/* TABLERO DIGITAL */}
-    {screen === "TABLERO" && (
-  <BoardGameMode onExit={() => {
-    setScreen("WELCOME");
-    setShowWelcome(true);
-  }} />
-)}
-  </>
-);
-  return (
-  <div
-    className={`min-h-screen flex flex-col transition-all duration-500 ${
-      isProjectionMode
-        ? "bg-black text-white"
-        : "bg-[#1B1A17]"
-    }`}
-  >
-
-    {/* HEADER */}
+      <div
+        className={`min-h-screen flex flex-col transition-all duration-500 ${
+          isProjectionMode
+            ? "bg-black text-white"
+            : "bg-[#1B1A17]"
+        }`}
+      >
+        {/* HEADER */}
 
       {/* Header */}
       <header className="relative bg-[#2A2621]/90 backdrop-blur-md border-b border-[#3A342C] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
