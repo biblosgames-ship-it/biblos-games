@@ -138,18 +138,26 @@
     const ficha = document.getElementById('jugador-ficha');
     const pos = coordenadas[posicionActual];
     
-    if (!pos) return;
+    if (!pos) {
+        console.error("No hay coordenadas para la casilla " + posicionActual);
+        return;
+    }
 
-    // Aquí está la clave: DIVIDIMOS POR LA MEDIDA REAL DE LA IMAGEN (2250)
-    // Esto convierte tus coordenadas de píxeles a % del tablero total
-    const xPercent = (pos.x / 2250) * 100;
-    const yPercent = (pos.y / 2250) * 100;
+    // --- AQUÍ ESTÁ EL LOG ---
+    // Esto nos dirá qué está leyendo el juego
+    console.log("Moviendo a casilla:", posicionActual);
+    console.log("Coordenada original (X, Y):", pos.x, pos.y);
+
+    const anchoOriginal = 2250;
+    const altoOriginal = 2250;
     
-    // Aplicamos los porcentajes
+    const xPercent = (pos.x / anchoOriginal) * 100;
+    const yPercent = (pos.y / altoOriginal) * 100;
+
+    console.log("Calculando porcentaje:", xPercent + "%", yPercent + "%");
+
     ficha.style.left = xPercent + '%';
     ficha.style.top = yPercent + '%';
-    
-    // Esto asegura que la ficha se centre en el punto exacto
     ficha.style.transform = "translate(-50%, -50%)"; 
     
     document.getElementById('resultado').innerText = "🎲 " + dado;
