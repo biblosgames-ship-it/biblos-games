@@ -26,9 +26,6 @@ import {
   MapPin,
   Landmark,
   MessageCircle,
-  Share2,
-  MessageCircle,
-  Facebook,
   Facebook,
   Share2
 } from "lucide-react";
@@ -591,10 +588,14 @@ return (
 
     {/* MODO TRIVIA */}
     {!showWelcome && screen === "TRIVIA" && (
-  <div className="w-full h-full">
-    {/* Aquí sigue tu código actual del juego de trivia */}
-  </div>
-)}
+
+  <div
+    className={`min-h-screen flex flex-col transition-all duration-500 ${
+      isProjectionMode
+        ? "bg-black text-white"
+        : "bg-[#1B1A17]"
+    }`}
+  >
 
     {/* TABLERO DIGITAL */}
     {screen === "TABLERO" && (
@@ -1234,6 +1235,8 @@ return (
           </motion.div>
         )}
       </main>
+</div>
+)}
 
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
