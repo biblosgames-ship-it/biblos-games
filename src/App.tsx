@@ -1221,7 +1221,6 @@ return (
       {/* Footer / Stats (Subtle) */}
       <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
         Total de Preguntas: {ALL_QUESTIONS.length}
-      </footer>
-    </div>
-  );
-}
+    </footer>
+  </>
+);
