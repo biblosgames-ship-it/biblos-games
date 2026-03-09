@@ -1215,7 +1215,6 @@ return (
           </motion.div>
         )}
       </main>
-)}
 
 {/* Footer / Stats */}
 <footer className="p-6 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-medium">
