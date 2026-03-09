@@ -36,10 +36,10 @@
     <a href="/" style="position: absolute; top: 20px; left: 20px; color: #D97706; text-decoration: none;">← Volver</a>
     <h1>Tablero Digital</h1>
     
-    <div id="tablero-container">
-        <img src="/Tablero.jpg" id="tablero-img" alt="Tablero Biblos">
-        <div id="jugador-ficha"></div>
-    </div>
+   <div id="tablero-container" style="position: relative; width: fit-content;">
+    <img src="/Tablero.jpg" id="tablero-img" style="max-width: 90vw; height: auto; display: block;">
+    <div id="jugador-ficha" style="position: absolute; ..."></div>
+</div>
 
     <button onclick="moverFicha()">🎲 Tirar dado</button>
     <h2 id="resultado">🎲</h2>
@@ -130,34 +130,31 @@
     let posicionActual = 0;
     
     // --- 2. LÓGICA DEL JUEGO ---
+
     function moverFicha() {
-        // Dimensiones originales de tu imagen (2250x2250)
-        const anchoOriginal = 2250;
-        const altoOriginal = 2250;
-        
-        const dado = Math.floor(Math.random() * 6) + 1;
-        posicionActual = Math.min(posicionActual + dado, 75);
-        
-        const ficha = document.getElementById('jugador-ficha');
-        const pos = coordenadas[posicionActual];
-        
-        if (!pos) {
-            document.getElementById('info').innerText = "Falta mapear casilla: " + posicionActual;
-            return;
-        }
-        
-        // CALCULO RESPONSIVO: Convertimos los píxeles a porcentaje (%)
-        const xPercent = (pos.x / anchoOriginal) * 100;
-        const yPercent = (pos.y / altoOriginal) * 100;
-        
-        // Aplicamos los porcentajes
-        ficha.style.left = xPercent + '%';
-        ficha.style.top = yPercent + '%';
-        ficha.style.transform = "translate(-50%, -50%)";
-        
-        document.getElementById('resultado').innerText = "🎲 " + dado;
-        document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
-    }
+    const dado = Math.floor(Math.random() * 6) + 1;
+    posicionActual = Math.min(posicionActual + dado, 75);
+    
+    const ficha = document.getElementById('jugador-ficha');
+    const pos = coordenadas[posicionActual];
+    
+    if (!pos) return;
+
+    // Aquí está la clave: DIVIDIMOS POR LA MEDIDA REAL DE LA IMAGEN (2250)
+    // Esto convierte tus coordenadas de píxeles a % del tablero total
+    const xPercent = (pos.x / 2250) * 100;
+    const yPercent = (pos.y / 2250) * 100;
+    
+    // Aplicamos los porcentajes
+    ficha.style.left = xPercent + '%';
+    ficha.style.top = yPercent + '%';
+    
+    // Esto asegura que la ficha se centre en el punto exacto
+    ficha.style.transform = "translate(-50%, -50%)"; 
+    
+    document.getElementById('resultado').innerText = "🎲 " + dado;
+    document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
+}
 
 </script>
 </body>
