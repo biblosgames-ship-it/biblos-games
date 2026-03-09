@@ -29,7 +29,6 @@ import {
   Share2,
   MessageCircle,
   Facebook,
-  Facebook,
   Share2
 } from "lucide-react";
 import confetti from 'canvas-confetti';
@@ -574,17 +573,14 @@ if (showWelcome) {
 
           {/* OPCIÓN 2: TABLERO DIGITAL */}
           <button
-            onClick={() => {
-            playSound("select");
-            setShowWelcome(false);
-            setTimeout(() => {
-            setScreen('TABLERO');
-            }, 50);
-            }}
-            className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
-          >
-          Tablero Digital
-          </button>
+  onClick={() => {
+    playSound("select");
+    window.location.href = "/board.html";
+  }}
+  className="px-6 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl shadow-lg hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+>
+  Tablero Digital
+</button>
         </div>
       </div>
     </div>
