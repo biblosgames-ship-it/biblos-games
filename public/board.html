@@ -45,53 +45,54 @@
     <h2 id="resultado">🎲</h2>
     <h3 id="info">Posición: 0</h3>
 
-   <script>
-    // --- 1. AQUÍ TUS COORDENADAS (Llena esto poco a poco) ---
-    // A medida que hagas clic en el tablero, pega aquí los resultados
+<script>
+    // --- 1. DATOS ---
+    // Aquí irán tus coordenadas. Si ya tienes algunas, puedes dejarlas pegadas.
     const coordenadas = [
         {x: 50, y: 50}, // Casilla 0
-        {x: 100, y: 50}, // Casilla 1
-        // ... pega aquí tus nuevas líneas cuando las saques de la consola
+        // ... (Aquí irás pegando el resultado de tus clics)
     ];
 
     let posicionActual = 0;
-
+    
+    // --- 2. LÓGICA DEL JUEGO ---
     function moverFicha() {
         const dado = Math.floor(Math.random() * 6) + 1;
-        
-        // Evitamos que pase de 75
         posicionActual = Math.min(posicionActual + dado, 75);
         
         const ficha = document.getElementById('jugador-ficha');
         const pos = coordenadas[posicionActual];
         
-        // SEGURIDAD: Si no tienes mapeada esta casilla, avisamos
         if (!pos) {
             document.getElementById('info').innerText = "Falta mapear casilla: " + posicionActual;
-            // Opcional: mover la ficha a una esquina para indicar error
-            ficha.style.left = '0px';
-            ficha.style.top = '0px';
             return;
         }
         
         // Mover la ficha con centrado automático
         ficha.style.left = pos.x + 'px';
         ficha.style.top = pos.y + 'px';
-        ficha.style.transform = "translate(-50%, -50%)"; // ¡Esto centra la ficha justo en el punto!
+        ficha.style.transform = "translate(-50%, -50%)"; 
         
         document.getElementById('resultado').innerText = "🎲 " + dado;
         document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
     }
 
-    // --- 2. AYUDANTE PARA MAPEAR (No borrar) ---
-    // Cada vez que haces clic en la imagen, te da la coordenada en la consola
+    // --- 3. AYUDANTE DE MAPEO (SOLO PARA DESARROLLO) ---
+    // Este contador es independiente del juego, así no se descontrola
+    let contadorMapeo = 0; 
+
     document.getElementById('tablero-img').addEventListener('click', function(e) {
         const rect = e.target.getBoundingClientRect();
         const x = Math.round(e.clientX - rect.left);
         const y = Math.round(e.clientY - rect.top);
         
-        console.log(`{x: ${x}, y: ${y}}, // Casilla ${posicionActual + 1}`);
-        alert("Coordenada copiada a consola: X:" + x + " Y:" + y);
+        // Imprime en consola para copiar masivamente
+        console.log(`{x: ${x}, y: ${y}}, // Casilla ${contadorMapeo}`);
+        
+        // Alerta visual para confirmar
+        alert("Casilla " + contadorMapeo + " mapeada. Revisa la consola.");
+        
+        contadorMapeo++; // Aumenta automáticamente para la siguiente vez que hagas clic
     });
 </script>
 </body>
