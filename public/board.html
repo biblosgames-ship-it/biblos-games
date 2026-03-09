@@ -85,20 +85,45 @@
     document.getElementById('casilla-0').classList.add('jugador');
 
     // 4. Lógica del dado
-    function tirarDado(){
-        // Quitar al jugador de donde esté
-        document.getElementById('casilla-' + posicionActual).classList.remove('jugador');
+    function tirarDado() {
+    // 1. Quitar al jugador de la casilla anterior
+    document.getElementById('casilla-' + posicionActual).classList.remove('jugador');
 
-        // Mover
-        const dado = Math.floor(Math.random() * 6) + 1;
-        posicionActual = Math.min(posicionActual + dado, 75); // Límite 75
+    // 2. Mover
+    const dado = Math.floor(Math.random() * 6) + 1;
+    posicionActual = Math.min(posicionActual + dado, 75);
+    
+    // 3. --- LÓGICA DE EFECTOS ESPECIALES (Aquí está la magia) ---
+    let mensajeEfecto = "";
 
-        // Poner al jugador en la nueva posición
-        document.getElementById('casilla-' + posicionActual).classList.add('jugador');
-        
-        document.getElementById('resultado').innerText = "🎲 " + dado;
-        document.getElementById('info').innerText = "Posición: " + posicionActual;
+    switch(posicionActual) {
+        case 9: // Vuelve al principio
+            posicionActual = 0;
+            mensajeEfecto = "¡Caíste en pecado! Vuelves al inicio.";
+            break;
+        case 10: // Adelanta 2
+            posicionActual += 2;
+            mensajeEfecto = "¡Bendición! Adelantas 2 espacios.";
+            break;
+        case 44: // Un turno sin jugar
+            mensajeEfecto = "¡Cuidado! Un turno sin jugar.";
+            break;
+        case 74: // El 666, vuelve a la 50
+            posicionActual = 50;
+            mensajeEfecto = "¡666! Vuelves a la casilla 50.";
+            break;
+        case 75: // La Meta
+            mensajeEfecto = "¡FELICIDADES! Llegaste a la Meta.";
+            break;
     }
+
+    // 4. Actualizar visualmente
+    document.getElementById('casilla-' + posicionActual).classList.add('jugador');
+    document.getElementById('resultado').innerText = "🎲 " + dado;
+    document.getElementById('info').innerText = "Posición: " + posicionActual + (mensajeEfecto ? " - " + mensajeEfecto : "");
+    
+    if (mensajeEfecto) alert(mensajeEfecto); // Opcional: mostrar alerta al usuario
+}
 </script>
 </body>
 </html>
