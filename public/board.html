@@ -1,51 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Tablero Digital Biblos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Digital Biblos</title>
+    <style>
+        body {
+            margin: 0;
+            background: #1B1A17; /* Mismo color que tu App */
+            color: #D6D0C4;      /* Color de texto de tu App */
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-<style>
+        /* Botón de Volver */
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #2A2621;
+            color: #D6D0C4;
+            border: 1px solid #3A342C;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-body{
-  margin:0;
-  background:#111;
-  color:white;
-  font-family:Arial, Helvetica, sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-}
-
-button{
-  padding:15px 25px;
-  font-size:18px;
-  margin-top:20px;
-  cursor:pointer;
-}
-
-</style>
+        /* Botón Tirar Dado */
+        .btn-dice {
+            padding: 20px 40px;
+            font-size: 20px;
+            background: #D97706; /* Color ámbar de tu app */
+            color: black;
+            border: none;
+            border-radius: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-dice:active { transform: scale(0.95); }
+    </style>
 </head>
-
 <body>
 
-<h1>Tablero Digital Biblos</h1>
+    <a href="/" class="btn-back">← Volver</a>
 
-<p>Aquí se ejecutará el modo tablero.</p>
+    <h1>Tablero Digital</h1>
+    <p>Modo de juego activo</p>
 
-<button onclick="tirarDado()">Tirar dado</button>
+    <button class="btn-dice" onclick="tirarDado()">🎲 Tirar dado</button>
+    <h2 id="resultado" style="font-size: 3rem; margin-top: 20px;">🎲</h2>
 
-<h2 id="resultado">🎲</h2>
-
-<script>
-
-function tirarDado(){
-  const numero = Math.floor(Math.random()*6)+1
-  document.getElementById("resultado").innerText = "Resultado: " + numero
-}
-
-</script>
+    <script>
+        function tirarDado(){
+            const numero = Math.floor(Math.random()*6)+1;
+            document.getElementById("resultado").innerText = "🎲 " + numero;
+        }
+    </script>
 
 </body>
 </html>
