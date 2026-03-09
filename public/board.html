@@ -131,6 +131,10 @@
     
     // --- 2. LÓGICA DEL JUEGO ---
     function moverFicha() {
+        // Dimensiones originales de tu imagen (2250x2250)
+        const anchoOriginal = 2250;
+        const altoOriginal = 2250;
+        
         const dado = Math.floor(Math.random() * 6) + 1;
         posicionActual = Math.min(posicionActual + dado, 75);
         
@@ -142,10 +146,14 @@
             return;
         }
         
-        // Mover la ficha con centrado automático
-        ficha.style.left = pos.x + 'px';
-        ficha.style.top = pos.y + 'px';
-        ficha.style.transform = "translate(-50%, -50%)"; 
+        // CALCULO RESPONSIVO: Convertimos los píxeles a porcentaje (%)
+        const xPercent = (pos.x / anchoOriginal) * 100;
+        const yPercent = (pos.y / altoOriginal) * 100;
+        
+        // Aplicamos los porcentajes
+        ficha.style.left = xPercent + '%';
+        ficha.style.top = yPercent + '%';
+        ficha.style.transform = "translate(-50%, -50%)";
         
         document.getElementById('resultado').innerText = "🎲 " + dado;
         document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
