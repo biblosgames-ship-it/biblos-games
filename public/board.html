@@ -815,6 +815,7 @@
     let jugadores = []; // Configuración de 1 a 8 jugadores
     let turnoActual = 0; // Índice del jugador actual
     let bloqueado = false; // Evita interactuar mientras alguien se mueve
+    let ordenPodio = []; // Rastrea el orden de llegada a la meta
 
     // Configuración Completa de Casillas
     const casillasInfo = [
@@ -999,6 +1000,7 @@
           color: '#FCD34D',
           posicion: 0,
           turnosPerdidos: 0,
+          terminado: false,
           stats: { total: 0, correct: 0 },
           uiElement: null
         });
@@ -1016,6 +1018,7 @@
             color: coloresDisponibles[i],
             posicion: 0,
             turnosPerdidos: 0,
+            terminado: false,
             stats: { total: 0, correct: 0 },
             uiElement: null
           });
@@ -1026,6 +1029,7 @@
 
       // Marcar inicio del cronómetro
       startTime = Date.now();
+      ordenPodio = []; // Reiniciar el podio para cada partida nueva
       reproducirSonido("select");
 
       // 3. Limpiar Tablero de Fichas viejas si existieran y Crear Novedosas
@@ -1153,9 +1157,17 @@
         return;
       }
 
-      // Multijugador: Pasamos al siguiente
-      turnoActual++;
-      if (turnoActual >= jugadores.length) turnoActual = 0;
+      // Comprobar si quedan jugadores activos (no terminados)
+      const activos = jugadores.filter(j => !j.terminado);
+      if (activos.length === 0) return; // Todos terminaron, no hay más turnos
+
+      // Multijugador: Avanzar hasta encontrar el siguiente jugador activo
+      let intentos = 0;
+      do {
+        turnoActual++;
+        if (turnoActual >= jugadores.length) turnoActual = 0;
+        intentos++;
+      } while (jugadores[turnoActual].terminado && intentos <= jugadores.length);
 
       const sgteJugador = jugadores[turnoActual];
 
@@ -1240,36 +1252,49 @@
         texto += "Se requiere el pago de 5 monedas/puntos (Según reglas locales).";
       }
       else if (effect === "WIN") {
-        titulo = "¡VICTORIA!";
-        texto += `¡Felicidades ${jugadorActivo.nombre}, has llegado a la META y has ganado el juego!`;
-        bloqueado = true; // Bloquea todo para siempre
+        // Marcar este jugador como terminado y registrar puesto
+        jugadorActivo.terminado = true;
+        ordenPodio.push(jugadorActivo);
+        const puesto = ordenPodio.length;
+        const activos = jugadores.filter(j => !j.terminado);
+        const esElUltimo = activos.length === 0;
 
-        // 1. Sonido de victoria
-        reproducirSonido("victoria");
+        if (esElUltimo) {
+          // Último en llegar: sin fanfarria, solo resumen final
+          titulo = "¡FIN DE LA PARTIDA!";
+          texto += `${jugadorActivo.nombre} ha completado el tablero. Todos los jugadores han llegado a la meta.`;
+          bloqueado = true;
+          setTimeout(() => {
+            mostrarResumenFinal(ordenPodio[0]); // El ganador fue el primero en llegar
+          }, 2000);
+        } else {
+          // No es el último: fanfarria y el juego continúa para los demás
+          const medallas = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣'];
+          titulo = `${medallas[puesto - 1] || '🏁'} ¡Puesto ${puesto}!`;
+          texto += `¡${jugadorActivo.nombre} ha llegado a la meta! El juego continúa para los demás jugadores (${activos.length} restante${activos.length > 1 ? 's' : ''}).`;
 
-        // 2. Confetti en múltiples oleadas
-        if (typeof confetti !== 'undefined') {
-          const lanzarOleada = (delay) => setTimeout(() => {
-            confetti({ particleCount: 120, spread: 120, origin: { x: 0.2, y: 0.6 } });
-            confetti({ particleCount: 120, spread: 120, origin: { x: 0.8, y: 0.6 } });
-          }, delay);
-          lanzarOleada(0);
-          lanzarOleada(700);
-          lanzarOleada(1400);
-          lanzarOleada(2100);
+          // Sonido de victoria
+          reproducirSonido("victoria");
+
+          // Confetti en múltiples oleadas
+          if (typeof confetti !== 'undefined') {
+            const lanzarOleada = (delay) => setTimeout(() => {
+              confetti({ particleCount: 120, spread: 120, origin: { x: 0.2, y: 0.6 } });
+              confetti({ particleCount: 120, spread: 120, origin: { x: 0.8, y: 0.6 } });
+            }, delay);
+            lanzarOleada(0);
+            lanzarOleada(700);
+            lanzarOleada(1400);
+          }
+
+          // Animar la ficha del ganador con pulso brillante
+          if (jugadorActivo.uiElement) {
+            jugadorActivo.uiElement.classList.add('ficha-ganadora');
+          }
+
+          // Mostrar banner de victoria temporal
+          mostrarBannerVictoria(jugadorActivo.nombre, jugadorActivo.color, puesto);
         }
-
-        // 3. Animar la ficha del ganador con pulso brillante
-        if (jugadorActivo.uiElement) {
-          jugadorActivo.uiElement.classList.add('ficha-ganadora');
-        }
-
-        // 4. Mostrar banner de victoria temporal
-        mostrarBannerVictoria(jugadorActivo.nombre, jugadorActivo.color);
-
-        setTimeout(() => {
-          mostrarResumenFinal(jugadorActivo);
-        }, 4000); // 4 Segundos para disfrutar la victoria antes de ver las analíticas
       }
 
       mostrarModal(titulo, texto, () => {
@@ -1527,14 +1552,18 @@
     }
 
     // --- BANNER DE VICTORIA ---
-    function mostrarBannerVictoria(nombre, color) {
+    function mostrarBannerVictoria(nombre, color, puesto = 1) {
+      const medallas = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣'];
+      const medalla = medallas[puesto - 1] || '🏁';
+      const subtitulo = puesto === 1 ? '¡Primer lugar en llegar a la META!' : `¡Llegaste en el puesto ${puesto}!`;
+
       const banner = document.createElement('div');
       banner.id = 'victory-banner';
       banner.innerHTML = `
-        <div class="vb-crown">🏆</div>
-        <p class="vb-title" style="color: ${color}">¡VICTORIA!</p>
+        <div class="vb-crown">${medalla}</div>
+        <p class="vb-title" style="color: ${color}">¡PUESTO ${puesto}!</p>
         <p class="vb-name" style="color: white">${nombre}</p>
-        <p class="vb-sub">¡Has llegado a la META!</p>
+        <p class="vb-sub">${subtitulo}</p>
       `;
       document.body.appendChild(banner);
 
