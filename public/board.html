@@ -106,6 +106,48 @@
       background: #F59E0B;
     }
 
+    /* Ficha del ganador: pulso brillante */
+    @keyframes fichaGanadora {
+      0%   { transform: translate(-50%, -50%) scale(1);   box-shadow: 0 0 10px currentColor; }
+      50%  { transform: translate(-50%, -50%) scale(2.2); box-shadow: 0 0 40px 15px currentColor; }
+      100% { transform: translate(-50%, -50%) scale(1);   box-shadow: 0 0 10px currentColor; }
+    }
+    .ficha-ganadora {
+      animation: fichaGanadora 0.9s ease-in-out infinite !important;
+      z-index: 999 !important;
+    }
+
+    /* Banner de victoria a pantalla completa */
+    #victory-banner {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      animation: bannerIn 0.5s ease;
+      pointer-events: none;
+    }
+    #victory-banner .vb-crown  { font-size: clamp(60px, 12vw, 120px); animation: crownBounce 0.6s ease infinite alternate; }
+    #victory-banner .vb-title  { font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; letter-spacing: 4px; margin: 0; text-shadow: 0 0 40px currentColor; }
+    #victory-banner .vb-name   { font-size: clamp(1.5rem, 5vw, 3rem); margin-top: 10px; opacity: 0.9; }
+    #victory-banner .vb-sub    { font-size: clamp(1rem, 3vw, 1.6rem); margin-top: 8px; color: #FCD34D; opacity: 0.85; }
+    @keyframes bannerIn {
+      from { opacity: 0; transform: scale(1.05); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes bannerOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    @keyframes crownBounce {
+      from { transform: translateY(0);    }
+      to   { transform: translateY(-18px); }
+    }
+
     .info-panel {
       background: rgba(255, 255, 255, 0.05);
       padding: 15px 30px;
@@ -865,12 +907,14 @@
       correct: new Audio("/sounds/correct.mp3"),
       wrong: new Audio(("/sounds/wrong.mp3")),
       projection: new Audio("/sounds/projection.mp3"),
+      victoria: new Audio("/sounds/ntro-sound-1.mp3"),
     };
 
     // Ajustar volumen
     Object.values(sonidos).forEach(sound => {
       sound.volume = 0.6;
     });
+    sonidos.victoria.volume = 1.0; // Victoria al máximo
 
     function reproducirSonido(tipo) {
       if (sonidos[tipo]) {
@@ -1200,14 +1244,32 @@
         texto += `¡Felicidades ${jugadorActivo.nombre}, has llegado a la META y has ganado el juego!`;
         bloqueado = true; // Bloquea todo para siempre
 
-        // Lanzamos confeti genérico y modal de victoria
+        // 1. Sonido de victoria
+        reproducirSonido("victoria");
+
+        // 2. Confetti en múltiples oleadas
         if (typeof confetti !== 'undefined') {
-          confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+          const lanzarOleada = (delay) => setTimeout(() => {
+            confetti({ particleCount: 120, spread: 120, origin: { x: 0.2, y: 0.6 } });
+            confetti({ particleCount: 120, spread: 120, origin: { x: 0.8, y: 0.6 } });
+          }, delay);
+          lanzarOleada(0);
+          lanzarOleada(700);
+          lanzarOleada(1400);
+          lanzarOleada(2100);
         }
+
+        // 3. Animar la ficha del ganador con pulso brillante
+        if (jugadorActivo.uiElement) {
+          jugadorActivo.uiElement.classList.add('ficha-ganadora');
+        }
+
+        // 4. Mostrar banner de victoria temporal
+        mostrarBannerVictoria(jugadorActivo.nombre, jugadorActivo.color);
 
         setTimeout(() => {
           mostrarResumenFinal(jugadorActivo);
-        }, 3000); // 3 Segundos para disfrutar la victoria antes de ver las analíticas
+        }, 4000); // 4 Segundos para disfrutar la victoria antes de ver las analíticas
       }
 
       mostrarModal(titulo, texto, () => {
@@ -1462,6 +1524,25 @@
           aplicarMovimientoExtra(jugadorActivo.posicion + 1, jugadorActivo);
         });
       }
+    }
+
+    // --- BANNER DE VICTORIA ---
+    function mostrarBannerVictoria(nombre, color) {
+      const banner = document.createElement('div');
+      banner.id = 'victory-banner';
+      banner.innerHTML = `
+        <div class="vb-crown">🏆</div>
+        <p class="vb-title" style="color: ${color}">¡VICTORIA!</p>
+        <p class="vb-name" style="color: white">${nombre}</p>
+        <p class="vb-sub">¡Has llegado a la META!</p>
+      `;
+      document.body.appendChild(banner);
+
+      // Desaparece sola a los 3.5s con animación de salida
+      setTimeout(() => {
+        banner.style.animation = 'bannerOut 0.5s ease forwards';
+        setTimeout(() => banner.remove(), 500);
+      }, 3500);
     }
 
     // Modal Functions
