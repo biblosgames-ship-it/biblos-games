@@ -106,6 +106,25 @@
       background: #F59E0B;
     }
 
+    /* Etiqueta de iniciales flotando sobre la ficha */
+    .ficha-label {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: white;
+      font-size: clamp(7px, 1.2vw, 11px);
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.25);
+      line-height: 1.4;
+    }
+
     /* Ficha del ganador: pulso brillante */
     @keyframes fichaGanadora {
       0%   { transform: translate(-50%, -50%) scale(1);   box-shadow: 0 0 10px currentColor; }
@@ -1051,6 +1070,18 @@
         ficha.style.zIndex = '10';
         ficha.style.background = jugador.color;
         ficha.style.boxShadow = `0 0 10px ${jugador.color}`;
+
+        // Etiqueta de iniciales sobre la ficha
+        const iniciales = jugador.nombre
+          .split(' ')
+          .map(p => p[0]?.toUpperCase() || '')
+          .join('')
+          .slice(0, 3); // Máximo 3 iniciales
+        const label = document.createElement('span');
+        label.className = 'ficha-label';
+        label.style.color = jugador.color;
+        label.textContent = iniciales;
+        ficha.appendChild(label);
 
         // La guardamos en el objeto para referencias fáciles
         jugador.uiElement = ficha;
