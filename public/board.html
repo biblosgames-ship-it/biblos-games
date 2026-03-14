@@ -1,173 +1,1625 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero Digital Biblos</title>
-    <style>
-        body { background: #1B1A17; color: #D6D0C4; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        
-        #tablero-container {
-    position: relative;
-    width: 2250px; /* Forzamos el ancho original */
-    height: 2250px; /* Forzamos el alto original */
-    margin: 20px auto;
-    border: 4px solid red; /* Ponemos un borde rojo para ver el contenedor */
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablero Digital Biblos</title>
+  <style>
+    body {
+      background: #1B1A17;
+      color: #D6D0C4;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
 
-#tablero-img {
-    width: 2250px; /* Forzamos que la imagen mida lo original */
-    height: 2250px;
-    display: block;
-}
-        
-        #jugador-ficha {
-            position: absolute;
-            width: 30px; height: 30px;
-            background: #D97706;
-            border-radius: 50%;
-            border: 2px solid white;
-            transition: all 0.5s ease;
-            top: 0; left: 0;
-            z-index: 10;
-        }
+    #game-wrapper {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        button { padding: 15px 30px; font-size: 18px; background: #D97706; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; color: black; }
-    </style>
+    #tablero-container {
+      position: relative;
+      width: 100%;
+      /* Ajuste dinámico */
+      aspect-ratio: 1 / 1;
+      /* Mantiene el contenedor cuadrado, como el tablero original */
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      background: #000;
+      /* Para la cámara */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #camera-view {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-origin: 50% 50%;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* Suave y rebotante */
+      will-change: transform;
+    }
+
+    #tablero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #jugador-ficha {
+      position: absolute;
+      width: clamp(15px, 3vw, 30px);
+      /* Tamaño responsivo para la ficha */
+      height: clamp(15px, 3vw, 30px);
+      background: #D97706;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 10px rgba(217, 119, 6, 0.8);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* Transición suave y rebotante */
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    button {
+      padding: 15px 40px;
+      font-size: 20px;
+      background: #D97706;
+      border: none;
+      border-radius: 50px;
+      font-weight: 900;
+      cursor: pointer;
+      color: black;
+      box-shadow: 0 5px 15px rgba(217, 119, 6, 0.4);
+      transition: transform 0.1s, background 0.3s;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button:hover {
+      background: #F59E0B;
+    }
+
+    .info-panel {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 30px;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-width: 250px;
+    }
+
+    .info-panel h2 {
+      margin: 0 0 10px 0;
+      font-size: 2rem;
+    }
+
+    .info-panel h3 {
+      margin: 0;
+      color: #9CA3AF;
+      font-weight: normal;
+    }
+
+    /* Estilos del Lobby de Configuración */
+    #game-lobby {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      margin-top: 50px;
+    }
+
+    #game-lobby h1 {
+      color: #D97706;
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+
+    .lobby-section {
+      margin-bottom: 25px;
+    }
+
+    .lobby-section h3 {
+      margin-bottom: 10px;
+      color: #FCD34D;
+      font-size: 1.1rem;
+    }
+
+    .mode-select label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .mode-select input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    select,
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid white;
+      flex-shrink: 0;
+    }
+
+    /* Estilos del Modal (Alerta Especial) */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    #modal-box {
+      background: #27272A;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      border: 2px solid #D97706;
+      transform: scale(0.8);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    #modal-box.show {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    #modal-title {
+      color: #D97706;
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+
+    #modal-text {
+      color: #fff;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    #modal-btn {
+      background: transparent;
+      color: #D97706;
+      border: 2px solid #D97706;
+      padding: 10px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+      margin-top: 15px;
+    }
+
+    #modal-btn:hover {
+      background: #D97706;
+      color: black;
+    }
+
+    /* Estilos de Trivia dentro del Modal */
+    #trivia-options {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+
+    .trivia-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 1rem;
+      transition: all 0.2s;
+      font-weight: normal;
+      box-shadow: none;
+    }
+
+    .trivia-btn:hover {
+      background: rgba(217, 119, 6, 0.2);
+      border-color: #D97706;
+    }
+
+    .trivia-btn.correct {
+      background: #10B981 !important;
+      color: white !important;
+      border-color: #059669 !important;
+    }
+
+    .trivia-btn.incorrect {
+      background: #EF4444 !important;
+      color: white !important;
+      border-color: #B91C1C !important;
+    }
+  </style>
 </head>
+
 <body>
 
-    <a href="/" style="position: absolute; top: 20px; left: 20px; color: #D97706; text-decoration: none;">← Volver</a>
-    <h1>Tablero Digital</h1>
-    
-   <div id="tablero-container" style="position: relative; width: fit-content;">
-    <img src="/Tablero.jpg" id="tablero-img" style="max-width: 90vw; height: auto; display: block;">
-    <div id="jugador-ficha" style="position: absolute; ..."></div>
-</div>
+  <a href="/"
+    style="position: absolute; top: 20px; left: 20px; color: #D97706; text-decoration: none; font-weight: bold; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid #D97706; z-index: 1000;">←
+    Volver</a>
 
-    <button onclick="moverFicha()">🎲 Tirar dado</button>
-    <h2 id="resultado">🎲</h2>
-    <h3 id="info">Posición: 0</h3>
+  <!-- Configuración Inicial Lobby -->
+  <div id="game-lobby">
+    <h1>Configuración del Tablero</h1>
 
-<script>
+    <div class="lobby-section">
+      <h3>Modo de Juego</h3>
+      <div class="mode-select">
+        <label>
+          <input type="radio" name="gameMode" value="multiplayer" checked onchange="toggleLobbyMode()">
+          Multijugador (Con Dados)
+        </label>
+        <label>
+          <input type="radio" name="gameMode" value="solitaire" onchange="toggleLobbyMode()">
+          Solitario (Avanzar Respondiendo)
+        </label>
+      </div>
+    </div>
+
+    <div class="lobby-section" id="multiplayer-config">
+      <h3>Cantidad de Jugadores</h3>
+      <select id="player-count" onchange="generatePlayerInputs()">
+        <option value="1">1 Jugador</option>
+        <option value="2" selected>2 Jugadores</option>
+        <option value="3">3 Jugadores</option>
+        <option value="4">4 Jugadores</option>
+        <option value="5">5 Jugadores</option>
+        <option value="6">6 Jugadores</option>
+        <option value="7">7 Jugadores</option>
+        <option value="8">8 Jugadores</option>
+      </select>
+
+      <div id="player-inputs">
+        <!-- Inputs for names will be generated here -->
+      </div>
+    </div>
+
+    <button onclick="startGame()" style="margin-top: 20px; width: 100%;">¡COMENZAR JUEGO!</button>
+  </div>
+
+  <div id="game-wrapper" style="display: none;">
+    <h1 style="color: #F59E0B; text-align: center; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;">
+      Tablero Digital</h1>
+
+    <div id="tablero-container">
+      <div id="camera-view">
+        <img src="/Tablero.jpg" id="tablero-img" alt="Tablero de Juego">
+        <div id="jugador-ficha"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="info-panel">
+        <h2 id="resultado">🎲 Tiro: -</h2>
+        <h3 id="info">Casilla actual: Salida</h3>
+      </div>
+      <button onclick="moverFicha()" id="btn-tirar">🎲 Tirar Dado</button>
+      <button id="btn-solitario" onclick="avanzarSolitario()" style="display: none;">🎯 Avanzar Respondiendo</button>
+    </div>
+  </div>
+
+  <!-- Modal para acciones especiales -->
+  <div id="modal-overlay">
+    <div id="modal-box">
+      <h2 id="modal-title">¡Casilla Especial!</h2>
+      <p id="modal-text">Texto de la acción aquí</p>
+
+      <div id="trivia-options">
+        <!-- Los botones de opciones se inyectarán aquí -->
+      </div>
+
+      <button id="modal-btn" onclick="cerrarModal()">Continuar</button>
+    </div>
+  </div>
+
+  <!-- Modal de Resumen Final (Victorias) -->
+  <div id="final-summary-modal"
+    style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px;">
+    <div
+      style="max-width: 400px; width: 100%; background: #2A2621; border-radius: 2rem; border: 2px solid rgba(217, 119, 6, 0.3); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+
+      <!-- Encabezado con Logo y Medalla -->
+      <div
+        style="background: #1B1A17; padding: 30px; text-align: center; border-bottom: 1px solid rgba(217, 119, 6, 0.2); position: relative;">
+        <img src="/logo-biblos.png" alt="Biblos Games"
+          style="width: 150px; margin: 0 auto 15px auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
+        <div id="summary-medal-icon" style="font-size: 3.5rem; margin-bottom: 10px;">🏆</div>
+        <h1 id="summary-medal-title"
+          style="font-size: 1.5rem; font-family: 'Cinzel', serif; font-weight: 900; text-transform: uppercase; color: #F59E0B; margin: 0;">
+          Maestro de la Palabra</h1>
+      </div>
+
+      <!-- Cuerpo / Estadísticas -->
+      <div style="padding: 24px;">
+        <p id="summary-winner-text" style="text-align: center; color: #D6D0C4; margin-bottom: 20px; font-weight: bold;">
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px;">
+          <div
+            style="background: rgba(27, 26, 23, 0.5); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
+            <p
+              style="font-size: 0.6rem; color: #78716C; text-transform: uppercase; margin-bottom: 4px; font-weight: bold;">
+              Aciertos</p>
+            <p id="summary-score" style="font-size: 1.25rem; font-weight: 900; color: #34D399; margin: 0;">0/0</p>
+          </div>
+          <div
+            style="background: rgba(27, 26, 23, 0.5); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
+            <p
+              style="font-size: 0.6rem; color: #78716C; text-transform: uppercase; margin-bottom: 4px; font-weight: bold;">
+              Precisión</p>
+            <p id="summary-accuracy" style="font-size: 1.25rem; font-weight: 900; color: #FBBF24; margin: 0;">0%</p>
+          </div>
+          <div
+            style="background: rgba(27, 26, 23, 0.5); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
+            <p
+              style="font-size: 0.6rem; color: #78716C; text-transform: uppercase; margin-bottom: 4px; font-weight: bold;">
+              Tiempo</p>
+            <p id="summary-time" style="font-size: 1.25rem; font-weight: 900; color: #60A5FA; margin: 0;">0m 0s</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <p
+            style="text-align: center; font-size: 0.65rem; color: #78716C; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; margin: 0;">
+            Comparte tu Medalla</p>
+
+          <button id="btn-share-wa" onclick="compartirWhatsapp()"
+            style="padding: 12px; background: #25D366; color: white; border: none; border-radius: 12px; font-weight: bold; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+              </path>
+            </svg>
+            WHATSAPP
+          </button>
+
+          <button id="btn-share-copy" onclick="compartirCopiar()"
+            style="padding: 12px; background: linear-gradient(to right, #833AB4, #FD1D1D, #FCAF45); color: white; border: none; border-radius: 12px; font-weight: bold; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <polyline points="16 6 12 2 8 6"></polyline>
+              <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            COPIA Y COMPARTE TUS RESULTADOS
+          </button>
+
+          <button onclick="location.reload()"
+            style="margin-top: 10px; padding: 16px; background: #F59E0B; color: #1B1A17; border: none; border-radius: 12px; font-weight: 900; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; cursor: pointer; width: 100%;">
+            NUEVA PARTIDA
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
     // --- 1. DATOS ---
     // Aquí irán tus coordenadas. Si ya tienes algunas, puedes dejarlas pegadas.
     const coordenadas = [
-    {x: 193, y: 585}, // Casilla 0
-    {x: 124, y: 593}, // Casilla 1
-    {x: 88, y: 592}, // Casilla 2
-    {x: 51, y: 573}, // Casilla 3
-    {x: 60, y: 536}, // Casilla 4
-    {x: 53, y: 492}, // Casilla 5
-    {x: 74, y: 466}, // Casilla 6
-    {x: 115, y: 462}, // Casilla 7
-    {x: 169, y: 471}, // Casilla 8
-    {x: 211, y: 466}, // Casilla 9
-    {x: 256, y: 473}, // Casilla 10
-    {x: 305, y: 469}, // Casilla 11
-    {x: 353, y: 465}, // Casilla 12
-    {x: 399, y: 468}, // Casilla 13
-    {x: 447, y: 475}, // Casilla 14
-    {x: 490, y: 470}, // Casilla 15
-    {x: 516, y: 447}, // Casilla 16
-    {x: 519, y: 404}, // Casilla 17
-    {x: 484, y: 358}, // Casilla 18
-    {x: 441, y: 374}, // Casilla 19
-    {x: 340, y: 370}, // Casilla 20
-    {x: 347, y: 376}, // Casilla 21
-    {x: 302, y: 374}, // Casilla 22
-    {x: 256, y: 375}, // Casilla 23
-    {x: 207, y: 372}, // Casilla 24
-    {x: 158, y: 378}, // Casilla 25
-    {x: 109, y: 376}, // Casilla 26
-    {x: 68, y: 339}, // Casilla 27
-    {x: 66, y: 285}, // Casilla 28
-    {x: 108, y: 258}, // Casilla 29
-    {x: 161, y: 261}, // Casilla 30
-    {x: 213, y: 264}, // Casilla 31
-    {x: 264, y: 265}, // Casilla 32
-    {x: 311, y: 264}, // Casilla 33
-    {x: 361, y: 265}, // Casilla 34
-    {x: 406, y: 263}, // Casilla 35
-    {x: 454, y: 262}, // Casilla 36
-    {x: 491, y: 260}, // Casilla 37
-    {x: 515, y: 230}, // Casilla 38
-    {x: 521, y: 191}, // Casilla 39
-    {x: 493, y: 163}, // Casilla 40
-    {x: 447, y: 166}, // Casilla 41
-    {x: 391, y: 167}, // Casilla 42
-    {x: 339, y: 173}, // Casilla 43
-    {x: 287, y: 166}, // Casilla 44
-    {x: 236, y: 170}, // Casilla 45
-    {x: 186, y: 169}, // Casilla 46
-    {x: 138, y: 169}, // Casilla 47
-    {x: 89, y: 162}, // Casilla 48
-    {x: 55, y: 118}, // Casilla 49
-    {x: 79, y: 69}, // Casilla 50
-    {x: 138, y: 63}, // Casilla 51
-    {x: 191, y: 66}, // Casilla 52
-    {x: 248, y: 68}, // Casilla 53
-    {x: 300, y: 71}, // Casilla 54
-    {x: 353, y: 67}, // Casilla 55
-    {x: 410, y: 68}, // Casilla 56
-    {x: 462, y: 67}, // Casilla 57
-    {x: 515, y: 70}, // Casilla 58
-    {x: 567, y: 71}, // Casilla 59
-    {x: 592, y: 98}, // Casilla 60
-    {x: 594, y: 141}, // Casilla 61
-    {x: 591, y: 177}, // Casilla 62
-    {x: 589, y: 214}, // Casilla 63
-    {x: 588, y: 251}, // Casilla 64
-    {x: 590, y: 289}, // Casilla 65
-    {x: 587, y: 324}, // Casilla 66
-    {x: 589, y: 361}, // Casilla 67
-    {x: 586, y: 396}, // Casilla 68
-    {x: 590, y: 435}, // Casilla 69
-    {x: 590, y: 473}, // Casilla 70
-    {x: 592, y: 511}, // Casilla 71
-    {x: 596, y: 555}, // Casilla 72
-    {x: 559, y: 579}, // Casilla 73
-    {x: 514, y: 570}, // Casilla 74
-    {x: 442, y: 576}  // Casilla 75
-];
+      {
+        "x": 29.88,
+        "y": 89.45
+      },
+      {
+        "x": 19.25,
+        "y": 90.95
+      },
+      {
+        "x": 13.25,
+        "y": 91.07
+      },
+      {
+        "x": 8,
+        "y": 88.07
+      },
+      {
+        "x": 8.38,
+        "y": 82.07
+      },
+      {
+        "x": 7.75,
+        "y": 75.82
+      },
+      {
+        "x": 11.88,
+        "y": 71.82
+      },
+      {
+        "x": 17.88,
+        "y": 71.7
+      },
+      {
+        "x": 25.5,
+        "y": 72.57
+      },
+      {
+        "x": 32.5,
+        "y": 71.82
+      },
+      {
+        "x": 39.5,
+        "y": 72.57
+      },
+      {
+        "x": 46.38,
+        "y": 72.2
+      },
+      {
+        "x": 54,
+        "y": 71.2
+      },
+      {
+        "x": 61.12,
+        "y": 71.82
+      },
+      {
+        "x": 67.88,
+        "y": 73.07
+      },
+      {
+        "x": 74.88,
+        "y": 72.07
+      },
+      {
+        "x": 79.13,
+        "y": 68.57
+      },
+      {
+        "x": 79.25,
+        "y": 62.32
+      },
+      {
+        "x": 74.25,
+        "y": 56.45
+      },
+      {
+        "x": 66.75,
+        "y": 57.07
+      },
+      {
+        "x": 60.25,
+        "y": 56.45
+      },
+      {
+        "x": 52.63,
+        "y": 57.32
+      },
+      {
+        "x": 46,
+        "y": 56.95
+      },
+      {
+        "x": 38.75,
+        "y": 57.2
+      },
+      {
+        "x": 31.25,
+        "y": 56.45
+      },
+      {
+        "x": 23.5,
+        "y": 57.07
+      },
+      {
+        "x": 16.75,
+        "y": 57.32
+      },
+      {
+        "x": 10.5,
+        "y": 52.2
+      },
+      {
+        "x": 9.75,
+        "y": 44.07
+      },
+      {
+        "x": 16.25,
+        "y": 39.07
+      },
+      {
+        "x": 23.88,
+        "y": 39.82
+      },
+      {
+        "x": 32.25,
+        "y": 40.45
+      },
+      {
+        "x": 39.88,
+        "y": 41.07
+      },
+      {
+        "x": 47.5,
+        "y": 40.07
+      },
+      {
+        "x": 54.75,
+        "y": 40.45
+      },
+      {
+        "x": 61.88,
+        "y": 40.2
+      },
+      {
+        "x": 68.75,
+        "y": 40.07
+      },
+      {
+        "x": 75,
+        "y": 39.82
+      },
+      {
+        "x": 78.88,
+        "y": 35.45
+      },
+      {
+        "x": 79.38,
+        "y": 29.7
+      },
+      {
+        "x": 75.38,
+        "y": 25.32
+      },
+      {
+        "x": 67.75,
+        "y": 25.57
+      },
+      {
+        "x": 59.75,
+        "y": 25.45
+      },
+      {
+        "x": 52,
+        "y": 25.57
+      },
+      {
+        "x": 43.5,
+        "y": 25.57
+      },
+      {
+        "x": 35.38,
+        "y": 25.82
+      },
+      {
+        "x": 28.13,
+        "y": 25.7
+      },
+      {
+        "x": 20.88,
+        "y": 25.57
+      },
+      {
+        "x": 13.5,
+        "y": 24.7
+      },
+      {
+        "x": 7.63,
+        "y": 17.95
+      },
+      {
+        "x": 12.5,
+        "y": 10.7
+      },
+      {
+        "x": 21.13,
+        "y": 9.95
+      },
+      {
+        "x": 29.38,
+        "y": 10.2
+      },
+      {
+        "x": 37.88,
+        "y": 9.95
+      },
+      {
+        "x": 46.13,
+        "y": 10.95
+      },
+      {
+        "x": 53.87,
+        "y": 9.7
+      },
+      {
+        "x": 62.5,
+        "y": 10.2
+      },
+      {
+        "x": 70.38,
+        "y": 10.2
+      },
+      {
+        "x": 79,
+        "y": 12.07
+      },
+      {
+        "x": 86.63,
+        "y": 10.95
+      },
+      {
+        "x": 90.25,
+        "y": 15.07
+      },
+      {
+        "x": 90.5,
+        "y": 21.2
+      },
+      {
+        "x": 90.5,
+        "y": 27.07
+      },
+      {
+        "x": 89.75,
+        "y": 32.82
+      },
+      {
+        "x": 89.75,
+        "y": 38.7
+      },
+      {
+        "x": 89.63,
+        "y": 43.95
+      },
+      {
+        "x": 90,
+        "y": 50.2
+      },
+      {
+        "x": 90,
+        "y": 54.95
+      },
+      {
+        "x": 88.63,
+        "y": 60.95
+      },
+      {
+        "x": 90.75,
+        "y": 66.57
+      },
+      {
+        "x": 90.38,
+        "y": 72.7
+      },
+      {
+        "x": 90.5,
+        "y": 78.07
+      },
+      {
+        "x": 91,
+        "y": 85.32
+      },
+      {
+        "x": 85.5,
+        "x": 78.5,
+        "y": 87.45
+      },
+      {
+        "x": 67.38,
+        "y": 89.2
+      }
+    ];
 
-    let posicionActual = 0;
-    
-    // --- 2. LÓGICA DEL JUEGO ---
+    // Variables globales Multi-jugador / Solitario
+    let modoJuego = 'multiplayer'; // 'multiplayer' o 'solitaire'
+    let jugadores = []; // Configuración de 1 a 8 jugadores
+    let turnoActual = 0; // Índice del jugador actual
+    let bloqueado = false; // Evita interactuar mientras alguien se mueve
 
-    function moverFicha() {
-    const dado = Math.floor(Math.random() * 6) + 1;
-    posicionActual = Math.min(posicionActual + dado, 75);
-    
-    const ficha = document.getElementById('jugador-ficha');
-    const pos = coordenadas[posicionActual];
-    
-    if (!pos) {
-        console.error("No hay coordenadas para la casilla " + posicionActual);
-        return;
+    // Configuración Completa de Casillas
+    const casillasInfo = [
+      { "id": 0, "description": "Salida", "period": "Inicio", "effect": null },
+      { "id": 1, "description": "Dios crea el día y la noche", "period": "El Principio", "effect": null },
+      { "id": 2, "description": "Dios crea el cielo y el mar", "period": "El Principio", "effect": null },
+      { "id": 3, "description": "Dios crea las plantas", "period": "El Principio", "effect": null },
+      { "id": 4, "description": "Dios crea el Sol, la luna y las estrellas", "period": "El Principio", "effect": "QUESTION" },
+      { "id": 5, "description": "Dios crea las aves y los peces", "period": "El Principio", "effect": null },
+      { "id": 6, "description": "Dios crea los animales y los seres humanos", "period": "El Principio", "effect": null },
+      { "id": 7, "description": "Dios descansó", "period": "El Principio", "effect": "SKIP_TURN" },
+      { "id": 8, "description": "En el Edén", "period": "El Principio", "effect": "QUESTION" },
+      { "id": 9, "description": "Has pecado", "period": "El Principio", "effect": "GOTO_0" },
+      { "id": 10, "description": "Tendrás que salir del Huerto", "period": "El Principio", "effect": "MOVE_2" },
+      { "id": 11, "description": "Caín mata a Abel", "period": "El Principio", "effect": null },
+      { "id": 12, "description": "El Gran Diluvio", "period": "El Principio", "effect": "QUESTION" },
+      { "id": 13, "description": "Sobreviviste al Diluvio", "period": "El Principio", "effect": null },
+      { "id": 14, "description": "Llegaste a la Torre de Babel", "period": "El Principio", "effect": "QUESTION" },
+      { "id": 15, "description": "Dios llama a Abraham", "period": "El Principio", "effect": null },
+      { "id": 16, "description": "Abraham y el hijo de la promesa", "period": "El Principio", "effect": null },
+      { "id": 17, "description": "Jacob y Esaú", "period": "El Principio", "effect": "QUESTION" },
+      { "id": 18, "description": "Las 12 tribus de Israel", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 19, "description": "José es gobernador de Egipto", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 20, "description": "La familia de Jacob va a Egipto", "period": "El Pueblo de Dios y la Ley", "effect": "QUESTION" },
+      { "id": 21, "description": "400 años de esclavitud", "period": "El Pueblo de Dios y la Ley", "effect": "SKIP_TURN" },
+      { "id": 22, "description": "Dios llama a Moisés", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 23, "description": "El Éxodo de Israel", "period": "El Pueblo de Dios y la Ley", "effect": "ROLL_AGAIN" },
+      { "id": 24, "description": "A través del desierto", "period": "El Pueblo de Dios y la Ley", "effect": "QUESTION" },
+      { "id": 25, "description": "Los 10 mandamientos", "period": "El Pueblo de Dios y la Ley", "effect": "MOVE_3" },
+      { "id": 26, "description": "El tabernáculo", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 27, "description": "La tierra prometida", "period": "El Pueblo de Dios y la Ley", "effect": "QUESTION" },
+      { "id": 28, "description": "Los jueces de Israel", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 29, "description": "Sansón el más fuerte", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 30, "description": "Samuel juez, sacerdote y profeta", "period": "El Pueblo de Dios y la Ley", "effect": null },
+      { "id": 31, "description": "Primer rey de Israel", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 32, "description": "David el pastor de ovejas", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 33, "description": "David enfrenta a Goliat", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 34, "description": "Un reinado sin fin", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 35, "description": "Salomón el más sabio de todos", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 36, "description": "El primer templo", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 37, "description": "Los dos reinos", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 38, "description": "El profeta Elías", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 39, "description": "El profeta Eliseo", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 40, "description": "Jonás en la boca del pez", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 41, "description": "El profeta Jeremías", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 42, "description": "Isaías el profeta mesiánico", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 43, "description": "El pueblo de Dios es destruido", "period": "Reyes, Profetas y Poetas", "effect": "GOTO_42" },
+      { "id": 44, "description": "70 años de cautividad", "period": "Reyes, Profetas y Poetas", "effect": "SKIP_TURN" },
+      { "id": 45, "description": "Daniel y sus amigos en Babilonia", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 46, "description": "Porque para esta hora has llegado", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 47, "description": "Necesitas construir muros", "period": "Reyes, Profetas y Poetas", "effect": "PAY_5" },
+      { "id": 48, "description": "Esdras enseña la Palabra de Dios al pueblo", "period": "Reyes, Profetas y Poetas", "effect": "QUESTION" },
+      { "id": 49, "description": "400 años entre testamentos", "period": "Reyes, Profetas y Poetas", "effect": null },
+      { "id": 50, "description": "Zacarías y una promesa viviente", "period": "Jesús y la Redención", "effect": null },
+      { "id": 51, "description": "Un ángel visita a María", "period": "Jesús y la Redención", "effect": "QUESTION" },
+      { "id": 52, "description": "Jesús ha nacido en Belén", "period": "Jesús y la Redención", "effect": null },
+      { "id": 53, "description": "Tres sabios del oriente", "period": "Jesús y la Redención", "effect": null },
+      { "id": 54, "description": "Jesús ya tiene 12 años", "period": "Jesús y la Redención", "effect": "MOVE_5" },
+      { "id": 55, "description": "Jesús es bautizado por Juan", "period": "Jesús y la Redención", "effect": "QUESTION" },
+      { "id": 56, "description": "Jesús inicia su ministerio", "period": "Jesús y la Redención", "effect": null },
+      { "id": 57, "description": "Jesús realiza grandes milagros", "period": "Jesús y la Redención", "effect": "ROLL_AGAIN" },
+      { "id": 58, "description": "Grandes enseñanzas del Maestro", "period": "Jesús y la Redención", "effect": "QUESTION" },
+      { "id": 59, "description": "Emmanuel, Dios con nosotros", "period": "Jesús y la Redención", "effect": null },
+      { "id": 60, "description": "Entrada triunfal", "period": "Jesús y la Redención", "effect": null },
+      { "id": 61, "description": "Jesús muere en la cruz", "period": "Jesús y la Redención", "effect": "QUESTION" },
+      { "id": 62, "description": "Tres días y tres noches en la tumba", "period": "Jesús y la Redención", "effect": null },
+      { "id": 63, "description": "Jesús ha resucitado", "period": "Jesús y la Redención", "effect": null },
+      { "id": 64, "description": "La gran comisión", "period": "La Iglesia Cristiana", "effect": null },
+      { "id": 65, "description": "Jesús asciende al cielo", "period": "La Iglesia Cristiana", "effect": "QUESTION" },
+      { "id": 66, "description": "El día de Pentecostés", "period": "La Iglesia Cristiana", "effect": null },
+      { "id": 67, "description": "La persecución a los cristianos", "period": "La Iglesia Cristiana", "effect": null },
+      { "id": 68, "description": "Saulo se convierte al evangelio", "period": "La Iglesia Cristiana", "effect": "QUESTION" },
+      { "id": 69, "description": "El evangelio es predicado por todas partes", "period": "La Iglesia Cristiana", "effect": "GOTO_65" },
+      { "id": 70, "description": "Señales antes del fin", "period": "Tiempos Finales", "effect": null },
+      { "id": 71, "description": "Jesús regresa a la tierra", "period": "Tiempos Finales", "effect": "SKIP_TURN" },
+      { "id": 72, "description": "Las bodas del Cordero", "period": "Tiempos Finales", "effect": "QUESTION" },
+      { "id": 73, "description": "La batalla final", "period": "Tiempos Finales", "effect": null },
+      { "id": 74, "description": "El gran trono blanco", "period": "Tiempos Finales", "effect": "QUESTION" },
+      { "id": 75, "description": "Cielo nuevo y tierra nueva (META)", "period": "Tiempos Finales", "effect": "WIN" }
+    ];
+
+    let preguntasTrivia = []; // Base de datos cargada desde questions.json
+
+    // Paleta de colores atractiva para hasta 8 jugadores:
+    const coloresDisponibles = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
+
+    // Sonidos
+    const sonidos = {
+      select: new Audio("/sounds/select.mp3"),
+      correct: new Audio("/sounds/correct.mp3"),
+      wrong: new Audio(("/sounds/wrong.mp3")),
+      projection: new Audio("/sounds/projection.mp3"),
+    };
+
+    // Ajustar volumen
+    Object.values(sonidos).forEach(sound => {
+      sound.volume = 0.6;
+    });
+
+    function reproducirSonido(tipo) {
+      if (sonidos[tipo]) {
+        sonidos[tipo].currentTime = 0;
+        sonidos[tipo].play().catch(e => console.log("Audio play failed:", e));
+      }
     }
 
-    // --- AQUÍ ESTÁ EL LOG ---
-    // Esto nos dirá qué está leyendo el juego
-    console.log("Moviendo a casilla:", posicionActual);
-    console.log("Coordenada original (X, Y):", pos.x, pos.y);
+    // Cronómetro
+    let startTime = null;
+    let endTime = null;
 
-    const anchoOriginal = 2250;
-    const altoOriginal = 2250;
-    
-    const xPercent = (pos.x / anchoOriginal) * 100;
-    const yPercent = (pos.y / altoOriginal) * 100;
+    // Al cargar la página, inicializamos la UI del Lobby y cargamos las preguntas
+    window.onload = async () => {
+      generatePlayerInputs(); // Dibujar inputs por defecto
 
-    console.log("Calculando porcentaje:", xPercent + "%", yPercent + "%");
+      try {
+        const res = await fetch('/questions.json');
+        if (res.ok) {
+          preguntasTrivia = await res.json();
+          console.log("Se cargaron " + preguntasTrivia.length + " preguntas de trivia.");
+        } else {
+          console.error("No se pudo encontrar questions.json");
+        }
+      } catch (error) {
+        console.error("Error cargando trivia:", error);
+      }
+    };
 
-    ficha.style.left = xPercent + '%';
-    ficha.style.top = yPercent + '%';
-    ficha.style.transform = "translate(-50%, -50%)"; 
-    
-    document.getElementById('resultado').innerText = "🎲 " + dado;
-    document.getElementById('info').innerText = "Estás en la casilla: " + posicionActual;
-}
+    // --- LÓGICA DEL LOBBY DE CONFIGURACIÓN ---
+    function toggleLobbyMode() {
+      const modeRadios = document.getElementsByName('gameMode');
+      for (let r of modeRadios) {
+        if (r.checked) modoJuego = r.value;
+      }
 
-</script>
+      const multiConfig = document.getElementById('multiplayer-config');
+      if (modoJuego === 'solitaire') {
+        multiConfig.style.display = 'none';
+      } else {
+        multiConfig.style.display = 'block';
+      }
+    }
+
+    function generatePlayerInputs() {
+      const count = parseInt(document.getElementById('player-count').value);
+      const container = document.getElementById('player-inputs');
+      container.innerHTML = ''; // Limpiar anteriores
+
+      for (let i = 0; i < count; i++) {
+        const div = document.createElement('div');
+        div.className = 'player-row';
+
+        const colorDot = document.createElement('div');
+        colorDot.className = 'color-dot';
+        colorDot.style.background = coloresDisponibles[i];
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = `Nombre Jugador ${i + 1}`;
+        input.value = `Jugador ${i + 1}`;
+        input.id = `input-player-${i}`;
+
+        div.appendChild(colorDot);
+        div.appendChild(input);
+        container.appendChild(div);
+      }
+    }
+
+    function startGame() {
+      // 1. Ocultar lobby, Mostrar juego
+      document.getElementById('game-lobby').style.display = 'none';
+      document.getElementById('game-wrapper').style.display = 'flex';
+
+      // 2. Configurar Jugadores
+      jugadores = [];
+      if (modoJuego === 'solitaire') {
+        // Solitario: 1 solo jugador amarillo
+        jugadores.push({
+          id: 0,
+          nombre: 'Explorador',
+          color: '#FCD34D',
+          posicion: 0,
+          turnosPerdidos: 0,
+          stats: { total: 0, correct: 0 },
+          uiElement: null
+        });
+
+        // Cambiar UI panel
+        document.getElementById('btn-tirar').style.display = 'none'; // Esconder Dado
+        document.getElementById('btn-solitario').style.display = 'inline-block'; // Mostrar botón Solitario
+      } else {
+        const count = parseInt(document.getElementById('player-count').value);
+        for (let i = 0; i < count; i++) {
+          const nombre = document.getElementById(`input-player-${i}`).value || `Jugador ${i + 1}`;
+          jugadores.push({
+            id: i,
+            nombre: nombre,
+            color: coloresDisponibles[i],
+            posicion: 0,
+            turnosPerdidos: 0,
+            stats: { total: 0, correct: 0 },
+            uiElement: null
+          });
+        }
+        document.getElementById('btn-solitario').style.display = 'none';
+        document.getElementById('btn-tirar').style.display = 'inline-block';
+      }
+
+      // Marcar inicio del cronómetro
+      startTime = Date.now();
+      reproducirSonido("select");
+
+      // 3. Limpiar Tablero de Fichas viejas si existieran y Crear Novedosas
+      const container = document.getElementById('camera-view');
+      // Remover la ficha default de la maqueta
+      const fichaDefault = document.getElementById('jugador-ficha');
+      if (fichaDefault) fichaDefault.remove();
+
+      jugadores.forEach(jugador => {
+        const ficha = document.createElement('div');
+        ficha.className = 'jugador-ficha-dinamica';
+        // Adoptamos estilos de CSS por JS para no amontonarlo todo en el <style> extra
+        ficha.style.position = 'absolute';
+        ficha.style.width = 'clamp(15px, 3vw, 30px)';
+        ficha.style.height = 'clamp(15px, 3vw, 30px)';
+        ficha.style.borderRadius = '50%';
+        ficha.style.border = '2px solid white';
+        ficha.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        ficha.style.zIndex = '10';
+        ficha.style.background = jugador.color;
+        ficha.style.boxShadow = `0 0 10px ${jugador.color}`;
+
+        // La guardamos en el objeto para referencias fáciles
+        jugador.uiElement = ficha;
+        container.appendChild(ficha);
+
+        // Colocarlas inicialmente en Casilla 0 
+        actualizarFichaEnPantalla(0, jugador);
+      });
+
+      // 4. Iniciar Turnos
+      turnoActual = 0;
+      actualizarPanelTurno();
+    }
+
+    // --- LÓGICA DE CÁMARA (NUEVO VISUAL) ---
+    function moverCamara(xPercent, yPercent, zoomBase) {
+      const camera = document.getElementById('camera-view');
+      // Para centrar el X,Y provisto, movemos el contenedor inversamente
+      // Si la ficha está en 20x 80y, la centramos moviéndonos a 50-20=30%x, 50-80=-30%y respecto al centro original.
+      const translateX = 50 - xPercent;
+      const translateY = 50 - yPercent;
+      camera.style.transform = `translate(${translateX}%, ${translateY}%) scale(${zoomBase})`;
+    }
+
+    // --- FUNCIONES DE TURNO Y UI ---
+    function actualizarPanelTurno() {
+      const j = jugadores[turnoActual];
+      const infoHTML = document.getElementById('info');
+
+      if (modoJuego === 'multiplayer') {
+        document.getElementById('resultado').innerHTML = `<span style="color:${j.color}">🎲 Turno de: ${j.nombre}</span>`;
+        infoHTML.innerText = `Posición: ${j.posicion}`;
+      } else {
+        document.getElementById('resultado').innerHTML = `Modo Solitario`;
+        infoHTML.innerText = `Casilla Actual: ${j.posicion}`;
+      }
+
+      // Animación sugerida de Scrolling hacia la UI para preparar el turno
+      const panelInfo = document.getElementById('panel');
+      if (panelInfo) {
+        panelInfo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Cámara resetea suavemente para darle vista de pájaro al jugador y ver el tablero entero
+      moverCamara(50, 50, 1);
+    }
+
+    // Adaptamos para que reciba cualquier jugador en especifico
+    function actualizarFichaEnPantalla(posIndex, jugador) {
+      if (!jugador || !jugador.uiElement) return;
+      const ficha = jugador.uiElement;
+      const pos = coordenadas[posIndex];
+
+      if (!pos) return;
+
+      // Desplazamiento sutil basado en el ID del jugador para que no se superpongan exactamente
+      // Ejemplo: Jugador 0 queda en medio, Jugador 1 se mueve un poquito a la derecha abajo, etc.
+      const offsets = [
+        { x: 0, y: 0 },
+        { x: 6, y: -6 },
+        { x: -6, y: 6 },
+        { x: -9, y: -9 },
+        { x: 9, y: 9 },
+        { x: 0, y: -9 },
+        { x: 0, y: 9 },
+        { x: -9, y: 0 }
+      ];
+
+      const miOffset = offsets[jugador.id] || { x: 0, y: 0 };
+
+      // Si la coordenada ya es un porcentaje
+      const isPercentObj = (pos.x <= 100 && pos.y <= 100);
+
+      let xPercentReal = 0;
+      let yPercentReal = 0;
+
+      if (isPercentObj) {
+        xPercentReal = pos.x;
+        yPercentReal = pos.y;
+        ficha.style.left = `calc(${pos.x}% + ${miOffset.x}px)`;
+        ficha.style.top = `calc(${pos.y}% + ${miOffset.y}px)`;
+      } else {
+        const xPercent = (pos.x / 600) * 100;
+        const yPercent = (pos.y / 600) * 100;
+        xPercentReal = xPercent;
+        yPercentReal = yPercent;
+        ficha.style.left = `calc(${xPercent}% + ${miOffset.x}px)`;
+        ficha.style.top = `calc(${yPercent}% + ${miOffset.y}px)`;
+      }
+
+      ficha.style.transform = "translate(-50%, -50%)";
+
+      // Pide cámara a esta posición si es el jugador activo moviéndose
+      if (jugador.id === jugadores[turnoActual]?.id) {
+        moverCamara(xPercentReal, yPercentReal, 1.8);
+      }
+    }
+
+    // --- CONTROL DE TURNOS ---
+    function siguienteTurno() {
+      if (modoJuego === 'solitaire') {
+        // Solitario: No pasa el turno, sigue el mismo explorador
+        bloqueado = false;
+        return;
+      }
+
+      // Multijugador: Pasamos al siguiente
+      turnoActual++;
+      if (turnoActual >= jugadores.length) turnoActual = 0;
+
+      const sgteJugador = jugadores[turnoActual];
+
+      if (sgteJugador.turnosPerdidos > 0) {
+        sgteJugador.turnosPerdidos--;
+        mostrarModal("Turno Perdido", `${sgteJugador.nombre}, te quedan ${sgteJugador.turnosPerdidos} turnos de castigo.`, () => {
+          siguienteTurno(); // Pasa al siguiente automáticamente
+        });
+      } else {
+        actualizarPanelTurno();
+        bloqueado = false;
+      }
+    }
+
+    function evaluarCasilla(posIndex, jugadorActivo = null) {
+      if (!jugadorActivo) jugadorActivo = jugadores[turnoActual];
+      const info = casillasInfo[posIndex];
+
+      // Casilla normal sin efecto
+      if (!info || info.effect === null) {
+        siguienteTurno();
+        return;
+      }
+
+      // Preparar el Modal según el efecto
+      let titulo = "¡Evento en el Tablero!";
+      let texto = `Has caído en: "${info.description}"\n\n`;
+      let accionMovimiento = null; // Función de mov extra si aplica
+      let repetirTurno = false; // Bandera para ROLL_AGAIN nativo
+      const effect = info.effect;
+
+      // Reseteamos UI del modal de trivia por defecto
+      document.getElementById('trivia-options').style.display = 'none';
+      document.getElementById('modal-btn').style.display = 'inline-block';
+
+      if (effect === "QUESTION") {
+        titulo = `Trivia: ${info.period}`;
+
+        // Buscar preguntas que correspondan al periodo de esta casilla
+        const preguntasFiltradas = preguntasTrivia.filter(q => q.period === info.period);
+
+        if (preguntasFiltradas.length > 0) {
+          // Escoger una pregunta al azar
+          const preguntaAlAzar = preguntasFiltradas[Math.floor(Math.random() * preguntasFiltradas.length)];
+          texto += preguntaAlAzar.question;
+
+          // Lógica de Renderizar Opciones (Se encarga de bloquear botón normal)
+          prepararModalTrivia(preguntaAlAzar, jugadorActivo);
+        } else {
+          texto += "¡Pregunta libre! El moderador debe hacer una pregunta sobre este periodo. Si respondes bien, juegas de nuevo.";
+          repetirTurno = true; // Hardcoded temporal para falta de DB
+        }
+      }
+      else if (effect === "SKIP_TURN") {
+        titulo = "¡Pierdes un turno!";
+        texto += "Deberás esperar aquí la próxima vez que te toque jugar.";
+        jugadorActivo.turnosPerdidos += 1;
+      }
+      else if (effect.startsWith("MOVE_")) {
+        const casillas = parseInt(effect.replace("MOVE_", ""));
+        titulo = "¡Mensaje Especial!";
+        texto += `Adelantas ${casillas} casillas tu ficha.`;
+        accionMovimiento = () => aplicarMovimientoExtra(jugadorActivo.posicion + casillas, jugadorActivo);
+      }
+      else if (effect.startsWith("GOTO_")) {
+        const destino = parseInt(effect.replace("GOTO_", ""));
+        titulo = "¡Situación Imprevista!";
+        if (destino === 0) {
+          texto += "Vuelves a la casilla de Salida.";
+        } else {
+          texto += `Te trasladas a la casilla ${destino}.`;
+        }
+        accionMovimiento = () => aplicarMovimientoExtra(destino, jugadorActivo);
+      }
+      else if (effect === "ROLL_AGAIN") {
+        titulo = "¡Sigue jugando!";
+        texto += "¡Tienes derecho a tirar de nuevo el dado ahora mismo!";
+        repetirTurno = true;
+      }
+      else if (effect === "PAY_5") {
+        titulo = "¡Requisito Especial!";
+        texto += "Se requiere el pago de 5 monedas/puntos (Según reglas locales).";
+      }
+      else if (effect === "WIN") {
+        titulo = "¡VICTORIA!";
+        texto += `¡Felicidades ${jugadorActivo.nombre}, has llegado a la META y has ganado el juego!`;
+        bloqueado = true; // Bloquea todo para siempre
+
+        // Lanzamos confeti genérico y modal de victoria
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+        }
+
+        setTimeout(() => {
+          mostrarResumenFinal(jugadorActivo);
+        }, 3000); // 3 Segundos para disfrutar la victoria antes de ver las analíticas
+      }
+
+      mostrarModal(titulo, texto, () => {
+        if (accionMovimiento) {
+          accionMovimiento();
+        } else if (repetirTurno) {
+          actualizarPanelTurno();
+          bloqueado = false; // Le toca otra vez
+        } else if (effect !== "WIN") {
+          siguienteTurno(); // Pasa al siguiente solo si no ganó
+        }
+      });
+    }
+
+    // Funciones exclusivas para TRIVIA
+    function prepararModalTrivia(preguntaObj, jugadorActivo) {
+      document.getElementById('modal-btn').style.display = 'none'; // Ocultamos el botón continuar normal
+      const optionsBox = document.getElementById('trivia-options');
+      optionsBox.innerHTML = ''; // Limpiar opciones anteriores
+      optionsBox.style.display = 'flex'; // Mostrar contenedor
+
+      preguntaObj.options.forEach((opcionTexto, index) => {
+        const btnOpt = document.createElement('button');
+        btnOpt.className = 'trivia-btn';
+        btnOpt.innerText = opcionTexto;
+        btnOpt.onclick = () => responderTrivia(btnOpt, index, preguntaObj.correctAnswer, jugadorActivo);
+        optionsBox.appendChild(btnOpt);
+      });
+    }
+
+    // Reglas de consecuencias de Trivia por Casilla
+    const triviaConsecuencias = {
+      4: { bien: 4, mal: -2 },
+      8: { bien: 3, mal: -3 },
+      12: { bien: 4, mal: -4 },
+      14: { bien: 4, mal: -3 },
+      17: { bien: 2, mal: -3 },
+      20: { bien: 3, mal: -4 },
+      24: { bien: 4, mal: -3 },
+      27: { bien: 3, mal: -3 },
+      32: { bien: 4, mal: -4 },
+      34: { bien: 4, mal: -2 },
+      37: { bien: 4, mal: -3 },
+      42: { bien: 4, mal: -4 },
+      45: { bien: 4, mal: -4 },
+      48: { bien: 4, mal: -4 },
+      51: { bien: 2, mal: -4 },
+      55: { bien: 3, mal: -3 },
+      58: { bien: 4, mal: -2 },
+      61: { bien: 4, mal: -3 },
+      65: { bien: 2, mal: -4 },
+      68: { bien: 2, mal: -2 },
+      72: { bien: 1, mal: -5 },
+      74: { bien: 0, mal: -4 }
+    };
+
+    function responderTrivia(btnElement, indexOfSelection, correctIndex, jugadorActivo) {
+      // Bloquear todos los botones tras responder
+      const todosLosBotones = document.querySelectorAll('.trivia-btn');
+      todosLosBotones.forEach(b => b.disabled = true);
+
+      // Mostrar botón de continuar de nuevo para salir de la trivia
+      const continuadBtn = document.getElementById('modal-btn');
+      continuadBtn.style.display = 'inline-block';
+      continuadBtn.innerText = "Finalizar";
+
+      // Obtener reglas de consecuencia para la casilla actual (Solo multijugador)
+      const casActual = jugadorActivo.posicion;
+      let reglas = { bien: 0, mal: 0 };
+
+      if (modoJuego === 'multiplayer') {
+        reglas = triviaConsecuencias[casActual] || { bien: 0, mal: 0 }; // Fallback de seguridad
+      } else {
+        // Solitario: Bien avanza 1 (Ojo la idea del Solitario es avanzar de casilla en casilla)
+        reglas = { bien: 1, mal: 0 }; // Mal no hace nada, se queda en la misma para re-intentar otra vez TODO
+      }
+
+      // Aumentamos total de preguntas jugadas
+      jugadorActivo.stats.total++;
+
+      if (indexOfSelection === correctIndex) {
+        // Aumentamos aciertos y reproducimos sonidos felices
+        jugadorActivo.stats.correct++;
+        reproducirSonido("correct");
+
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        btnElement.classList.add('correct');
+
+        // Crear mensaje y acción según regla
+        let msjExito = "¡Respuesta Correcta!";
+
+        if (modoJuego === 'solitaire') {
+          msjExito += `\n¡Avanzas a la Casilla ${casActual + 1}!`;
+        } else if (reglas.bien > 0) {
+          msjExito += `\n¡${jugadorActivo.nombre} avanza ${reglas.bien} casillas!`;
+        } else {
+          msjExito += `\n¡Bien hecho!`;
+        }
+
+        document.getElementById('modal-title').innerText = msjExito;
+
+        modalCallback = () => {
+          if (reglas.bien > 0) {
+            aplicarMovimientoExtra(casActual + reglas.bien, jugadorActivo);
+          } else {
+            moverCamara(50, 50, 1);
+            siguienteTurno();
+          }
+          continuadBtn.innerText = "Continuar"; // Reset texto original
+        };
+
+      } else {
+        reproducirSonido("wrong");
+        btnElement.classList.add('incorrect');
+        // Marcar en verde la que era correcta para enseñar al jugador
+        if (todosLosBotones[correctIndex]) {
+          todosLosBotones[correctIndex].classList.add('correct');
+        }
+
+        let msjFallo = "¡Incorrecto!";
+
+        if (modoJuego === 'solitaire') {
+          msjFallo += "\nDebes intentarlo en el próximo turno para poder avanzar.";
+        } else if (reglas.mal < 0) {
+          const casillasARetroceder = Math.abs(reglas.mal);
+          msjFallo += `\n${jugadorActivo.nombre} retrocede ${casillasARetroceder} casillas.`;
+        }
+
+        document.getElementById('modal-title').innerText = msjFallo;
+
+        modalCallback = () => {
+          if (reglas.mal < 0) {
+            aplicarMovimientoExtra(casActual + reglas.mal, jugadorActivo);
+          } else {
+            moverCamara(50, 50, 1);
+            siguienteTurno();
+          }
+          continuadBtn.innerText = "Continuar";
+        };
+      }
+    }
+
+    function aplicarMovimientoExtra(nuevaPos) {
+      // Nos aseguramos que no pase de 75 y no baje de 0
+      jugadores[turnoActual].posicion = Math.max(0, Math.min(nuevaPos, 75));
+      actualizarFichaEnPantalla(jugadores[turnoActual].posicion, jugadores[turnoActual]);
+      document.getElementById('info').innerText = "Casilla actual: " + jugadores[turnoActual].posicion;
+
+      // Esperar a que termine la animación de movimiento para evaluar la nueva casilla
+      // Esto permite que las consecuencias (ej. caer en una pregunta por retroceder) se activen
+      setTimeout(() => {
+        evaluarCasilla(jugadores[turnoActual].posicion, jugadores[turnoActual]);
+      }, 600);
+    }
+
+    // --- FLUIDEZ DEL TABLERO ---
+    function moverFicha() {
+      const jugadorActivo = jugadores[turnoActual];
+
+      // Si el juego esta bloqueado o este jugador llegó a la meta, no hacer nada
+      if (bloqueado || jugadorActivo.posicion >= 75) return;
+
+      bloqueado = true;
+      const dado = Math.floor(Math.random() * 6) + 1;
+
+      // Al iniciar el lanzamiento, scrolleamos hacia el tablero para ver bien a la cámara enfocar
+      const tableroCont = document.getElementById('tablero-container');
+      if (tableroCont) {
+        tableroCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Hacemos un leve zoom y paneo predictivo a su ficha actual
+      const posActualCoords = coordenadas[jugadorActivo.posicion];
+      if (posActualCoords) {
+        const isPercentObj = (posActualCoords.x <= 100 && posActualCoords.y <= 100);
+        const xPercent = isPercentObj ? posActualCoords.x : (posActualCoords.x / 600) * 100;
+        const yPercent = isPercentObj ? posActualCoords.y : (posActualCoords.y / 600) * 100;
+        moverCamara(xPercent, yPercent, 1.4);
+      }
+
+      // Animación del dado
+      const btn = document.getElementById('btn-tirar');
+      const resultadoHTML = document.getElementById('resultado');
+
+      btn.innerText = "🎲 ...";
+      btn.disabled = true;
+      reproducirSonido("select");
+
+      let repeticiones = 0;
+      let intervaloDado = setInterval(() => {
+        resultadoHTML.innerHTML = `<span style="color:${jugadorActivo.color}">🎲 ${Math.floor(Math.random() * 6) + 1}</span>`;
+        repeticiones++;
+
+        if (repeticiones > 10) {
+          clearInterval(intervaloDado);
+          // Mostrar resultado real
+          resultadoHTML.innerHTML = `<span style="color:${jugadorActivo.color}">🎲 ¡Tiraste un ${dado}!</span>`;
+
+          // Calcular nueva posición para el jugador activo
+          let nuevaPosicion = Math.min(jugadorActivo.posicion + dado, 75);
+          jugadorActivo.posicion = nuevaPosicion;
+
+          // Mover visualmente
+          actualizarFichaEnPantalla(jugadorActivo.posicion, jugadorActivo);
+          document.getElementById('info').innerText = "Posición: " + jugadorActivo.posicion;
+
+          // Esperar a que termine la animación de movimiento para evaluar la casilla
+          setTimeout(() => {
+            evaluarCasilla(jugadorActivo.posicion, jugadorActivo);
+          }, 600); // 600ms es la duración del CSS transition de la ficha
+
+          btn.innerText = "🎲 Tirar Dado";
+          btn.disabled = false;
+        }
+      }, 50);
+    }
+
+    function avanzarSolitario() {
+      const jugadorActivo = jugadores[0]; // Solo hay 1 jugador
+      if (bloqueado || jugadorActivo.posicion >= 75) return;
+      bloqueado = true;
+
+      // El solitario funciona con Trivia continua, en lugar de dado forzamos Evento QUESTION
+      const casActualInfo = casillasInfo[jugadorActivo.posicion];
+
+      let periodoActual = casActualInfo.period;
+
+      let titulo = `Trivia de Solitario: ${periodoActual}`;
+      let texto = `Responde correctamente para avanzar a la siguiente casilla de este periodo.\n\n`;
+
+      // Ocultar botones extra si habían quedado limpios
+      document.getElementById('trivia-options').style.display = 'none';
+      document.getElementById('modal-btn').style.display = 'inline-block';
+
+      // Buscar preguntas
+      const preguntasFiltradas = preguntasTrivia.filter(q => q.period === periodoActual);
+
+      if (preguntasFiltradas.length > 0) {
+        const preguntaAlAzar = preguntasFiltradas[Math.floor(Math.random() * preguntasFiltradas.length)];
+        texto += preguntaAlAzar.question;
+
+        mostrarModal(titulo, texto, () => { });
+        // Forzar la trivia
+        prepararModalTrivia(preguntaAlAzar, jugadorActivo);
+      } else {
+        texto += "No hay preguntas en en la base de datos para avanzar. Avanzas automáticamente.";
+        mostrarModal(titulo, texto, () => {
+          // Forzar avance temporal
+          aplicarMovimientoExtra(jugadorActivo.posicion + 1, jugadorActivo);
+        });
+      }
+    }
+
+    // Modal Functions
+    let modalCallback = null;
+
+    function mostrarModal(titulo, texto, callback) {
+      document.getElementById('modal-title').innerText = titulo;
+      document.getElementById('modal-text').innerText = texto;
+
+      const overlay = document.getElementById('modal-overlay');
+      overlay.style.display = 'flex';
+
+      // Timeout muy corto para que la transición de CSS se aplique tras pasar de display:none a flex
+      setTimeout(() => {
+        document.getElementById('modal-box').classList.add('show');
+      }, 10);
+
+      modalCallback = callback;
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-box').classList.remove('show');
+
+      setTimeout(() => {
+        document.getElementById('modal-overlay').style.display = 'none';
+        if (modalCallback) {
+          modalCallback();
+          modalCallback = null;
+        }
+      }, 300); // 300ms debe coincidir con la transición CSS
+    }
+
+    // --- CÁLCULO ESTADÍSTICO Y RESUMEN FINAL ---
+    let resultDatosParaCompartir = {};
+
+    function mostrarResumenFinal(ganador) {
+      endTime = Date.now();
+      const durationSeconds = Math.floor((endTime - startTime) / 1000);
+
+      const mins = Math.floor(durationSeconds / 60);
+      const secs = durationSeconds % 60;
+      const formattedTime = `${mins}m ${secs}s`;
+
+      const total = ganador.stats.total;
+      const correct = ganador.stats.correct;
+      const accuracy = total === 0 ? 0 : Math.round((correct / total) * 100);
+
+      let medal = { icon: "📖", label: "Sembrador de Conocimiento", color: "#A8A29E" }; // default text-stone-400
+      if (accuracy >= 90) medal = { icon: "🏆", label: "Maestro de la Palabra", color: "#FBBF24" }; // text-amber-400
+      else if (accuracy >= 70) medal = { icon: "🥈", label: "Erudito Bíblico", color: "#D6D0C4" }; // text-stone-300
+      else if (accuracy >= 50) medal = { icon: "🥉", label: "Discípulo en Camino", color: "#F97316" }; // text-orange-500
+
+      // Asignar al DOM
+      document.getElementById('summary-medal-icon').innerText = medal.icon;
+
+      const titleEl = document.getElementById('summary-medal-title');
+      titleEl.innerText = medal.label;
+      titleEl.style.color = medal.color;
+
+      let resText = `¡${ganador.nombre} ha completado el tablero!`;
+      if (modoJuego !== 'solitaire') {
+        resText = `¡${ganador.nombre} ha ganado la partida!`;
+      }
+      document.getElementById('summary-winner-text').innerText = resText;
+
+      document.getElementById('summary-score').innerText = `${correct}/${total}`;
+      document.getElementById('summary-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('summary-time').innerText = formattedTime;
+
+      // Mostrar Modal ocultando el anterior si estaba abierto
+      cerrarModal();
+      document.getElementById('final-summary-modal').style.display = 'flex';
+
+      // Set datos para compartir globalmente
+      resultDatosParaCompartir = {
+        nombre: ganador.nombre,
+        medal: medal,
+        accuracy: accuracy,
+        correct: correct,
+        total: total,
+        time: formattedTime,
+        url: "https://biblosgames.com"
+      };
+    }
+
+    function obtenerTextoCompartir() {
+      if (!resultDatosParaCompartir.medal) return "";
+      const rc = resultDatosParaCompartir;
+      const acc = rc.accuracy;
+      const dibujoPuntos = acc >= 80 ? "status: 🟩🟩🟩🟩🟩" : acc >= 50 ? "status: 🟩🟩🟩⬜⬜" : "status: 🟥⬜⬜⬜⬜";
+
+      return `✨ BIBLOS GAMES - TABLERO DIGITAL ✨\n━━━━━━━━━━━━━━\n${rc.medal.icon} Titulo Obtenido: ${rc.medal.label}\n👤 Jugador: ${rc.nombre}\n${dibujoPuntos}\n🎯 Precisión: ${rc.accuracy}%\n✅ Aciertos: ${rc.correct}/${rc.total}\n⏱️ Tiempo: ${rc.time}\n━━━━━━━━━━━━━━\n¡Desafía tu conocimiento aquí! Accede a nuestra app y descubre la manera mas divertida de estudiar la Biblia 👇\n${rc.url}`;
+    }
+
+    function compartirWhatsapp() {
+      const textoVis = obtenerTextoCompartir();
+      window.open(`https://wa.me/?text=${encodeURIComponent(textoVis)}`, '_blank');
+    }
+
+    function compartirCopiar() {
+      const textoVis = obtenerTextoCompartir();
+      navigator.clipboard.writeText(textoVis).then(() => {
+        alert("¡Tarjeta de resultados copiada! Pégala en tu Story 🔥");
+      }).catch(err => {
+        console.error("No se pudo copiar el texto", err);
+      });
+    }
+
+    // --- MODO DESARROLLADOR: MAPEADOR DE COORDENADAS ---
+    // Esta herramienta te permitirá hacer click en cada casilla para guardar la coordenada perfecta.
+    let mapeando = false; // Desactivado ya que tenemos las coordenadas
+    let nuevasCoordenadas = [];
+
+    document.getElementById('tablero-img').addEventListener('click', function (e) {
+      if (!mapeando) return;
+
+      // Obtenemos el tamaño real del contenedor renderizado en la pantalla actual
+      const rect = this.getBoundingClientRect();
+
+      // Calculamos la posición exacta del click relativa a la imagen en la pantalla
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Lo convertimos a un porcentaje de 0 a 100 para guardarlo
+      // Esta es la forma más universal y perfecta de que funcione siempre.
+      const percentX = +((clickX / rect.width) * 100).toFixed(2);
+      const percentY = +((clickY / rect.height) * 100).toFixed(2);
+
+      // Agregamos la coordenada al array nuevo
+      nuevasCoordenadas.push({ x: percentX, y: percentY });
+
+      // Pintamos un marcador visual temporal en donde acaban de hacer click para guiarte
+      const marcador = document.createElement('div');
+      marcador.style.position = 'absolute';
+      marcador.style.width = '10px';
+      marcador.style.height = '10px';
+      marcador.style.background = 'blue';
+      marcador.style.borderRadius = '50%';
+      marcador.style.left = percentX + '%';
+      marcador.style.top = percentY + '%';
+      marcador.style.transform = 'translate(-50%, -50%)';
+      marcador.style.zIndex = '100';
+      document.getElementById('tablero-container').appendChild(marcador);
+
+      // Mostramos el código que deberás copiar al terminar en la consola
+      console.clear();
+      console.log("--- Llevas " + nuevasCoordenadas.length + " casillas (Incluyendo la Salida como casilla 0) ---");
+      console.log("Copia y reemplaza el bloque 'coordenadas' entero con esto cuando termines de pinchar las 76 casillas (0 al 75):");
+      console.log(JSON.stringify(nuevasCoordenadas, null, 2));
+
+      // Mover la ficha naranja allí para que lo veas inmediato
+      const ficha = document.getElementById('jugador-ficha');
+      ficha.style.left = percentX + '%';
+      ficha.style.top = percentY + '%';
+      document.getElementById('info').innerText = "Casilla mapeada: " + (nuevasCoordenadas.length - 1);
+    });
+
+  </script>
 </body>
+
 </html>

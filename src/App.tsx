@@ -26,8 +26,6 @@ import {
   MapPin,
   Landmark,
   MessageCircle,
-  Share2,
-  MessageCircle,
   Facebook,
   Share2
 } from "lucide-react";
