@@ -178,16 +178,42 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
     setTimeout(() => setIsCopiedResult(false), 2500);
   };
 
+  // Determinar si el usuario actual es el ganador o perdedor
+  const isMeSurrendered = Boolean(surrenderInfo?.isMeSurrendered);
+  const isRivalSurrendered = Boolean(surrenderInfo && !surrenderInfo.isMeSurrendered);
+
+  let isMeWinner = true;
+  if (isMeSurrendered) {
+    isMeWinner = false;
+  } else if (isRivalSurrendered) {
+    isMeWinner = true;
+  } else if (isSolo) {
+    // Modo individual: Gana si alcanzó la meta 75 o si en carrera por tiempo obtuvo delta positivo de rating
+    isMeWinner = completedMeta || (currentCategory !== 'INFINITO' && currentPos > 0 && effectiveSoloResult.ratingDelta >= 0);
+  } else if (gameWinner) {
+    // Multijugador / 1v1 / VS Bots: el ganador es el usuario si su nombre o id coincide con currentPlayer
+    const myName = currentPlayer?.name || (players[0] ? players[0].name : '');
+    const myId = currentPlayer?.id !== undefined ? currentPlayer.id : (players[0] ? players[0].id : '');
+    isMeWinner = (gameWinner.id !== undefined && myId !== undefined && gameWinner.id === myId) || 
+                 Boolean(gameWinner.name && myName && gameWinner.name.trim().toLowerCase() === myName.trim().toLowerCase());
+  }
+
   return (
     <div className="fixed inset-0 z-[10000] w-full h-full flex flex-col justify-between items-center bg-gradient-to-b from-[#0b241b] via-[#05130e] to-[#020806] text-emerald-100 p-3 sm:p-6 overflow-y-auto">
       {/* RESPLANDOR Y HALO DE FONDO */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[650px] h-[650px] rounded-full blur-[120px] opacity-35 bg-amber-500 animate-pulse" />
+        <div className={`absolute -top-24 left-1/2 -translate-x-1/2 w-[650px] h-[650px] rounded-full blur-[120px] opacity-35 animate-pulse ${
+          isMeWinner ? 'bg-emerald-500' : 'bg-rose-600'
+        }`} />
       </div>
 
       {/* CABECERA SUPERIOR: BADGE */}
       <div className="relative z-10 pt-1 sm:pt-2 text-center shrink-0">
-        <div className="inline-flex items-center gap-2 px-4 sm:px-6 py-1.5 rounded-full text-xs font-black tracking-[0.2em] uppercase border shadow-2xl bg-amber-500 text-amber-950 border-amber-300 ring-4 ring-amber-400/30">
+        <div className={`inline-flex items-center gap-2 px-4 sm:px-6 py-1.5 rounded-full text-xs font-black tracking-[0.2em] uppercase border shadow-2xl ${
+          isMeWinner
+            ? 'bg-amber-500 text-amber-950 border-amber-300 ring-4 ring-amber-400/30'
+            : 'bg-rose-600 text-white border-rose-400 ring-4 ring-rose-500/30'
+        }`}>
           <Sparkles size={14} />
           <span>
             {surrenderInfo
@@ -205,17 +231,21 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
         {/* TROFEO / CORONA RADIANTE */}
         <div className="inline-block">
           <motion.div
-            initial={{ scale: 0.6, rotate: -8 }}
+            initial={{ scale: 0.6, rotate: isMeWinner ? -8 : 0 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', damping: 14, stiffness: 220 }}
-            className="p-4 sm:p-5 rounded-full border-4 border-white shadow-[0_0_50px_rgba(245,158,11,0.5)] inline-flex items-center justify-center bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 text-amber-950 ring-8 ring-amber-300/30"
+            className={`p-4 sm:p-5 rounded-full border-4 shadow-2xl inline-flex items-center justify-center ${
+              isMeWinner
+                ? 'border-white shadow-[0_0_50px_rgba(245,158,11,0.5)] bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 text-amber-950 ring-8 ring-amber-300/30'
+                : 'border-rose-400/80 shadow-[0_0_50px_rgba(244,63,94,0.4)] bg-gradient-to-tr from-rose-900 via-stone-800 to-rose-950 text-rose-200 ring-8 ring-rose-500/20'
+            }`}
           >
             <Trophy className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-[0_0_20px_rgba(255,255,255,1)]" />
           </motion.div>
         </div>
 
-        {/* TÍTULO */}
-        <div className="space-y-0.5">
+        {/* TÍTULO Y BANNER HAS GANADO / HAS PERDIDO */}
+        <div className="space-y-2">
           <h1 className="text-2xl sm:text-4xl font-black font-serif tracking-tight text-amber-300 drop-shadow-[0_0_25px_rgba(245,158,11,0.7)]">
             {surrenderInfo
               ? (surrenderInfo.isMeSurrendered ? '🏳️ HAS ABANDONADO' : '👑 ¡VICTORIA POR ABANDONO!')
@@ -223,6 +253,33 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
               ? '👑 ¡META ALCANZADA! 👑'
               : '🏁 ¡CARRERA COMPLETADA! 🏁'}
           </h1>
+
+          {/* BANNER ENORME HAS GANADO (VERDE) / HAS PERDIDO (ROJO MAYÚSCULA) */}
+          <div className="pt-1 pb-1">
+            {isMeWinner ? (
+              <motion.div
+                initial={{ scale: 0.8, y: -5 }}
+                animate={{ scale: [1, 1.04, 1], y: 0 }}
+                transition={{ duration: 1.8, repeat: Infinity, repeatType: 'reverse' }}
+                className="inline-block px-6 sm:px-10 py-2 sm:py-3 rounded-2xl bg-gradient-to-r from-emerald-950 via-emerald-800 to-emerald-950 border-2 border-emerald-400 shadow-[0_0_40px_rgba(16,185,129,0.75)]"
+              >
+                <span className="text-3xl sm:text-5xl font-black font-sans uppercase tracking-widest text-emerald-300 drop-shadow-[0_0_25px_rgba(52,211,153,1)]">
+                  ¡HAS GANADO!
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ scale: 0.8, y: -5 }}
+                animate={{ scale: 1, y: 0 }}
+                className="inline-block px-6 sm:px-10 py-2 sm:py-3 rounded-2xl bg-gradient-to-r from-rose-950 via-rose-900 to-rose-950 border-2 border-rose-500 shadow-[0_0_40px_rgba(244,63,94,0.75)]"
+              >
+                <span className="text-3xl sm:text-5xl font-black font-sans uppercase tracking-widest text-rose-300 drop-shadow-[0_0_25px_rgba(251,113,133,1)]">
+                  ¡HAS PERDIDO!
+                </span>
+              </motion.div>
+            )}
+          </div>
+
           <p className="text-xs sm:text-sm text-stone-200 font-medium max-w-sm mx-auto leading-snug">
             {surrenderInfo ? (
               surrenderInfo.isMeSurrendered ? (
@@ -230,8 +287,10 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
               ) : (
                 <span>¡El rival <strong className="text-rose-300">{surrenderInfo.surrenderedName}</strong> ha abandonado la partida! Te llevas la victoria y los <strong className="text-amber-300">+2 🪙 Talentos</strong>.</span>
               )
-            ) : (
+            ) : isMeWinner ? (
               <span>¡Gran desempeño, <strong className="text-amber-300">{winner.countryFlag || '🇩🇴'} {winner.name}</strong>! Alcanzaste la <strong className="text-amber-300">Casilla {currentPos}/75</strong>.</span>
+            ) : (
+              <span>¡Buen intento, <strong className="text-stone-300">{currentPlayer?.name || 'Jugador'}</strong>! La victoria fue para <strong className="text-amber-300">{winner.name}</strong>. ¡Sigue entrenando tu conocimiento bíblico!</span>
             )}
           </p>
         </div>

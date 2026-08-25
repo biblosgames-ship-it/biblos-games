@@ -5397,6 +5397,25 @@ const handleAnswerClick = (index: number) => {
                 <h1 className={`text-xl font-serif font-black tracking-tight uppercase ${medal.color}`}>
                   {medal.label}
                 </h1>
+
+                {/* BANNER HAS GANADO / HAS PERDIDO EN TRIVIA */}
+                {total > 0 && (
+                  <div className="pt-2 pb-1">
+                    {accuracy >= 60 ? (
+                      <div className="inline-block px-5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-950 via-emerald-800 to-emerald-950 border-2 border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.7)]">
+                        <span className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-widest text-emerald-300 drop-shadow-[0_0_15px_rgba(52,211,153,1)]">
+                          ¡HAS GANADO!
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="inline-block px-5 py-1.5 rounded-xl bg-gradient-to-r from-rose-950 via-rose-900 to-rose-950 border-2 border-rose-500 shadow-[0_0_25px_rgba(244,63,94,0.7)]">
+                        <span className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-widest text-rose-300 drop-shadow-[0_0_15px_rgba(251,113,133,1)]">
+                          ¡HAS PERDIDO!
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="p-6 space-y-6">
