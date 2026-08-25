@@ -4,5 +4,11 @@ dist/
 coverage/
 .DS_Store
 *.log
+*.jks
+*.keystore
+*.aab
+*.apk
+*.csv
+.idea/
 .env*
 !.env.example

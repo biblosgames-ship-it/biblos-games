@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Biblos Games</string>
+    <string name="title_activity_main">Biblos Games</string>
+    <string name="package_name">com.biblosgames.app</string>
+    <string name="custom_url_scheme">com.biblosgames.app</string>
+    <string name="admob_app_id">ca-app-pub-9854726623821294~2592269623</string>
+</resources>

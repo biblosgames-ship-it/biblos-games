@@ -17,13 +17,15 @@ export interface Question {
   id: string;
   mode: 
     | 'TABLERO'
+    | 'PRINCIPIANTE'
     | 'KIDS'
     | 'VERSICULOS'
     | 'PERSONAJES'
     | 'DIOS'
     | 'SALVACION'
     | 'MANDAMIENTOS'
-    | 'HISTORIA';
+    | 'HISTORIA'
+    | 'GEOGRAFIA';
   period: Period;
   difficulty: Difficulty;
   question: string;

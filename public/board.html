@@ -200,6 +200,14 @@
       margin-top: 50px;
     }
 
+    /* Ocultamiento instantáneo cuando el juego viene de la sala en línea */
+    body.is-autostart #game-lobby {
+      display: none !important;
+    }
+    body.is-autostart #game-wrapper {
+      display: flex !important;
+    }
+
     #game-lobby h1 {
       color: #D97706;
       text-align: center;
@@ -358,9 +366,12 @@
       border-color: #B91C1C !important;
     }
   </style>
-</head>
-
 <body>
+  <script>
+    if (new URLSearchParams(window.location.search).get('autostart') === 'true') {
+      document.body.classList.add('is-autostart');
+    }
+  </script>
 
   <a href="/"
     style="position: absolute; top: 20px; left: 20px; color: #D97706; text-decoration: none; font-weight: bold; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid #D97706; z-index: 1000;">←
@@ -426,9 +437,22 @@
     </div>
   </div>
 
+  <!-- Overlay de Cuenta Regresiva Inicial (3, 2, 1, ¡GO!) -->
+  <div id="board-countdown-overlay" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+    <p style="color: #F59E0B; font-size: 14px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px;">Modo Solitario Contrarreloj</p>
+    <div id="board-countdown-number" style="font-size: 100px; font-weight: 900; color: #FCD34D; font-family: serif; text-shadow: 0 0 30px rgba(245, 158, 11, 0.7);">3</div>
+    <p style="color: #D6D0C4; font-size: 14px; margin-top: 20px; font-weight: 500;">¡Responde rápido en cada casilla para avanzar a la Meta!</p>
+  </div>
+
   <!-- Modal para acciones especiales -->
   <div id="modal-overlay">
     <div id="modal-box">
+      <!-- BARRA DE CRONÓMETRO Y TEMPORIZADOR DE 15s -->
+      <div id="modal-timer-bar-container" style="display: none; width: 100%; background: #374151; height: 10px; border-radius: 20px; overflow: hidden; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1);">
+        <div id="modal-timer-bar" style="height: 100%; width: 100%; background: #10B981; transition: width 1s linear, background 0.3s;"></div>
+      </div>
+      <div id="modal-timer-display" style="display: none; font-family: monospace; font-size: 20px; font-weight: 900; color: #FCD34D; text-align: right; margin-bottom: 8px;">⏱️ 00:15</div>
+
       <h2 id="modal-title">¡Casilla Especial!</h2>
       <p id="modal-text">Texto de la acción aquí</p>
 
@@ -962,6 +986,30 @@
       } catch (error) {
         console.error("Error cargando trivia:", error);
       }
+
+      // Detección automática instantánea para partidas iniciadas desde el Modo En Línea o Trivia
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('autostart') === 'true') {
+        modoJuego = params.get('mode') || 'solitaire';
+        
+        // Parsear nombres de jugadores en línea
+        const rawPlayers = params.get('players');
+        if (rawPlayers) {
+          const namesList = rawPlayers.split(',').map(n => decodeURIComponent(n));
+          const numInput = document.getElementById('player-count');
+          if (numInput) {
+            numInput.value = namesList.length.toString();
+            generatePlayerInputs();
+          }
+
+          namesList.forEach((name, idx) => {
+            const inputField = document.getElementById(`input-player-${idx}`);
+            if (inputField) inputField.value = name;
+          });
+        }
+
+        startGame();
+      }
     };
 
     // --- LÓGICA DEL LOBBY DE CONFIGURACIÓN ---
@@ -1011,7 +1059,32 @@
 
       // 2. Configurar Jugadores
       jugadores = [];
-      if (modoJuego === 'solitaire') {
+
+      const params = new URLSearchParams(window.location.search);
+      const isOnline = params.get('online') === 'true';
+      const rawPlayers = params.get('players');
+
+      if (isOnline && rawPlayers) {
+        // Modo En Línea: Cargar todos los competidores reales de la sala
+        const namesList = rawPlayers.split(',').map(n => decodeURIComponent(n));
+        namesList.forEach((nombre, i) => {
+          jugadores.push({
+            id: i,
+            nombre: nombre,
+            color: coloresDisponibles[i % coloresDisponibles.length],
+            posicion: 0,
+            turnosPerdidos: 0,
+            terminado: false,
+            stats: { total: 0, correct: 0 },
+            uiElement: null
+          });
+        });
+
+        // Configurar UI para competencia en vivo
+        modoJuego = 'multiplayer';
+        document.getElementById('btn-solitario').style.display = 'inline-block';
+        document.getElementById('btn-tirar').style.display = 'none';
+      } else if (modoJuego === 'solitaire') {
         // Solitario: 1 solo jugador amarillo
         jugadores.push({
           id: 0,
@@ -1046,54 +1119,56 @@
         document.getElementById('btn-tirar').style.display = 'inline-block';
       }
 
-      // Marcar inicio del cronómetro
-      startTime = Date.now();
-      ordenPodio = []; // Reiniciar el podio para cada partida nueva
-      reproducirSonido("select");
-
       // 3. Limpiar Tablero de Fichas viejas si existieran y Crear Novedosas
       const container = document.getElementById('camera-view');
-      // Remover la ficha default de la maqueta
       const fichaDefault = document.getElementById('jugador-ficha');
       if (fichaDefault) fichaDefault.remove();
+
+      // Limpiar fichas anteriores si las hubiera
+      document.querySelectorAll('.jugador-ficha-dinamica').forEach(el => el.remove());
 
       jugadores.forEach(jugador => {
         const ficha = document.createElement('div');
         ficha.className = 'jugador-ficha-dinamica';
-        // Adoptamos estilos de CSS por JS para no amontonarlo todo en el <style> extra
         ficha.style.position = 'absolute';
-        ficha.style.width = 'clamp(15px, 3vw, 30px)';
-        ficha.style.height = 'clamp(15px, 3vw, 30px)';
+        ficha.style.width = 'clamp(18px, 3.5vw, 32px)';
+        ficha.style.height = 'clamp(18px, 3.5vw, 32px)';
         ficha.style.borderRadius = '50%';
         ficha.style.border = '2px solid white';
         ficha.style.transition = 'all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
         ficha.style.zIndex = '10';
         ficha.style.background = jugador.color;
-        ficha.style.boxShadow = `0 0 10px ${jugador.color}`;
+        ficha.style.boxShadow = `0 0 12px ${jugador.color}`;
 
-        // Etiqueta de iniciales sobre la ficha
         const iniciales = jugador.nombre
           .split(' ')
           .map(p => p[0]?.toUpperCase() || '')
           .join('')
-          .slice(0, 3); // Máximo 3 iniciales
+          .slice(0, 3);
         const label = document.createElement('span');
         label.className = 'ficha-label';
         label.style.color = jugador.color;
         label.textContent = iniciales;
         ficha.appendChild(label);
 
-        // La guardamos en el objeto para referencias fáciles
         jugador.uiElement = ficha;
         container.appendChild(ficha);
 
-        // Colocarlas inicialmente en Casilla 0 
+        // Posicionar inmediatamente en la Casilla 0 (Salida)
         actualizarFichaEnPantalla(0, jugador);
       });
 
       // 4. Iniciar Turnos
       turnoActual = 0;
       actualizarPanelTurno();
+
+      // Marcar inicio del cronómetro
+      startTime = Date.now();
+      ordenPodio = [];
+      reproducirSonido("select");
+
+      // 5. Lanzar animación de cuenta regresiva (3... 2... 1... ¡DESAFÍO!) con fichas ya renderizadas
+      ejecutarCuentaRegresivaSolitario();
     }
 
     // --- LÓGICA DE CÁMARA (NUEVO VISUAL) ---
@@ -1340,6 +1415,88 @@
       });
     }
 
+    // --- LÓGICA DE CRONÓMETRO DE 15 SEGUNDOS Y CUENTA REGRESIVA INICIAL ---
+    let intervalBoardTimer = null;
+    let boardTimeRemaining = 15;
+
+    function ejecutarCuentaRegresivaSolitario() {
+      const overlay = document.getElementById('board-countdown-overlay');
+      const numEl = document.getElementById('board-countdown-number');
+      overlay.style.display = 'flex';
+      let num = 3;
+      numEl.innerText = num;
+      reproducirSonido("select");
+
+      const countInt = setInterval(() => {
+        num--;
+        if (num > 0) {
+          numEl.innerText = num;
+          reproducirSonido("select");
+        } else if (num === 0) {
+          numEl.innerText = "¡DESAFÍO!";
+          reproducirSonido("victoria");
+        } else {
+          clearInterval(countInt);
+          overlay.style.display = 'none';
+          // Disparar inmediatamente el turno de trivia del jugador al concluir el 3, 2, 1
+          avanzarSolitario();
+        }
+      }, 900);
+    }
+
+    function iniciarCronometroTrivia(jugadorActivo) {
+      detenerCronometroTrivia(); // Limpiar previo si existiera
+      const barContainer = document.getElementById('modal-timer-bar-container');
+      const bar = document.getElementById('modal-timer-bar');
+      const display = document.getElementById('modal-timer-display');
+
+      barContainer.style.display = 'block';
+      display.style.display = 'block';
+
+      boardTimeRemaining = 15;
+      bar.style.width = '100%';
+      bar.style.background = '#10B981';
+      display.innerText = '⏱️ 00:15';
+      display.style.color = '#FCD34D';
+
+      intervalBoardTimer = setInterval(() => {
+        boardTimeRemaining--;
+        display.innerText = `⏱️ 00:${boardTimeRemaining < 10 ? '0' + boardTimeRemaining : boardTimeRemaining}`;
+
+        const pct = (boardTimeRemaining / 15) * 100;
+        bar.style.width = pct + '%';
+
+        if (boardTimeRemaining <= 5) {
+          bar.style.background = '#EF4444';
+          display.style.color = '#EF4444';
+        } else if (boardTimeRemaining <= 8) {
+          bar.style.background = '#F59E0B';
+          display.style.color = '#FCD34D';
+        }
+
+        if (boardTimeRemaining <= 0) {
+          detenerCronometroTrivia();
+          // Timeout automático: seleccionar incorrecta por defecto
+          const opciones = document.querySelectorAll('.trivia-btn');
+          if (opciones.length > 0) {
+            document.getElementById('modal-title').innerText = "⏰ ¡TIEMPO AGOTADO!";
+            responderTrivia(opciones[0], -1, 999, jugadorActivo); // -1 fuerza fallo por tiempo
+          }
+        }
+      }, 1000);
+    }
+
+    function detenerCronometroTrivia() {
+      if (intervalBoardTimer) {
+        clearInterval(intervalBoardTimer);
+        intervalBoardTimer = null;
+      }
+      const barContainer = document.getElementById('modal-timer-bar-container');
+      const display = document.getElementById('modal-timer-display');
+      if (barContainer) barContainer.style.display = 'none';
+      if (display) display.style.display = 'none';
+    }
+
     // Funciones exclusivas para TRIVIA
     function prepararModalTrivia(preguntaObj, jugadorActivo) {
       document.getElementById('modal-btn').style.display = 'none'; // Ocultamos el botón continuar normal
@@ -1354,6 +1511,9 @@
         btnOpt.onclick = () => responderTrivia(btnOpt, index, preguntaObj.correctAnswer, jugadorActivo);
         optionsBox.appendChild(btnOpt);
       });
+
+      // Iniciar el temporizador de 15s en la pregunta
+      iniciarCronometroTrivia(jugadorActivo);
     }
 
     // Reglas de consecuencias de Trivia por Casilla
@@ -1383,6 +1543,7 @@
     };
 
     function responderTrivia(btnElement, indexOfSelection, correctIndex, jugadorActivo) {
+      detenerCronometroTrivia();
       // Bloquear todos los botones tras responder
       const todosLosBotones = document.querySelectorAll('.trivia-btn');
       todosLosBotones.forEach(b => b.disabled = true);
@@ -1397,10 +1558,10 @@
       let reglas = { bien: 0, mal: 0 };
 
       if (modoJuego === 'multiplayer') {
-        reglas = triviaConsecuencias[casActual] || { bien: 0, mal: 0 }; // Fallback de seguridad
+        reglas = triviaConsecuencias[casActual] || { bien: 1, mal: 0 }; // En carrera continua se avanza al menos 1 casilla por acierto
       } else {
-        // Solitario: Bien avanza 1 (Ojo la idea del Solitario es avanzar de casilla en casilla)
-        reglas = { bien: 1, mal: 0 }; // Mal no hace nada, se queda en la misma para re-intentar otra vez TODO
+        // Solitario: Bien avanza 1
+        reglas = { bien: 1, mal: 0 };
       }
 
       // Aumentamos total de preguntas jugadas
@@ -1547,8 +1708,8 @@
     }
 
     function avanzarSolitario() {
-      const jugadorActivo = jugadores[0]; // Solo hay 1 jugador
-      if (bloqueado || jugadorActivo.posicion >= 75) return;
+      const jugadorActivo = jugadores[turnoActual] || jugadores[0]; // Jugador del turno actual
+      if (!jugadorActivo || bloqueado || jugadorActivo.posicion >= 75) return;
       bloqueado = true;
 
       // El solitario funciona con Trivia continua, en lugar de dado forzamos Evento QUESTION
@@ -1563,15 +1724,21 @@
       document.getElementById('trivia-options').style.display = 'none';
       document.getElementById('modal-btn').style.display = 'inline-block';
 
-      // Buscar preguntas
-      const preguntasFiltradas = preguntasTrivia.filter(q => q.period === periodoActual);
+      // Buscar preguntas por el periodo actual
+      let preguntasFiltradas = (preguntasTrivia && preguntasTrivia.length > 0)
+        ? preguntasTrivia.filter(q => q.period === periodoActual)
+        : [];
+
+      // Fallback si la colección aún se está deserializando
+      if (preguntasFiltradas.length === 0 && preguntasTrivia.length > 0) {
+        preguntasFiltradas = preguntasTrivia;
+      }
 
       if (preguntasFiltradas.length > 0) {
         const preguntaAlAzar = preguntasFiltradas[Math.floor(Math.random() * preguntasFiltradas.length)];
         texto += preguntaAlAzar.question;
 
         mostrarModal(titulo, texto, () => { });
-        // Forzar la trivia
         prepararModalTrivia(preguntaAlAzar, jugadorActivo);
       } else {
         texto += "No hay preguntas en en la base de datos para avanzar. Avanzas automáticamente.";
@@ -1676,6 +1843,29 @@
       cerrarModal();
       document.getElementById('final-summary-modal').style.display = 'flex';
 
+      // Guardar automáticamente en el Salón de la Fama / Leaderboard Global
+      try {
+        const calculatedPoints = (correct * 150) + Math.round((accuracy / 100) * 500) + Math.max(0, Math.round((15 - (durationSeconds / Math.max(1, total))) * 30 * correct));
+        const leaderboardKey = 'biblos_leaderboard_data';
+        const currentData = JSON.parse(localStorage.getItem(leaderboardKey) || '[]');
+        const newEntry = {
+          id: 'score_' + Date.now(),
+          playerName: ganador.nombre || 'Explorador Solitario',
+          playerAvatar: '/avatars/david.jpg',
+          mode: 'TABLERO',
+          score: calculatedPoints,
+          accuracy: accuracy,
+          totalQuestions: total,
+          correctQuestions: correct,
+          timeSeconds: durationSeconds,
+          date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+        };
+        const updated = [...currentData, newEntry].sort((a, b) => b.score - a.score).slice(0, 50);
+        localStorage.setItem(leaderboardKey, JSON.stringify(updated));
+      } catch (e) {
+        console.error('Error guardando en el Ranking desde Tablero', e);
+      }
+
       // Set datos para compartir globalmente
       resultDatosParaCompartir = {
         nombre: ganador.nombre,
@@ -1758,8 +1948,6 @@
       ficha.style.left = percentX + '%';
       ficha.style.top = percentY + '%';
       document.getElementById('info').innerText = "Casilla mapeada: " + (nuevasCoordenadas.length - 1);
-    });
-
   </script>
 </body>
 
