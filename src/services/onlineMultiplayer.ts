@@ -1,5 +1,6 @@
-import { io, Socket } from 'socket.io-client';
-import { voiceChatService } from './voiceChatService';
+import { RealtimeChannel } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
+import { voiceChatService, RoomChatMessage } from './voiceChatService';
 
 export interface OnlinePlayer {
   id: string;
@@ -45,120 +46,474 @@ export interface OnlineRoom {
   startTime?: number;
 }
 
-class OnlineMultiplayerService {
-  private socket: Socket;
-  private currentRoom: OnlineRoom | null = null;
-  private listeners: Array<(room: OnlineRoom) => void> = [];
+const BIBLE_BOTS = [
+  { name: 'Pedro', avatar: '/avatars/pedro.jpg', rating: 1100, country: 'DO', countryFlag: '🇩🇴' },
+  { name: 'María', avatar: '/avatars/maria.jpg', rating: 1250, country: 'PR', countryFlag: '🇵🇷' },
+  { name: 'Débora', avatar: '/avatars/debora.jpg', rating: 1550, country: 'CO', countryFlag: '🇨🇴' },
+  { name: 'Moisés', avatar: '/avatars/moises.jpg', rating: 1850, country: 'MX', countryFlag: '🇲🇽' },
+  { name: 'Ester', avatar: '/avatars/esther.jpg', rating: 2200, country: 'GT', countryFlag: '🇬🇹' },
+  { name: 'Daniel', avatar: '/avatars/daniel.jpg', rating: 2600, country: 'US', countryFlag: '🇺🇸' },
+  { name: 'Elías', avatar: '/avatars/elias.jpg', rating: 2850, country: 'ES', countryFlag: '🇪🇸' },
+  { name: 'Salomón', avatar: '/avatars/salomon.jpg', rating: 3100, country: 'PA', countryFlag: '🇵🇦' }
+];
 
+class OnlineMultiplayerService {
+  private clientId: string;
+  private currentRoom: OnlineRoom | null = null;
+  private roomChannel: RealtimeChannel | null = null;
+  private matchmakingChannel: RealtimeChannel | null = null;
+  private groupLobbyChannel: RealtimeChannel | null = null;
+  private friendsLobbyChannel: RealtimeChannel | null = null;
+
+  private listeners: Array<(room: OnlineRoom) => void> = [];
   private actionListeners: Array<(data: { action: string; payload: any; senderId: string }) => void> = [];
+  private matchmakingTimer: any = null;
+  private groupLobbyTimer: any = null;
+
+  // Listeners para invitaciones y lobbies
+  private friendInviteCallbacks: Array<(invite: any) => void> = [];
+  private activeFriendLobbiesCallbacks: Array<(lobbies: ActiveFriendLobby[]) => void> = [];
+  private gracePeriodCallbacks: Array<(data: any) => void> = [];
+  private playerReconnectedCallbacks: Array<(data: any) => void> = [];
+  private opponentAbandonedCallbacks: Array<(data: any) => void> = [];
+  private sanctionAppliedCallbacks: Array<(data: any) => void> = [];
 
   constructor() {
-    // Conectar automáticamente al servidor local de Socket.io
-    const host = window.location.hostname || 'localhost';
-    this.socket = io(`http://${host}:4000`, {
-      transports: ['websocket', 'polling']
+    // Generar o recuperar ID de cliente único persistente para la sesión
+    let storedId = '';
+    try {
+      storedId = sessionStorage.getItem('biblos_client_id') || '';
+      if (!storedId) {
+        storedId = 'usr_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+        sessionStorage.setItem('biblos_client_id', storedId);
+      }
+    } catch {
+      storedId = 'usr_' + Math.random().toString(36).substring(2, 9);
+    }
+    this.clientId = storedId;
+
+    // Conectar el servicio de chat con el canal activo
+    voiceChatService.setSendHandler((roomCode, message) => {
+      this.sendRoomChat(roomCode, message);
     });
 
-    // Escuchar actualizaciones de la sala en tiempo real desde el servidor local
-    this.socket.on('ROOM_UPDATED', (roomData: OnlineRoom) => {
-      this.currentRoom = roomData;
-      this.notifyListeners();
-    });
-
-    // Escuchar acciones del juego sincronizadas
-    this.socket.on('GAME_ACTION_RECEIVED', (data: { action: string; payload: any; senderId: string }) => {
-      this.actionListeners.forEach(listener => listener(data));
-    });
-
-    this.socket.on('JOIN_ERROR', (msg: string) => {
-      alert(`⚠️ Error al unirse: ${msg}`);
-    });
-
-    voiceChatService.setSocket(this.socket);
+    console.log(`[SUPABASE REALTIME] Multijugador inicializado con Client ID: ${this.clientId}`);
   }
 
-  getSocket(): Socket {
-    return this.socket;
+  getSocket(): any {
+    return {
+      id: this.clientId,
+      connected: true,
+      emit: (event: string, data: any) => {
+        if (event === 'SET_ROOM_STATUS' && data) {
+          this.setRoomStatus(data.status, data.extraData);
+        } else if (event === 'SYNC_GAME_ACTION' && data) {
+          this.sendGameAction(data.action, data.payload);
+        }
+      },
+      on: (_event: string, _cb: any) => {},
+      off: (_event: string, _cb?: any) => {}
+    };
   }
 
   getSocketId(): string {
-    return this.socket.id || '';
+    return this.clientId;
   }
 
-  // 0. Matchmaking 1 vs 1 (Cola en tiempo real)
+  // --- GESTIÓN DE CANALES DE SALA ---
+  private bindRoomChannel(code: string) {
+    if (this.roomChannel) {
+      supabase.removeChannel(this.roomChannel);
+      this.roomChannel = null;
+    }
+
+    const channel = supabase.channel(`biblos_room_${code}`, {
+      config: { broadcast: { self: false } }
+    });
+
+    channel
+      .on('broadcast', { event: 'ROOM_UPDATED' }, ({ payload }) => {
+        if (payload && payload.code === code) {
+          this.currentRoom = payload;
+          this.notifyListeners();
+        }
+      })
+      .on('broadcast', { event: 'GAME_ACTION' }, ({ payload }) => {
+        if (payload) {
+          this.actionListeners.forEach(listener => listener(payload));
+        }
+      })
+      .on('broadcast', { event: 'ROOM_CHAT' }, ({ payload }) => {
+        if (payload) {
+          voiceChatService.receiveMessage(payload);
+        }
+      })
+      .on('broadcast', { event: 'PLAYER_JOIN_REQUEST' }, ({ payload }) => {
+        // Si soy el anfitrión, agrego al jugador y transmito la sala actualizada
+        if (this.currentRoom && this.currentRoom.players.some(p => p.id === this.clientId && p.isHost)) {
+          const joiningPlayer = payload.player as OnlinePlayer;
+          if (joiningPlayer && !this.currentRoom.players.some(p => p.id === joiningPlayer.id)) {
+            this.currentRoom.players.push(joiningPlayer);
+            this.notifyListeners();
+            this.broadcastRoomUpdate(this.currentRoom);
+          }
+        }
+      })
+      .on('broadcast', { event: 'PLAYER_LEAVE' }, ({ payload }) => {
+        if (this.currentRoom && payload.playerId) {
+          this.currentRoom.players = this.currentRoom.players.filter(p => p.id !== payload.playerId);
+          if (this.currentRoom.players.length > 0 && !this.currentRoom.players.some(p => p.isHost)) {
+            this.currentRoom.players[0].isHost = true;
+          }
+          this.notifyListeners();
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`[SUPABASE REALTIME] Conectado a la sala: ${code}`);
+        }
+      });
+
+    this.roomChannel = channel;
+  }
+
+  private broadcastRoomUpdate(room: OnlineRoom) {
+    if (this.roomChannel) {
+      this.roomChannel.send({
+        type: 'broadcast',
+        event: 'ROOM_UPDATED',
+        payload: room
+      });
+    }
+  }
+
+  sendRoomChat(_roomCode: string, message: RoomChatMessage) {
+    if (this.roomChannel) {
+      this.roomChannel.send({
+        type: 'broadcast',
+        event: 'ROOM_CHAT',
+        payload: message
+      });
+    }
+    voiceChatService.receiveMessage(message);
+  }
+
+  // --- 0. MATCHMAKING 1 vs 1 ---
   startMatchmaking(
     player: { name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
     onMatchFound: (data: { room: OnlineRoom; opponent: { name: string; avatar: string; country?: string; countryFlag?: string; rating: number } }) => void
   ) {
-    this.socket.emit('START_MATCHMAKING', player);
+    this.cancelMatchmaking();
 
-    const onMatch = (data: { room: OnlineRoom; opponent: { name: string; avatar: string; country?: string; countryFlag?: string; rating: number } }) => {
-      this.socket.off('MATCH_FOUND', onMatch);
-      this.currentRoom = data.room;
-      this.notifyListeners();
-      onMatchFound(data);
-    };
+    const channelName = 'biblos_mm_1v1_global';
+    const channel = supabase.channel(channelName, {
+      config: { presence: { key: this.clientId } }
+    });
 
-    this.socket.on('MATCH_FOUND', onMatch);
+    let matched = false;
+
+    channel
+      .on('broadcast', { event: 'MATCH_INVITE' }, ({ payload }) => {
+        if (!matched && payload && payload.targetId === this.clientId) {
+          matched = true;
+          this.cancelMatchmaking();
+          this.currentRoom = payload.room;
+          this.bindRoomChannel(payload.room.code);
+          this.notifyListeners();
+          onMatchFound({ room: payload.room, opponent: payload.opponent });
+        }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        if (matched) return;
+        const state = channel.presenceState();
+        const waitingPlayers: any[] = [];
+
+        Object.values(state).forEach((presences: any) => {
+          presences.forEach((p: any) => {
+            if (p.id && p.id !== this.clientId) {
+              waitingPlayers.push(p);
+            }
+          });
+        });
+
+        if (waitingPlayers.length > 0) {
+          // Elegir al primer rival disponible
+          const opponent = waitingPlayers[0];
+          
+          // Determinista: el cliente con ID alfabéticamente menor actúa como creador de la sala
+          if (this.clientId < opponent.id) {
+            matched = true;
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            const hostPlayer: OnlinePlayer = {
+              id: this.clientId,
+              name: player.name || 'Jugador 1',
+              avatar: player.avatar || '/avatars/david.jpg',
+              country: player.country || 'DO',
+              countryFlag: player.countryFlag || '🇩🇴',
+              isHost: true,
+              position: 0,
+              score: 0,
+              ready: false
+            };
+            const guestPlayer: OnlinePlayer = {
+              id: opponent.id,
+              name: opponent.name || 'Rival',
+              avatar: opponent.avatar || '/avatars/pedro.jpg',
+              country: opponent.country || 'DO',
+              countryFlag: opponent.countryFlag || '🇩🇴',
+              isHost: false,
+              position: 0,
+              score: 0,
+              ready: false
+            };
+
+            const room: OnlineRoom = {
+              code,
+              isPrivate: false,
+              status: 'LOBBY',
+              players: [hostPlayer, guestPlayer],
+              currentQuestionIndex: 0
+            };
+
+            // Enviar invitación al rival
+            channel.send({
+              type: 'broadcast',
+              event: 'MATCH_INVITE',
+              payload: {
+                targetId: opponent.id,
+                room,
+                opponent: {
+                  name: player.name,
+                  avatar: player.avatar,
+                  country: player.country,
+                  countryFlag: player.countryFlag,
+                  rating: player.rating || 1000
+                }
+              }
+            });
+
+            this.cancelMatchmaking();
+            this.currentRoom = room;
+            this.bindRoomChannel(code);
+            this.notifyListeners();
+            onMatchFound({
+              room,
+              opponent: {
+                name: opponent.name,
+                avatar: opponent.avatar,
+                country: opponent.country,
+                countryFlag: opponent.countryFlag,
+                rating: opponent.rating || 1000
+              }
+            });
+          }
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            id: this.clientId,
+            name: player.name,
+            avatar: player.avatar,
+            country: player.country || 'DO',
+            countryFlag: player.countryFlag || '🇩🇴',
+            rating: player.rating || 1000,
+            joinedAt: Date.now()
+          });
+        }
+      });
+
+    this.matchmakingChannel = channel;
+
+    // Fallback con Bot Bíblico si no se encuentra rival humano en 7 segundos
+    this.matchmakingTimer = setTimeout(() => {
+      if (!matched) {
+        matched = true;
+        this.cancelMatchmaking();
+
+        const botIdx = Math.floor(Math.random() * BIBLE_BOTS.length);
+        const bot = BIBLE_BOTS[botIdx];
+        const botId = 'bot_' + Math.random().toString(36).substring(2, 7);
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const room: OnlineRoom = {
+          code,
+          isPrivate: false,
+          status: 'LOBBY',
+          players: [
+            {
+              id: this.clientId,
+              name: player.name || 'Jugador',
+              avatar: player.avatar || '/avatars/david.jpg',
+              country: player.country || 'DO',
+              countryFlag: player.countryFlag || '🇩🇴',
+              isHost: true,
+              position: 0,
+              score: 0,
+              ready: false
+            },
+            {
+              id: botId,
+              name: bot.name,
+              avatar: bot.avatar,
+              country: bot.country,
+              countryFlag: bot.countryFlag,
+              isHost: false,
+              position: 0,
+              score: 0,
+              ready: true,
+              isBot: true
+            }
+          ],
+          currentQuestionIndex: 0
+        };
+
+        this.currentRoom = room;
+        this.bindRoomChannel(code);
+        this.notifyListeners();
+        onMatchFound({
+          room,
+          opponent: {
+            name: bot.name,
+            avatar: bot.avatar,
+            country: bot.country,
+            countryFlag: bot.countryFlag,
+            rating: bot.rating
+          }
+        });
+      }
+    }, 7000);
   }
 
   cancelMatchmaking() {
-    this.socket.emit('CANCEL_MATCHMAKING');
-    this.socket.off('MATCH_FOUND');
+    if (this.matchmakingTimer) {
+      clearTimeout(this.matchmakingTimer);
+      this.matchmakingTimer = null;
+    }
+    if (this.matchmakingChannel) {
+      supabase.removeChannel(this.matchmakingChannel);
+      this.matchmakingChannel = null;
+    }
   }
 
-  // 0.1 Matchmaking Grupal: "Todos Vs Todos" (3 a 8 Jugadores con 30 segundos)
+  // --- 0.1 MATCHMAKING TODOS VS TODOS (3 a 8 Jugadores) ---
   startGroupMatchmaking(
     player: { name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
     onLobbyUpdate: (data: { code: string; timeRemaining: number; players: OnlinePlayer[] }) => void,
     onMatchStart: (data: { room: OnlineRoom }) => void
   ) {
-    this.socket.emit('START_GROUP_MATCHMAKING', player);
+    this.cancelGroupMatchmaking();
 
-    this.socket.off('GROUP_LOBBY_UPDATE');
-    this.socket.on('GROUP_LOBBY_UPDATE', (data: { code: string; timeRemaining: number; players: OnlinePlayer[] }) => {
-      onLobbyUpdate(data);
+    const channelName = 'biblos_group_lobby_global';
+    const channel = supabase.channel(channelName, {
+      config: { presence: { key: this.clientId } }
     });
 
-    const onStart = (data: { room: OnlineRoom }) => {
-      this.socket.off('GROUP_LOBBY_UPDATE');
-      this.socket.off('GROUP_MATCH_START', onStart);
-      this.currentRoom = data.room;
-      this.notifyListeners();
-      onMatchStart(data);
-    };
+    let timeRemaining = 20;
+    const lobbyPlayers: OnlinePlayer[] = [
+      {
+        id: this.clientId,
+        name: player.name || 'Jugador',
+        avatar: player.avatar || '/avatars/david.jpg',
+        country: player.country || 'DO',
+        countryFlag: player.countryFlag || '🇩🇴',
+        isHost: true,
+        position: 0,
+        score: 0,
+        ready: true
+      }
+    ];
 
-    this.socket.on('GROUP_MATCH_START', onStart);
+    onLobbyUpdate({ code: 'TODOS_VS_TODOS', timeRemaining, players: lobbyPlayers });
+
+    this.groupLobbyTimer = setInterval(() => {
+      timeRemaining--;
+      if (timeRemaining > 0) {
+        onLobbyUpdate({ code: 'TODOS_VS_TODOS', timeRemaining, players: lobbyPlayers });
+      } else {
+        this.cancelGroupMatchmaking();
+        
+        // Completar con bots si hay menos de 3 jugadores
+        while (lobbyPlayers.length < 3) {
+          const availableBot = BIBLE_BOTS[lobbyPlayers.length % BIBLE_BOTS.length];
+          lobbyPlayers.push({
+            id: 'bot_' + Math.random().toString(36).substring(2, 7),
+            name: availableBot.name,
+            avatar: availableBot.avatar,
+            country: availableBot.country,
+            countryFlag: availableBot.countryFlag,
+            isHost: false,
+            position: 0,
+            score: 0,
+            ready: true,
+            isBot: true
+          });
+        }
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const room: OnlineRoom = {
+          code,
+          isPrivate: false,
+          status: 'LOBBY',
+          players: lobbyPlayers,
+          currentQuestionIndex: 0
+        };
+
+        this.currentRoom = room;
+        this.bindRoomChannel(code);
+        this.notifyListeners();
+        onMatchStart({ room });
+      }
+    }, 1000);
+
+    this.groupLobbyChannel = channel;
   }
 
   cancelGroupMatchmaking() {
-    this.socket.emit('CANCEL_GROUP_MATCHMAKING');
-    this.socket.off('GROUP_LOBBY_UPDATE');
-    this.socket.off('GROUP_MATCH_START');
+    if (this.groupLobbyTimer) {
+      clearInterval(this.groupLobbyTimer);
+      this.groupLobbyTimer = null;
+    }
+    if (this.groupLobbyChannel) {
+      supabase.removeChannel(this.groupLobbyChannel);
+      this.groupLobbyChannel = null;
+    }
   }
 
-  // 0.2 Sala de Amigos en Vivo (Red de Amigos)
+  // --- 0.2 SALA DE AMIGOS EN VIVO ---
   startFriendsLobby(
     player: { name: string; avatar: string; country?: string; countryFlag?: string; rating?: number; friendCode?: string },
     onLobbyUpdate: (data: { code: string; players: OnlinePlayer[] }) => void,
     onMatchStart: (data: { room: OnlineRoom }) => void
   ) {
-    this.socket.emit('START_FRIENDS_LOBBY', player);
-
-    this.socket.off('FRIENDS_LOBBY_UPDATE');
-    this.socket.on('FRIENDS_LOBBY_UPDATE', (data: { code: string; players: OnlinePlayer[] }) => {
-      onLobbyUpdate(data);
-    });
-
-    const onStart = (data: { room: OnlineRoom }) => {
-      this.socket.off('FRIENDS_LOBBY_UPDATE');
-      this.socket.off('FRIENDS_MATCH_START', onStart);
-      this.currentRoom = data.room;
-      this.notifyListeners();
-      onMatchStart(data);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const host: OnlinePlayer = {
+      id: this.clientId,
+      name: player.name || 'Anfitrión',
+      avatar: player.avatar || '/avatars/david.jpg',
+      country: player.country || 'DO',
+      countryFlag: player.countryFlag || '🇩🇴',
+      isHost: true,
+      position: 0,
+      score: 0,
+      ready: true
     };
 
-    this.socket.on('FRIENDS_MATCH_START', onStart);
+    const room: OnlineRoom = {
+      code,
+      isPrivate: true,
+      status: 'LOBBY',
+      players: [host],
+      currentQuestionIndex: 0
+    };
+
+    this.currentRoom = room;
+    this.bindRoomChannel(code);
+    this.notifyListeners();
+    onLobbyUpdate({ code, players: [host] });
+
+    // Cuando el host inicia la partida
+    (this as any)._friendsOnStart = onMatchStart;
   }
 
   joinFriendsLobby(
@@ -167,145 +522,178 @@ class OnlineMultiplayerService {
     onLobbyUpdate: (data: { code: string; players: OnlinePlayer[] }) => void,
     onMatchStart: (data: { room: OnlineRoom }) => void
   ) {
-    this.socket.emit('JOIN_FRIENDS_LOBBY', { roomCode, playerData: player });
+    this.bindRoomChannel(roomCode);
 
-    this.socket.off('FRIENDS_LOBBY_UPDATE');
-    this.socket.on('FRIENDS_LOBBY_UPDATE', (data: { code: string; players: OnlinePlayer[] }) => {
-      onLobbyUpdate(data);
-    });
-
-    const onStart = (data: { room: OnlineRoom }) => {
-      this.socket.off('FRIENDS_LOBBY_UPDATE');
-      this.socket.off('FRIENDS_MATCH_START', onStart);
-      this.currentRoom = data.room;
-      this.notifyListeners();
-      onMatchStart(data);
+    const guest: OnlinePlayer = {
+      id: this.clientId,
+      name: player.name || 'Invitado',
+      avatar: player.avatar || '/avatars/esther.jpg',
+      country: player.country || 'DO',
+      countryFlag: player.countryFlag || '🇩🇴',
+      isHost: false,
+      position: 0,
+      score: 0,
+      ready: true
     };
 
-    this.socket.on('FRIENDS_MATCH_START', onStart);
+    // Solicitar unirse al anfitrión
+    setTimeout(() => {
+      this.roomChannel?.send({
+        type: 'broadcast',
+        event: 'PLAYER_JOIN_REQUEST',
+        payload: { player: guest }
+      });
+    }, 400);
+
+    const unsub = this.subscribe((room) => {
+      if (room.code === roomCode) {
+        onLobbyUpdate({ code: roomCode, players: room.players });
+        if (room.status !== 'LOBBY') {
+          unsub();
+          onMatchStart({ room });
+        }
+      }
+    });
   }
 
   hostStartFriendsMatch(roomCode: string) {
-    this.socket.emit('HOST_START_FRIENDS_MATCH', { roomCode });
+    if (this.currentRoom && this.currentRoom.code === roomCode) {
+      this.setRoomStatus('VOTING_THEME');
+      if ((this as any)._friendsOnStart) {
+        (this as any)._friendsOnStart({ room: this.currentRoom });
+      }
+    }
   }
 
   cancelFriendsLobby(roomCode: string) {
-    this.socket.emit('CANCEL_FRIENDS_LOBBY', { roomCode });
-    this.socket.off('FRIENDS_LOBBY_UPDATE');
-    this.socket.off('FRIENDS_MATCH_START');
+    this.leaveRoom();
   }
 
-  onFriendRoomInvitation(
-    callback: (invite: { roomCode: string; hostName: string; hostAvatar: string; hostCountryFlag: string; hostFriendCode: string; hostRating: number }) => void
-  ) {
-    this.socket.on('FRIEND_ROOM_INVITATION', callback);
+  onFriendRoomInvitation(callback: (invite: any) => void) {
+    this.friendInviteCallbacks.push(callback);
     return () => {
-      this.socket.off('FRIEND_ROOM_INVITATION', callback);
+      this.friendInviteCallbacks = this.friendInviteCallbacks.filter(cb => cb !== callback);
     };
   }
 
   requestActiveFriendLobbies() {
-    this.socket.emit('GET_ACTIVE_FRIEND_LOBBIES');
+    this.activeFriendLobbiesCallbacks.forEach(cb => cb([]));
   }
 
   onActiveFriendLobbiesUpdate(callback: (lobbies: ActiveFriendLobby[]) => void) {
-    this.socket.on('ACTIVE_FRIEND_LOBBIES_UPDATE', callback);
-    this.socket.emit('GET_ACTIVE_FRIEND_LOBBIES');
+    this.activeFriendLobbiesCallbacks.push(callback);
     return () => {
-      this.socket.off('ACTIVE_FRIEND_LOBBIES_UPDATE', callback);
+      this.activeFriendLobbiesCallbacks = this.activeFriendLobbiesCallbacks.filter(cb => cb !== callback);
     };
   }
 
-  // 1. Crear Sala Privada o Pública
+  // --- 1. CREAR SALA PRIVADA ---
   createRoom(isPrivate: boolean, hostPlayer: { name: string; avatar: string }): OnlineRoom | null {
-    this.socket.emit('CREATE_ROOM', { isPrivate, player: hostPlayer });
-    return this.currentRoom;
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const host: OnlinePlayer = {
+      id: this.clientId,
+      name: hostPlayer.name || 'Anfitrión',
+      avatar: hostPlayer.avatar || '/avatars/david.jpg',
+      isHost: true,
+      position: 0,
+      score: 0,
+      ready: false
+    };
+
+    const room: OnlineRoom = {
+      code,
+      isPrivate,
+      status: 'LOBBY',
+      players: [host],
+      currentQuestionIndex: 0
+    };
+
+    this.currentRoom = room;
+    this.bindRoomChannel(code);
+    this.notifyListeners();
+    return room;
   }
 
   async createRoomAsync(isPrivate: boolean, hostPlayer: { name: string; avatar: string }): Promise<OnlineRoom> {
-    return new Promise((resolve) => {
-      const fallbackCode = Math.floor(100000 + Math.random() * 900000).toString();
-      const fallbackRoom: OnlineRoom = {
-        code: fallbackCode,
-        isPrivate,
-        status: 'LOBBY',
-        players: [{
-          id: this.socket.id || 'host_1',
-          name: hostPlayer.name || 'Anfitrión',
-          avatar: hostPlayer.avatar || '/avatars/david.jpg',
-          isHost: true,
-          position: 0,
-          score: 0,
-          ready: false
-        }],
-        currentQuestionIndex: 0
-      };
-
-      let resolved = false;
-
-      const onRoomUpdated = (roomData: OnlineRoom) => {
-        if (!resolved) {
-          resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
-          this.currentRoom = roomData;
-          this.notifyListeners();
-          resolve(roomData);
-        }
-      };
-
-      this.socket.on('ROOM_UPDATED', onRoomUpdated);
-      this.socket.emit('CREATE_ROOM', { isPrivate, player: hostPlayer });
-
-      // Fallback seguro a los 400ms si el servidor no responde
-      setTimeout(() => {
-        if (!resolved) {
-          resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
-          this.currentRoom = fallbackRoom;
-          this.notifyListeners();
-          resolve(fallbackRoom);
-        }
-      }, 400);
-    });
+    const room = this.createRoom(isPrivate, hostPlayer);
+    return room!;
   }
 
-  // 2. Unirse a Sala mediante PIN
+  // --- 2. UNIRSE A SALA MEDIANTE PIN ---
   joinRoom(code: string, player: { name: string; avatar: string }): OnlineRoom | null {
-    this.socket.emit('JOIN_ROOM', { code, player });
+    const guest: OnlinePlayer = {
+      id: this.clientId,
+      name: player.name || 'Invitado',
+      avatar: player.avatar || '/avatars/maria.jpg',
+      isHost: false,
+      position: 0,
+      score: 0,
+      ready: false
+    };
+
+    this.bindRoomChannel(code);
+
+    setTimeout(() => {
+      this.roomChannel?.send({
+        type: 'broadcast',
+        event: 'PLAYER_JOIN_REQUEST',
+        payload: { player: guest }
+      });
+    }, 300);
+
     return this.currentRoom;
   }
 
   async joinRoomAsync(code: string, player: { name: string; avatar: string }): Promise<OnlineRoom | null> {
     return new Promise((resolve) => {
+      this.joinRoom(code, player);
+
       let resolved = false;
-
-      const onRoomUpdated = (roomData: OnlineRoom) => {
-        if (!resolved && roomData.code === code) {
+      const unsub = this.subscribe((room) => {
+        if (!resolved && room.code === code) {
           resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
-          this.currentRoom = roomData;
-          this.notifyListeners();
-          resolve(roomData);
+          unsub();
+          resolve(room);
         }
-      };
+      });
 
-      this.socket.on('ROOM_UPDATED', onRoomUpdated);
-      this.socket.emit('JOIN_ROOM', { code, player });
-
+      // Fallback a los 1800ms
       setTimeout(() => {
         if (!resolved) {
           resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
+          unsub();
+          if (!this.currentRoom) {
+            this.currentRoom = {
+              code,
+              isPrivate: true,
+              status: 'LOBBY',
+              players: [{
+                id: this.clientId,
+                name: player.name,
+                avatar: player.avatar,
+                isHost: false,
+                position: 0,
+                score: 0,
+                ready: true
+              }],
+              currentQuestionIndex: 0
+            };
+          }
           resolve(this.currentRoom);
         }
-      }, 1500);
+      }, 1800);
     });
   }
 
-  // 3. Cambiar estado de sala
+  // --- 3. ACCIONES Y ESTADOS DEL JUEGO ---
   setRoomStatus(status: OnlineRoom['status'], extraData?: Partial<OnlineRoom>) {
     if (!this.currentRoom) return;
-    this.socket.emit('SET_ROOM_STATUS', { code: this.currentRoom.code, status, extraData });
+    this.currentRoom.status = status;
+    if (extraData) {
+      Object.assign(this.currentRoom, extraData);
+    }
+    this.notifyListeners();
+    this.broadcastRoomUpdate(this.currentRoom);
   }
 
   voteTheme(playerId: string, theme: string) {
@@ -319,8 +707,19 @@ class OnlineMultiplayerService {
   }
 
   sendGameAction(action: string, payload: any = {}) {
-    if (!this.currentRoom) return;
-    this.socket.emit('SYNC_GAME_ACTION', { code: this.currentRoom.code, action, payload });
+    if (!this.currentRoom || !this.roomChannel) return;
+
+    const actionData = {
+      action,
+      payload,
+      senderId: this.clientId
+    };
+
+    this.roomChannel.send({
+      type: 'broadcast',
+      event: 'GAME_ACTION',
+      payload: actionData
+    });
   }
 
   subscribeGameAction(callback: (data: { action: string; payload: any; senderId: string }) => void) {
@@ -336,7 +735,8 @@ class OnlineMultiplayerService {
     if (p) {
       p.position = Math.min(newPos, 75);
       p.score += pointsAdded;
-      this.socket.emit('SET_ROOM_STATUS', { code: this.currentRoom.code, status: this.currentRoom.status, extraData: { players: this.currentRoom.players } });
+      this.notifyListeners();
+      this.broadcastRoomUpdate(this.currentRoom);
     }
   }
 
@@ -359,60 +759,50 @@ class OnlineMultiplayerService {
     return this.currentRoom;
   }
 
-  reconnectToMatch(code: string, userId: string, playerName: string): Promise<OnlineRoom | null> {
+  reconnectToMatch(code: string, _userId: string, _playerName: string): Promise<OnlineRoom | null> {
     return new Promise((resolve) => {
-      this.socket.emit('RECONNECT_TO_MATCH', { code, userId, playerName });
-
-      const onSuccess = (room: OnlineRoom) => {
-        this.socket.off('RECONNECT_SUCCESS', onSuccess);
-        this.socket.off('RECONNECT_FAILED', onFailed);
-        this.currentRoom = room;
-        this.notifyListeners();
-        resolve(room);
-      };
-
-      const onFailed = () => {
-        this.socket.off('RECONNECT_SUCCESS', onSuccess);
-        this.socket.off('RECONNECT_FAILED', onFailed);
-        resolve(null);
-      };
-
-      this.socket.on('RECONNECT_SUCCESS', onSuccess);
-      this.socket.on('RECONNECT_FAILED', onFailed);
+      this.bindRoomChannel(code);
+      resolve(this.currentRoom);
     });
   }
 
-  onOpponentGracePeriod(callback: (data: { playerName: string; gracePeriodSeconds: number; message: string }) => void) {
-    this.socket.on('OPPONENT_DISCONNECTED_GRACE_PERIOD', callback);
+  onOpponentGracePeriod(callback: (data: any) => void) {
+    this.gracePeriodCallbacks.push(callback);
     return () => {
-      this.socket.off('OPPONENT_DISCONNECTED_GRACE_PERIOD', callback);
+      this.gracePeriodCallbacks = this.gracePeriodCallbacks.filter(cb => cb !== callback);
     };
   }
 
-  onPlayerReconnected(callback: (data: { playerName: string; room: OnlineRoom }) => void) {
-    this.socket.on('PLAYER_RECONNECTED', callback);
+  onPlayerReconnected(callback: (data: any) => void) {
+    this.playerReconnectedCallbacks.push(callback);
     return () => {
-      this.socket.off('PLAYER_RECONNECTED', callback);
+      this.playerReconnectedCallbacks = this.playerReconnectedCallbacks.filter(cb => cb !== callback);
     };
   }
 
-  onOpponentAbandoned(callback: (data: { leaverName: string; leaverAvatar: string; isVoluntary: boolean; message: string }) => void) {
-    this.socket.on('OPPONENT_ABANDONED', callback);
+  onOpponentAbandoned(callback: (data: any) => void) {
+    this.opponentAbandonedCallbacks.push(callback);
     return () => {
-      this.socket.off('OPPONENT_ABANDONED', callback);
+      this.opponentAbandonedCallbacks = this.opponentAbandonedCallbacks.filter(cb => cb !== callback);
     };
   }
 
-  onSanctionApplied(callback: (data: { isVoluntary: boolean; reason: string }) => void) {
-    this.socket.on('SANCTION_APPLIED', callback);
+  onSanctionApplied(callback: (data: any) => void) {
+    this.sanctionAppliedCallbacks.push(callback);
     return () => {
-      this.socket.off('SANCTION_APPLIED', callback);
+      this.sanctionAppliedCallbacks = this.sanctionAppliedCallbacks.filter(cb => cb !== callback);
     };
   }
 
   leaveRoom() {
-    if (this.currentRoom) {
-      this.socket.emit('LEAVE_ROOM', { code: this.currentRoom.code });
+    if (this.roomChannel && this.currentRoom) {
+      this.roomChannel.send({
+        type: 'broadcast',
+        event: 'PLAYER_LEAVE',
+        payload: { playerId: this.clientId }
+      });
+      supabase.removeChannel(this.roomChannel);
+      this.roomChannel = null;
     }
     this.currentRoom = null;
     this.notifyListeners();
@@ -420,3 +810,4 @@ class OnlineMultiplayerService {
 }
 
 export const onlineService = new OnlineMultiplayerService();
+

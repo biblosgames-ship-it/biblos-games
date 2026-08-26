@@ -1,8 +1,62 @@
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const PORT = 4000;
-const httpServer = createServer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DIST_PATH = path.join(__dirname, 'dist');
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.wav': 'audio/wav',
+  '.mp3': 'audio/mpeg',
+  '.mp4': 'video/mp4',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf'
+};
+
+const PORT = process.env.PORT || 4000;
+const httpServer = createServer((req, res) => {
+  if (fs.existsSync(DIST_PATH)) {
+    try {
+      const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+      let pathname = decodeURIComponent(parsedUrl.pathname);
+      if (pathname === '/') pathname = '/index.html';
+      
+      let filePath = path.join(DIST_PATH, pathname);
+      
+      // Si la ruta solicitada no tiene archivo real o es un directorio, servir index.html para SPA
+      if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+        filePath = path.join(DIST_PATH, 'index.html');
+      }
+      
+      if (fs.existsSync(filePath)) {
+        const ext = path.extname(filePath).toLowerCase();
+        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+        res.writeHead(200, { 'Content-Type': contentType });
+        return fs.createReadStream(filePath).pipe(res);
+      }
+    } catch (e) {
+      console.error('[HTTP ERROR]', e);
+    }
+  }
+  
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Biblos Games Server Activo 🎮');
+});
+
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
