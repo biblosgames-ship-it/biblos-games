@@ -120,15 +120,18 @@ class OnlineMultiplayerService {
     return this.clientId;
   }
 
-  // --- GESTIÓN DE CANALES DE SALA ---
-  private bindRoomChannel(code: string) {
+// --- GESTIÓN DE CANALES DE SALA ---
+  private bindRoomChannel(code: string, localPlayer?: Partial<OnlinePlayer>) {
     if (this.roomChannel) {
       supabase.removeChannel(this.roomChannel);
       this.roomChannel = null;
     }
 
     const channel = supabase.channel(`biblos_room_${code}`, {
-      config: { broadcast: { self: false } }
+      config: {
+        presence: { key: this.clientId },
+        broadcast: { self: false }
+      }
     });
 
     channel
@@ -148,29 +151,62 @@ class OnlineMultiplayerService {
           voiceChatService.receiveMessage(payload);
         }
       })
-      .on('broadcast', { event: 'PLAYER_JOIN_REQUEST' }, ({ payload }) => {
-        // Si soy el anfitrión, agrego al jugador y transmito la sala actualizada
-        if (this.currentRoom && this.currentRoom.players.some(p => p.id === this.clientId && p.isHost)) {
-          const joiningPlayer = payload.player as OnlinePlayer;
-          if (joiningPlayer && !this.currentRoom.players.some(p => p.id === joiningPlayer.id)) {
-            this.currentRoom.players.push(joiningPlayer);
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const activePresences: OnlinePlayer[] = [];
+
+        Object.values(state).forEach((presences: any) => {
+          presences.forEach((p: any) => {
+            if (p.id && !activePresences.some(x => x.id === p.id)) {
+              activePresences.push({
+                id: p.id,
+                name: p.name || 'Jugador',
+                avatar: p.avatar || '/avatars/david.jpg',
+                country: p.country,
+                countryFlag: p.countryFlag,
+                isHost: p.isHost ?? false,
+                position: p.position ?? 0,
+                score: p.score ?? 0,
+                ready: p.ready ?? true,
+                isBot: p.isBot ?? false
+              });
+            }
+          });
+        });
+
+        if (activePresences.length > 0) {
+          if (!activePresences.some(p => p.isHost)) {
+            activePresences[0].isHost = true;
+          }
+
+          if (this.currentRoom) {
+            // Preservar estado de bots o posiciones existentes si ya estaban en juego
+            const bots = this.currentRoom.players.filter(p => p.isBot);
+            const combined = [...activePresences, ...bots];
+            this.currentRoom.players = combined.map(p => {
+              const existing = this.currentRoom?.players.find(x => x.id === p.id);
+              return existing ? { ...p, position: existing.position, score: existing.score } : p;
+            });
             this.notifyListeners();
-            this.broadcastRoomUpdate(this.currentRoom);
           }
         }
       })
-      .on('broadcast', { event: 'PLAYER_LEAVE' }, ({ payload }) => {
-        if (this.currentRoom && payload.playerId) {
-          this.currentRoom.players = this.currentRoom.players.filter(p => p.id !== payload.playerId);
-          if (this.currentRoom.players.length > 0 && !this.currentRoom.players.some(p => p.isHost)) {
-            this.currentRoom.players[0].isHost = true;
-          }
-          this.notifyListeners();
-        }
-      })
-      .subscribe((status) => {
+      .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           console.log(`[SUPABASE REALTIME] Conectado a la sala: ${code}`);
+          if (localPlayer) {
+            await channel.track({
+              id: this.clientId,
+              name: localPlayer.name || 'Jugador',
+              avatar: localPlayer.avatar || '/avatars/david.jpg',
+              country: localPlayer.country || 'DO',
+              countryFlag: localPlayer.countryFlag || '🇩🇴',
+              isHost: localPlayer.isHost ?? false,
+              position: 0,
+              score: 0,
+              ready: true
+            });
+          }
         }
       });
 
@@ -211,16 +247,33 @@ class OnlineMultiplayerService {
     });
 
     let matched = false;
+    const myJoinedAt = Date.now();
+
+    const triggerMatchFound = (room: OnlineRoom, opponent: any) => {
+      if (matched) return;
+      matched = true;
+      if (this.matchmakingTimer) {
+        clearTimeout(this.matchmakingTimer);
+        this.matchmakingTimer = null;
+      }
+      this.currentRoom = room;
+      this.bindRoomChannel(room.code, { name: player.name, avatar: player.avatar, country: player.country, countryFlag: player.countryFlag, isHost: room.players.find(p => p.id === this.clientId)?.isHost });
+      this.notifyListeners();
+      onMatchFound({ room, opponent });
+
+      // Desconectar suavemente del canal de matchmaking después de 2 segundos
+      setTimeout(() => {
+        if (this.matchmakingChannel === channel) {
+          supabase.removeChannel(channel);
+          this.matchmakingChannel = null;
+        }
+      }, 2000);
+    };
 
     channel
       .on('broadcast', { event: 'MATCH_INVITE' }, ({ payload }) => {
         if (!matched && payload && payload.targetId === this.clientId) {
-          matched = true;
-          this.cancelMatchmaking();
-          this.currentRoom = payload.room;
-          this.bindRoomChannel(payload.room.code);
-          this.notifyListeners();
-          onMatchFound({ room: payload.room, opponent: payload.opponent });
+          triggerMatchFound(payload.room, payload.opponent);
         }
       })
       .on('presence', { event: 'sync' }, () => {
@@ -237,12 +290,14 @@ class OnlineMultiplayerService {
         });
 
         if (waitingPlayers.length > 0) {
-          // Elegir al primer rival disponible
+          // Ordenar por tiempo de llegada (el primero en llegar es el anfitrión)
+          waitingPlayers.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
           const opponent = waitingPlayers[0];
           
-          // Determinista: el cliente con ID alfabéticamente menor actúa como creador de la sala
-          if (this.clientId < opponent.id) {
-            matched = true;
+          // Si yo llegué antes o si hay empate por ID
+          const iAmHost = (myJoinedAt <= (opponent.joinedAt || myJoinedAt)) || (this.clientId < opponent.id);
+
+          if (iAmHost) {
             const code = Math.floor(100000 + Math.random() * 900000).toString();
             const hostPlayer: OnlinePlayer = {
               id: this.clientId,
@@ -253,7 +308,7 @@ class OnlineMultiplayerService {
               isHost: true,
               position: 0,
               score: 0,
-              ready: false
+              ready: true
             };
             const guestPlayer: OnlinePlayer = {
               id: opponent.id,
@@ -264,7 +319,7 @@ class OnlineMultiplayerService {
               isHost: false,
               position: 0,
               score: 0,
-              ready: false
+              ready: true
             };
 
             const room: OnlineRoom = {
@@ -292,19 +347,12 @@ class OnlineMultiplayerService {
               }
             });
 
-            this.cancelMatchmaking();
-            this.currentRoom = room;
-            this.bindRoomChannel(code);
-            this.notifyListeners();
-            onMatchFound({
-              room,
-              opponent: {
-                name: opponent.name,
-                avatar: opponent.avatar,
-                country: opponent.country,
-                countryFlag: opponent.countryFlag,
-                rating: opponent.rating || 1000
-              }
+            triggerMatchFound(room, {
+              name: opponent.name,
+              avatar: opponent.avatar,
+              country: opponent.country,
+              countryFlag: opponent.countryFlag,
+              rating: opponent.rating || 1000
             });
           }
         }
@@ -318,14 +366,14 @@ class OnlineMultiplayerService {
             country: player.country || 'DO',
             countryFlag: player.countryFlag || '🇩🇴',
             rating: player.rating || 1000,
-            joinedAt: Date.now()
+            joinedAt: myJoinedAt
           });
         }
       });
 
     this.matchmakingChannel = channel;
 
-    // Fallback con Bot Bíblico si no se encuentra rival humano en 7 segundos
+    // Fallback con Bot Bíblico si pasan 20 segundos sin encontrar rival humano
     this.matchmakingTimer = setTimeout(() => {
       if (!matched) {
         matched = true;
@@ -350,11 +398,11 @@ class OnlineMultiplayerService {
               isHost: true,
               position: 0,
               score: 0,
-              ready: false
+              ready: true
             },
             {
               id: botId,
-              name: bot.name,
+              name: `${bot.name} 🤖`,
               avatar: bot.avatar,
               country: bot.country,
               countryFlag: bot.countryFlag,
@@ -369,12 +417,12 @@ class OnlineMultiplayerService {
         };
 
         this.currentRoom = room;
-        this.bindRoomChannel(code);
+        this.bindRoomChannel(code, { name: player.name, avatar: player.avatar, isHost: true });
         this.notifyListeners();
         onMatchFound({
           room,
           opponent: {
-            name: bot.name,
+            name: `${bot.name} 🤖`,
             avatar: bot.avatar,
             country: bot.country,
             countryFlag: bot.countryFlag,
@@ -382,7 +430,7 @@ class OnlineMultiplayerService {
           }
         });
       }
-    }, 7000);
+    }, 20000);
   }
 
   cancelMatchmaking() {
@@ -409,7 +457,7 @@ class OnlineMultiplayerService {
       config: { presence: { key: this.clientId } }
     });
 
-    let timeRemaining = 20;
+    let timeRemaining = 25;
     const lobbyPlayers: OnlinePlayer[] = [
       {
         id: this.clientId,
@@ -423,6 +471,45 @@ class OnlineMultiplayerService {
         ready: true
       }
     ];
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const active: OnlinePlayer[] = [];
+        Object.values(state).forEach((presences: any) => {
+          presences.forEach((p: any) => {
+            if (p.id && !active.some(x => x.id === p.id)) {
+              active.push({
+                id: p.id,
+                name: p.name || 'Jugador',
+                avatar: p.avatar || '/avatars/david.jpg',
+                country: p.country || 'DO',
+                countryFlag: p.countryFlag || '🇩🇴',
+                isHost: p.id === this.clientId,
+                position: 0,
+                score: 0,
+                ready: true
+              });
+            }
+          });
+        });
+        if (active.length > 0) {
+          onLobbyUpdate({ code: 'TODOS_VS_TODOS', timeRemaining, players: active });
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            id: this.clientId,
+            name: player.name,
+            avatar: player.avatar,
+            country: player.country || 'DO',
+            countryFlag: player.countryFlag || '🇩🇴',
+            rating: player.rating || 1000,
+            joinedAt: Date.now()
+          });
+        }
+      });
 
     onLobbyUpdate({ code: 'TODOS_VS_TODOS', timeRemaining, players: lobbyPlayers });
 
@@ -438,7 +525,7 @@ class OnlineMultiplayerService {
           const availableBot = BIBLE_BOTS[lobbyPlayers.length % BIBLE_BOTS.length];
           lobbyPlayers.push({
             id: 'bot_' + Math.random().toString(36).substring(2, 7),
-            name: availableBot.name,
+            name: `${availableBot.name} 🤖`,
             avatar: availableBot.avatar,
             country: availableBot.country,
             countryFlag: availableBot.countryFlag,
@@ -460,7 +547,7 @@ class OnlineMultiplayerService {
         };
 
         this.currentRoom = room;
-        this.bindRoomChannel(code);
+        this.bindRoomChannel(code, { name: player.name, avatar: player.avatar, isHost: true });
         this.notifyListeners();
         onMatchStart({ room });
       }
@@ -508,11 +595,10 @@ class OnlineMultiplayerService {
     };
 
     this.currentRoom = room;
-    this.bindRoomChannel(code);
+    this.bindRoomChannel(code, { name: player.name, avatar: player.avatar, isHost: true });
     this.notifyListeners();
     onLobbyUpdate({ code, players: [host] });
 
-    // Cuando el host inicia la partida
     (this as any)._friendsOnStart = onMatchStart;
   }
 
@@ -522,28 +608,7 @@ class OnlineMultiplayerService {
     onLobbyUpdate: (data: { code: string; players: OnlinePlayer[] }) => void,
     onMatchStart: (data: { room: OnlineRoom }) => void
   ) {
-    this.bindRoomChannel(roomCode);
-
-    const guest: OnlinePlayer = {
-      id: this.clientId,
-      name: player.name || 'Invitado',
-      avatar: player.avatar || '/avatars/esther.jpg',
-      country: player.country || 'DO',
-      countryFlag: player.countryFlag || '🇩🇴',
-      isHost: false,
-      position: 0,
-      score: 0,
-      ready: true
-    };
-
-    // Solicitar unirse al anfitrión
-    setTimeout(() => {
-      this.roomChannel?.send({
-        type: 'broadcast',
-        event: 'PLAYER_JOIN_REQUEST',
-        payload: { player: guest }
-      });
-    }, 400);
+    this.bindRoomChannel(roomCode, { name: player.name, avatar: player.avatar, isHost: false });
 
     const unsub = this.subscribe((room) => {
       if (room.code === roomCode) {
@@ -565,7 +630,7 @@ class OnlineMultiplayerService {
     }
   }
 
-  cancelFriendsLobby(roomCode: string) {
+  cancelFriendsLobby(_roomCode: string) {
     this.leaveRoom();
   }
 
@@ -597,7 +662,7 @@ class OnlineMultiplayerService {
       isHost: true,
       position: 0,
       score: 0,
-      ready: false
+      ready: true
     };
 
     const room: OnlineRoom = {
@@ -609,7 +674,7 @@ class OnlineMultiplayerService {
     };
 
     this.currentRoom = room;
-    this.bindRoomChannel(code);
+    this.bindRoomChannel(code, { name: hostPlayer.name, avatar: hostPlayer.avatar, isHost: true });
     this.notifyListeners();
     return room;
   }
@@ -621,26 +686,7 @@ class OnlineMultiplayerService {
 
   // --- 2. UNIRSE A SALA MEDIANTE PIN ---
   joinRoom(code: string, player: { name: string; avatar: string }): OnlineRoom | null {
-    const guest: OnlinePlayer = {
-      id: this.clientId,
-      name: player.name || 'Invitado',
-      avatar: player.avatar || '/avatars/maria.jpg',
-      isHost: false,
-      position: 0,
-      score: 0,
-      ready: false
-    };
-
-    this.bindRoomChannel(code);
-
-    setTimeout(() => {
-      this.roomChannel?.send({
-        type: 'broadcast',
-        event: 'PLAYER_JOIN_REQUEST',
-        payload: { player: guest }
-      });
-    }, 300);
-
+    this.bindRoomChannel(code, { name: player.name, avatar: player.avatar, isHost: false });
     return this.currentRoom;
   }
 
@@ -650,14 +696,13 @@ class OnlineMultiplayerService {
 
       let resolved = false;
       const unsub = this.subscribe((room) => {
-        if (!resolved && room.code === code) {
+        if (!resolved && room.code === code && room.players.length > 0) {
           resolved = true;
           unsub();
           resolve(room);
         }
       });
 
-      // Fallback a los 1800ms
       setTimeout(() => {
         if (!resolved) {
           resolved = true;
@@ -681,7 +726,7 @@ class OnlineMultiplayerService {
           }
           resolve(this.currentRoom);
         }
-      }, 1800);
+      }, 1500);
     });
   }
 
