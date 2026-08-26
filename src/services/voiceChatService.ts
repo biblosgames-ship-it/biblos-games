@@ -1,3 +1,5 @@
+import { io, Socket } from "socket.io-client";
+
 export interface RoomChatMessage {
   id: string;
   senderId: string;
@@ -28,22 +30,19 @@ export const BIBLICAL_EMOJIS = [
 ];
 
 class VoiceChatService {
+  private socket: Socket | null = null;
   private currentRoomCode: string | null = null;
   private chatListeners: Array<(msg: RoomChatMessage) => void> = [];
-  private sendChatHandler: ((roomCode: string, msg: RoomChatMessage) => void) | null = null;
 
   constructor() {}
 
-  setSocket(_socketInstance: any) {
-    // Compatibilidad hacia atrás
-  }
+  setSocket(socketInstance: Socket) {
+    this.socket = socketInstance;
 
-  setSendHandler(handler: (roomCode: string, msg: RoomChatMessage) => void) {
-    this.sendChatHandler = handler;
-  }
-
-  receiveMessage(msg: RoomChatMessage) {
-    this.chatListeners.forEach(cb => cb(msg));
+    this.socket.off("ROOM_CHAT_RECEIVED");
+    this.socket.on("ROOM_CHAT_RECEIVED", (msg: RoomChatMessage) => {
+      this.chatListeners.forEach(cb => cb(msg));
+    });
   }
 
   setRoom(roomCode: string) {
@@ -66,7 +65,7 @@ class VoiceChatService {
   ) {
     const message: RoomChatMessage = {
       id: "msg_" + Math.random().toString(36).substring(2, 9),
-      senderId: "p_" + Math.random().toString(36).substring(2, 6),
+      senderId: this.socket?.id || "local_" + Math.random().toString(36).substring(2, 6),
       senderName: userName,
       senderAvatar: userAvatar,
       text,
@@ -74,13 +73,13 @@ class VoiceChatService {
       timestamp: Date.now()
     };
 
-    if (this.sendChatHandler && roomCode) {
-      this.sendChatHandler(roomCode, message);
-    } else {
-      this.receiveMessage(message);
+    if (this.socket && this.socket.connected) {
+      this.socket.emit("SEND_ROOM_CHAT", { roomCode, message });
+      this.socket.emit("ROOM_CHAT_MESSAGE", { roomCode, message });
     }
   }
 }
 
 export const voiceChatService = new VoiceChatService();
+
 
