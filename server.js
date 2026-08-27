@@ -45,7 +45,18 @@ const httpServer = createServer((req, res) => {
       if (fs.existsSync(filePath)) {
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-        res.writeHead(200, { 'Content-Type': contentType });
+        const headers = { 'Content-Type': contentType };
+
+        // Evitar que los teléfonos almacenen en caché index.html desactualizado
+        if (filePath.endsWith('index.html')) {
+          headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0';
+          headers['Pragma'] = 'no-cache';
+          headers['Expires'] = '0';
+        } else if (pathname.startsWith('/assets/')) {
+          headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+        }
+
+        res.writeHead(200, headers);
         return fs.createReadStream(filePath).pipe(res);
       }
     } catch (e) {
