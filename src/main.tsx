@@ -3,6 +3,32 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
+// 🛡️ DOM SAFEGUARD: Protege contra extensiones del navegador, Google Translate / traducción automática
+// de iOS/Android que alteran el árbol DOM de React y causan el error "Failed to execute removeChild on Node".
+if (typeof Node !== 'undefined' && Node.prototype) {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(child: T): T {
+    if (child.parentNode !== this) {
+      if (child.parentNode) {
+        return child.parentNode.removeChild(child) as T;
+      }
+      return child;
+    }
+    return originalRemoveChild.call(this, child) as T;
+  };
+
+  const originalInsertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
+    if (referenceNode && referenceNode.parentNode !== this) {
+      if (referenceNode.parentNode) {
+        return referenceNode.parentNode.insertBefore(newNode, referenceNode) as T;
+      }
+      return this.appendChild(newNode) as T;
+    }
+    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+  };
+}
+
 interface ErrorBoundaryProps {
   children: ReactNode;
 }
@@ -27,6 +53,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     console.error("React Error Caught by Boundary:", error, errorInfo);
   }
 
+  handleResetAndGoHome = () => {
+    try {
+      // Limpiar datos transitorios de sala/partida
+      sessionStorage.clear();
+      // Eliminar parámetros de búsqueda de la URL
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.location.href = cleanUrl;
+    } catch {
+      window.location.reload();
+    }
+  };
+
   render() {
     if (this.state.hasError) {
       return (
@@ -42,27 +80,61 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           textAlign: 'center',
           fontFamily: 'system-ui, sans-serif'
         }}>
-          <h2 style={{ color: '#F59E0B', fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>
-            ⚠️ Ocurrió un detalle en la vista
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '20px',
+            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+            border: '2px solid rgba(245, 158, 11, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '32px',
+            marginBottom: '16px'
+          }}>
+            🕊️
+          </div>
+          <h2 style={{ color: '#F59E0B', fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>
+            Partida sincronizada
           </h2>
-          <p style={{ color: '#D6D0C4', maxWidth: '400px', fontSize: '14px', marginBottom: '20px' }}>
-            {this.state.error?.message || 'Error inesperado al cargar la sala.'}
+          <p style={{ color: '#D6D0C4', maxWidth: '380px', fontSize: '13px', marginBottom: '24px', lineHeight: '1.5' }}>
+            Hubo una sincronización en la vista del juego. Puedes volver al menú principal para continuar jugando sin perder tu cuenta.
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              backgroundColor: '#D97706',
-              color: '#000',
-              fontWeight: 'bold',
-              padding: '12px 24px',
-              borderRadius: '12px',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            🔄 Recargar y Continuar
-          </button>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={this.handleResetAndGoHome}
+              style={{
+                backgroundColor: '#D97706',
+                color: '#1B1A17',
+                fontWeight: '900',
+                padding: '12px 24px',
+                borderRadius: '14px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '13px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)'
+              }}
+            >
+              🏠 Ir al Menú Principal
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                backgroundColor: '#2A2621',
+                color: '#F3E8D2',
+                fontWeight: 'bold',
+                padding: '12px 20px',
+                borderRadius: '14px',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                cursor: 'pointer',
+                fontSize: '13px'
+              }}
+            >
+              🔄 Recargar
+            </button>
+          </div>
         </div>
       );
     }

@@ -2247,7 +2247,12 @@ function BoardGameMode({
           {/* 📋 MENÚ DESPLEGABLE CON TODAS LAS OPCIONES ORGANIZADAS */}
           <AnimatePresence>
             {showHeaderMenu && (
-              <>
+              <motion.div
+                key="header-menu-wrapper"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <div 
                   className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
                   onClick={() => setShowHeaderMenu(false)}
@@ -2375,7 +2380,7 @@ function BoardGameMode({
                     <span>Volver a Inicio</span>
                   </button>
                 </motion.div>
-              </>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
@@ -3799,7 +3804,13 @@ function BoardGameMode({
       {/* 🏳️ MODAL DE CONFIRMACIÓN DE ABANDONAR / RENDIRSE */}
       <AnimatePresence>
         {showSurrenderConfirm && (
-          <div className="fixed inset-0 z-[11000] bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
+          <motion.div
+            key="surrender-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[11000] bg-black/85 backdrop-blur-md p-4 flex items-center justify-center"
+          >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -3834,7 +3845,7 @@ function BoardGameMode({
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -5510,7 +5521,17 @@ const handleAnswerClick = (index: number) => {
                     </button>
 
                     <button
-                      onClick={() => shareGameResults(userProfileState, accuracy, correct, total)}
+                      onClick={async () => {
+                        playSound("select");
+                        const res = await shareGameResults(userProfileState, accuracy, correct, total);
+                        if (res?.copied) {
+                          setFriendInviteNotification('📋 ¡Resultados copiados al portapapeles! Compártelos en tus redes.');
+                          triggerHaptic("success");
+                        } else if (res?.shared) {
+                          setFriendInviteNotification('🕊️ ¡Resultados compartidos con éxito!');
+                          triggerHaptic("success");
+                        }
+                      }}
                       className="py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-amber-950 rounded-xl font-black flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition-all uppercase text-[11px] tracking-wider cursor-pointer"
                     >
                       <Share2 size={16} /> Compartir
@@ -5855,7 +5876,14 @@ const handleAnswerClick = (index: number) => {
                       setUserTalents(bonus.newBalance);
                       confetti({ particleCount: 50, spread: 60 });
                     }
-                    await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                    const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                    if (res?.copied) {
+                      setFriendInviteNotification('📋 ¡Enlace de invitación copiado al portapapeles! Compártelo en WhatsApp o tus redes.');
+                      triggerHaptic("success");
+                    } else if (res?.shared) {
+                      setFriendInviteNotification('🕊️ ¡Invitación compartida con éxito!');
+                      triggerHaptic("success");
+                    }
                   }}
                   className="p-2.5 bg-stone-900/80 hover:bg-stone-800 rounded-xl border border-amber-500/40 text-left space-y-0.5 cursor-pointer transition"
                 >
@@ -6613,7 +6641,12 @@ const handleAnswerClick = (index: number) => {
           {/* 📋 MENÚ DESPLEGABLE TRIVIA */}
           <AnimatePresence>
             {showTriviaHeaderMenu && (
-              <>
+              <motion.div
+                key="trivia-header-menu-wrapper"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <div 
                   className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
                   onClick={() => setShowTriviaHeaderMenu(false)}
@@ -6721,7 +6754,7 @@ const handleAnswerClick = (index: number) => {
                     <span>Reiniciar Preguntas</span>
                   </button>
                 </motion.div>
-              </>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
@@ -8231,9 +8264,16 @@ const handleAnswerClick = (index: number) => {
                           setUserTalents(bonus.newBalance);
                           confetti({ particleCount: 50, spread: 60 });
                         }
-                        await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                        const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                        if (res?.copied) {
+                          setFriendInviteNotification('📋 ¡Enlace copiado al portapapeles! Compártelo en WhatsApp o tus redes sociales.');
+                          triggerHaptic("success");
+                        } else if (res?.shared) {
+                          setFriendInviteNotification('🕊️ ¡Invitación compartida con éxito!');
+                          triggerHaptic("success");
+                        }
                       }}
-                      className="p-2 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 text-left cursor-pointer transition flex items-center justify-between group"
+                      className="p-2 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 text-left cursor-pointer transition flex items-center justify-between group active:scale-95"
                     >
                       <div>
                         <span className="text-[10px] font-black text-emerald-300 group-hover:text-emerald-200 block">Compartir Tarjeta</span>
@@ -8598,20 +8638,55 @@ const handleAnswerClick = (index: number) => {
               {/* Barra de Acciones Fija Inferior (Siempre Visible) */}
               <div className="p-3 bg-[#1E1B17] border-t border-amber-900/40 grid grid-cols-3 gap-2 shrink-0">
                 <button
-                  onClick={() => shareUserProfile(userProfileState)}
-                  className="py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-1 cursor-pointer"
+                  type="button"
+                  onClick={async () => {
+                    playSound("select");
+                    const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                    const inviteUrl = generateFriendInviteUrl({
+                      name: userProfileState.name || 'Jugador Bíblico',
+                      code: myCode,
+                      avatar: userProfileState.avatar || '/avatars/david.jpg',
+                      country: userProfileState.country || 'DO',
+                      countryFlag: userProfileState.countryFlag || '🇩🇴'
+                    });
+                    const bonus = claimSocialShareBonus();
+                    if (bonus.success) {
+                      setUserTalents(bonus.newBalance);
+                      confetti({ particleCount: 40, spread: 50 });
+                    }
+                    const res = await shareUserProfile(userProfileState, inviteUrl);
+                    if (res?.copied) {
+                      setFriendInviteNotification('📋 ¡Perfil bíblico copiado al portapapeles! Pégalo en WhatsApp o tus redes sociales.');
+                      triggerHaptic("success");
+                    } else if (res?.shared) {
+                      setFriendInviteNotification('🕊️ ¡Perfil compartido con éxito!');
+                      triggerHaptic("success");
+                    }
+                  }}
+                  className="py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-1 cursor-pointer active:scale-95"
                 >
                   <Share2 size={13} /> Compartir
                 </button>
                 <button
-                  onClick={() => downloadUserProfileImage()}
-                  className="py-2.5 bg-stone-800 hover:bg-stone-700 text-amber-200 border border-amber-700/30 font-bold rounded-xl text-[10px] uppercase tracking-wider transition flex items-center justify-center gap-1 cursor-pointer"
+                  type="button"
+                  onClick={async () => {
+                    playSound("select");
+                    const success = await downloadUserProfileImage();
+                    if (success) {
+                      setFriendInviteNotification('📥 ¡Imagen de perfil descargada con éxito!');
+                      triggerHaptic("success");
+                    } else {
+                      setFriendInviteNotification('⚠️ Para compartir tu perfil en web, utiliza el botón Compartir.');
+                    }
+                  }}
+                  className="py-2.5 bg-stone-800 hover:bg-stone-700 text-amber-200 border border-amber-700/30 font-bold rounded-xl text-[10px] uppercase tracking-wider transition flex items-center justify-center gap-1 cursor-pointer active:scale-95"
                 >
                   📥 Descargar
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowProfileModal(false)}
-                  className="py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-md cursor-pointer"
+                  className="py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-md cursor-pointer active:scale-95"
                 >
                   Guardar / Cerrar
                 </button>
@@ -10975,7 +11050,14 @@ const handleAnswerClick = (index: number) => {
                                       setUserTalents(bonus.newBalance);
                                       confetti({ particleCount: 50, spread: 60 });
                                     }
-                                    await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                                    const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                                    if (res?.copied) {
+                                      setFriendInviteNotification('📋 ¡Enlace copiado al portapapeles! Compártelo en WhatsApp o tus redes.');
+                                      triggerHaptic("success");
+                                    } else if (res?.shared) {
+                                      setFriendInviteNotification('🕊️ ¡Invitación compartida con éxito!');
+                                      triggerHaptic("success");
+                                    }
                                   }}
                                   className="py-3 px-3 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-amber-950 font-black rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg active:scale-95 transition cursor-pointer border border-amber-300"
                                 >

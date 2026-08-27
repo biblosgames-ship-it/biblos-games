@@ -52,7 +52,7 @@ export interface DailyChallengeStreakState {
 export interface DailyChallengeState {
   date: string; // YYYY-MM-DD
   title: string;
-  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK";
+  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC";
   themeName: string;
   description: string;
   icon: string;
@@ -72,79 +72,200 @@ export interface DailyChallengeState {
   }[];
 }
 
-const DAILY_CHALLENGE_STORAGE_KEY = "biblos_daily_challenge_v1";
+const DAILY_CHALLENGE_STORAGE_KEY = "biblos_daily_challenge_v2";
 const DAILY_STREAK_STORAGE_KEY = "biblos_daily_streak_v1";
 
-export const DAILY_THEMES_ROTATION: {
+function matchesKeyword(text: string | undefined, keywords: string[]): boolean {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return keywords.some(k => lower.includes(k.toLowerCase()));
+}
+
+const HEROES_KEYWORDS = [
+  "abraham", "moisés", "moises", "david", "daniel", "josué", "josue", "elías", "elias", "eliseo", "noé", "noe", 
+  "josé", "jose", "pedro", "pablo", "juan", "ester", "rut", "ruth", "samuel", "salomón", "salomon", 
+  "gedeón", "gedeon", "sansón", "sanson", "enoc", "isaac", "jacob", "esteban", "bernabé", "bernabe",
+  "timoteo", "nehemías", "nehemias", "esdras", "jonás", "jonas", "maría", "maria", "débora", "debora",
+  "fe", "héroe", "siervo", "profeta", "apóstol", "patriarca"
+];
+
+const VILLAINS_EXCLUSIONS = [
+  "bestia", "falso profeta", "satanás", "satanas", "diablo", "demonio", "dragón", "dragon", "apolión", 
+  "apolion", "jezabel", "faraón", "faraon", "judas iscariote", "herodes", "goliat", "abismo"
+];
+
+export interface DailyThemeConfig {
+  id: string;
   title: string;
-  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK";
+  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC";
   themeName: string;
   description: string;
   icon: string;
   period?: Period;
-}[] = [
+  filter: (q: Question) => boolean;
+}
+
+export const DAILY_THEMES_ROTATION: DailyThemeConfig[] = [
   {
-    title: "Génesis y La Creación",
+    id: "GENESIS",
+    title: "Génesis y Los Orígenes",
     themeType: "PERIOD",
     themeName: "El Principio",
-    description: "10 hitos recorriendo los orígenes, los patriarcas y las promesas eternas.",
+    description: "10 preguntas sobre la Creación, Adán y Eva, el Arca de Noé y los patriarcas en Génesis.",
     icon: "🌱",
     period: Period.PRINCIPIO,
+    filter: (q: Question) => q.period === Period.PRINCIPIO,
   },
   {
+    id: "EXODO_LEY",
     title: "El Éxodo y la Ley Divina",
     themeType: "PERIOD",
     themeName: "El Pueblo de Dios y la Ley",
-    description: "10 preguntas sobre el tabernáculo, Moisés y la travesía del desierto.",
+    description: "10 preguntas sobre Moisés, la liberación de Egipto, el desierto y los mandamientos.",
     icon: "📜",
     period: Period.LEY,
+    filter: (q: Question) => q.period === Period.LEY,
   },
   {
-    title: "Reyes, Salmos y Profecías",
+    id: "REYES_PROFETAS",
+    title: "Reyes, Salmos y Profetas",
     themeType: "PERIOD",
     themeName: "Reyes, Profetas y Poetas",
-    description: "10 hitos sobre David, Salomón, los profetas y la alabanza a Dios.",
+    description: "10 preguntas sobre David, Salomón, los profetas del Antiguo Testamento y las alabanzas.",
     icon: "👑",
     period: Period.REYES_PROFETAS,
+    filter: (q: Question) => q.period === Period.REYES_PROFETAS,
   },
   {
-    title: "Jesucristo: Vida y Redención",
+    id: "JESUCRISTO",
+    title: "Jesucristo: Vida y Evangelios",
     themeType: "PERIOD",
     themeName: "Jesús y la Redención",
-    description: "10 desafíos sobre el Salvador, sus parábolas, milagros y la resurrección.",
+    description: "10 preguntas sobre las enseñanzas, milagros, ministerio, muerte y resurrección de Jesús.",
     icon: "✝️",
     period: Period.REDENCION,
+    filter: (q: Question) => q.period === Period.REDENCION,
   },
   {
-    title: "Hechos y Cartas Apostólicas",
+    id: "HECHOS_CARTAS",
+    title: "Hechos y la Iglesia Apostólica",
     themeType: "PERIOD",
     themeName: "La Iglesia Cristiana",
-    description: "10 preguntas sobre el fuego de Pentecostés, el evangelio y las cartas de Pablo.",
+    description: "10 desafíos sobre Pentecostés, los viajes misioneros de Pablo y las cartas de la iglesia.",
     icon: "🕊️",
     period: Period.IGLESIA,
+    filter: (q: Question) => q.period === Period.IGLESIA,
   },
   {
-    title: "Apocalipsis y Tiempos Finales",
+    id: "PROFECIAS_FINALES",
+    title: "Profecías y Tiempos Finales",
     themeType: "PERIOD",
     themeName: "Tiempos Finales",
-    description: "10 revelaciones proféticas sobre el regreso de Cristo y la Nueva Jerusalén.",
+    description: "10 revelaciones proféticas sobre el regreso del Señor, las promesas y la gloria venidera.",
     icon: "🌟",
     period: Period.TIEMPOS_FINALES,
+    filter: (q: Question) => q.period === Period.TIEMPOS_FINALES,
   },
   {
-    title: "Especial de Versículos y Citas Clave",
-    themeType: "VERSICULOS",
-    themeName: "Promesas y Citas Bíblicas",
-    description: "10 versículos memorables de la Escritura para ejercitar tu memoria espiritual.",
-    icon: "📖",
-  },
-  {
-    title: "Grandes Héroes y Heroínas de la Fe",
+    id: "HEROES_FE",
+    title: "Grandes Héroes y Siervos de la Fe",
     themeType: "PERSONAJES",
     themeName: "Hombres y Mujeres de Dios",
-    description: "10 preguntas enfocadas en las vidas y lecciones de fe de grandes personajes bíblicos.",
+    description: "10 preguntas sobre las vidas, hazañas de fe y testimonios de los siervos de Dios.",
     icon: "🛡️",
-  }
+    filter: (q: Question) => {
+      const isModePersonaje = Array.isArray(q.mode) ? q.mode.includes("PERSONAJES") : q.mode === "PERSONAJES";
+      const hasHero = matchesKeyword(q.question, HEROES_KEYWORDS) || matchesKeyword(q.options.join(" "), HEROES_KEYWORDS);
+      const isVillain = matchesKeyword(q.question, VILLAINS_EXCLUSIONS);
+      return (isModePersonaje || hasHero) && !isVillain && q.period !== Period.TIEMPOS_FINALES;
+    },
+  },
+  {
+    id: "VERSICULOS_CITAS",
+    title: "Especial de Versículos y Citas Clave",
+    themeType: "VERSICULOS",
+    themeName: "Memorización y Citas Bíblicas",
+    description: "10 preguntas para completar versículos memorables y reconocer citas de la Escritura.",
+    icon: "📖",
+    filter: (q: Question) => {
+      const isModeVersiculo = Array.isArray(q.mode) ? q.mode.includes("VERSICULOS") : q.mode === "VERSICULOS";
+      const txt = (q.question + " " + q.reference).toLowerCase();
+      const hasVersePattern = 
+        txt.includes("completa el versículo") || 
+        txt.includes("completa el versiculo") || 
+        txt.includes("completa:") || 
+        txt.includes("según ") || 
+        txt.includes("segun ") ||
+        txt.includes("dice:") ||
+        txt.includes("dice el versículo") ||
+        txt.includes("cómo termina") ||
+        txt.includes("como termina") ||
+        txt.includes("¿dónde dice") ||
+        txt.includes("¿donde dice") ||
+        txt.includes("¿qué libro dice") ||
+        txt.includes("¿que libro dice") ||
+        txt.includes("está escrito") ||
+        txt.includes("cita bíblica");
+      return isModeVersiculo || hasVersePattern;
+    },
+  },
+  {
+    id: "MILAGROS_SENALES",
+    title: "Milagros y Grandes Prodigios",
+    themeType: "THEMATIC",
+    themeName: "El Poder de Dios en Acción",
+    description: "10 preguntas sobre las intervenciones sobrenaturales y milagros de Dios en la Biblia.",
+    icon: "⚡",
+    filter: (q: Question) => {
+      const keywords = [
+        "mar rojo", "maná", "mana", "agua de la peña", "plagas", "jericó", "jerico", "fuego del cielo", 
+        "horno de fuego", "foso de los leones", "resurrección", "resurreccion", "resucitó", "resucito", 
+        "sanó", "sano", "ciego", "leproso", "caminar sobre el agua", "tempestad", "multiplicación", "multiplicacion",
+        "peces", "panes", "lázaro", "lazaro", "vino de caná", "milagro", "maravilla", "sol se detuvo", "lepra"
+      ];
+      return matchesKeyword(q.question, keywords) || matchesKeyword(q.options.join(" "), keywords);
+    },
+  },
+  {
+    id: "MANDAMIENTOS_SABIDURIA",
+    title: "Mandamientos y Sabiduría Bíblica",
+    themeType: "THEMATIC",
+    themeName: "Enseñanzas Morales y Espirituales",
+    description: "10 preguntas sobre los mandamientos de Dios, Proverbios y consejos de sabiduría.",
+    icon: "🧭",
+    filter: (q: Question) => {
+      const isModeMandamientos = Array.isArray(q.mode) ? q.mode.includes("MANDAMIENTOS") : q.mode === "MANDAMIENTOS";
+      const isWisdom = q.reference && (q.reference.startsWith("Proverbios") || q.reference.startsWith("Eclesiastés") || q.reference.startsWith("Santiago"));
+      return isModeMandamientos || isWisdom;
+    },
+  },
+  {
+    id: "MUJERES_VALIENTES",
+    title: "Mujeres Ejemplares de la Biblia",
+    themeType: "THEMATIC",
+    themeName: "Mujeres de Fe y Valentía",
+    description: "10 preguntas dedicadas a las mujeres de fe, reinas, profetisas y madres en la Biblia.",
+    icon: "👑",
+    filter: (q: Question) => {
+      const mujeresKeywords = [
+        "ester", "rut", "ruth", "maría", "maria", "débora", "debora", "sara", "sarai", "rebeca", "raquel", "lea", 
+        "ana", "rahab", "marta", "elisabet", "elizabeth", "priscila", "dorcas", "lidia", "mujer", "reina de sabá", "madre", "viuda"
+      ];
+      const isNotVillain = !matchesKeyword(q.question, ["jezabel", "herodías", "atalía"]);
+      return matchesKeyword(q.question, mujeresKeywords) && isNotVillain;
+    },
+  },
+  {
+    id: "SALVACION_GRACIA",
+    title: "El Plan de Salvación y la Gracia",
+    themeType: "THEMATIC",
+    themeName: "Amor, Redención y Perdón",
+    description: "10 preguntas sobre el perdón de pecados, el sacrificio en la cruz y la vida eterna.",
+    icon: "💖",
+    filter: (q: Question) => {
+      return Array.isArray(q.mode) ? q.mode.includes("SALVACION") : q.mode === "SALVACION";
+    },
+  },
 ];
 
 function getDaySeed(dateStr: string): number {
@@ -223,15 +344,7 @@ export function getDailyChallenge(): DailyChallengeState {
   const themeConfig = DAILY_THEMES_ROTATION[themeIndex];
 
   const allQuestions = getAllGameQuestions();
-  let pool: Question[] = [];
-
-  if (themeConfig.period) {
-    pool = allQuestions.filter(q => q.period === themeConfig.period);
-  } else if (themeConfig.themeType === "VERSICULOS") {
-    pool = allQuestions.filter(q => q.mode === "VERSICULOS" || (q.reference && q.reference.length > 0));
-  } else if (themeConfig.themeType === "PERSONAJES") {
-    pool = allQuestions.filter(q => q.mode === "PERSONAJES");
-  }
+  let pool = allQuestions.filter(themeConfig.filter);
 
   if (pool.length < 10) {
     pool = allQuestions;

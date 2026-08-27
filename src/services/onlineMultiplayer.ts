@@ -53,13 +53,18 @@ class OnlineMultiplayerService {
 
   constructor() {
     // Detección inteligente de URL:
-    // 1. Si está configurada la variable VITE_SOCKET_SERVER_URL, usarla (ideal si frontend está en Vercel y server en Railway)
-    // 2. Si estamos en desarrollo local con Vite (puerto 3000 o 5173), conectar a localhost:4000
-    // 3. Si estamos en producción (Railway Todo-en-Uno), conectar a la misma URL del dominio actual
-    const isLocalDev = typeof window !== 'undefined' && window.location.hostname === 'localhost' && (window.location.port === '3000' || window.location.port === '5173');
-    const defaultUrl = isLocalDev 
-      ? `http://${window.location.hostname}:4000` 
-      : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000');
+    // 1. Si está configurada la variable VITE_SOCKET_SERVER_URL, usarla
+    // 2. Si estamos en la app nativa de Android/Capacitor o producción, conectar a Railway
+    // 3. Si estamos en desarrollo local con Vite (puerto 3000 o 5173), conectar a localhost:4000
+    const isLocalHost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    const isViteDev = isLocalHost && (window.location.port === '3000' || window.location.port === '5173');
+    
+    let defaultUrl = 'https://biblos-games-production.up.railway.app';
+    if (isViteDev) {
+      defaultUrl = `http://${window.location.hostname}:4000`;
+    } else if (typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost')) {
+      defaultUrl = window.location.origin;
+    }
 
     const serverUrl = import.meta.env.VITE_SOCKET_SERVER_URL || defaultUrl;
 
