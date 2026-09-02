@@ -46,15 +46,18 @@ export const shareOrCopy = async (options: {
   text: string;
   url?: string;
 }): Promise<{ shared: boolean; copied: boolean }> => {
-  const fullText = options.url ? `${options.text}\n\n${options.url}` : options.text;
+  const targetUrl = options.url || window.location.origin;
+  const fullTextWithLink = options.text.includes(targetUrl)
+    ? options.text
+    : `${options.text}\n\n👉 Juega gratis y entra aquí:\n${targetUrl}`;
 
   // 1. Plataforma Nativa Capacitor (Android / iOS)
   if (Capacitor.isNativePlatform()) {
     try {
       await Share.share({
         title: options.title,
-        text: options.text,
-        url: options.url,
+        text: fullTextWithLink,
+        url: targetUrl,
         dialogTitle: options.title,
       });
       return { shared: true, copied: false };
@@ -72,8 +75,8 @@ export const shareOrCopy = async (options: {
     try {
       await navigator.share({
         title: options.title,
-        text: options.text,
-        url: options.url,
+        text: fullTextWithLink,
+        url: targetUrl,
       });
       return { shared: true, copied: false };
     } catch (e: any) {
@@ -86,7 +89,7 @@ export const shareOrCopy = async (options: {
   }
 
   // 3. Respaldo para Navegadores de escritorio sin Web Share API: Copiar al portapapeles
-  const copied = await copyTextToClipboard(fullText);
+  const copied = await copyTextToClipboard(fullTextWithLink);
   return { shared: false, copied };
 };
 
@@ -124,7 +127,7 @@ export const downloadElementAsImage = async (
 };
 
 /**
- * Captura un elemento DOM e intenta compartirlo (como archivo o texto con enlace)
+ * Captura un elemento DOM e intenta compartirlo (con enlace directo garantizado)
  */
 export const captureAndShareElement = async (
   elementId: string,
@@ -134,62 +137,6 @@ export const captureAndShareElement = async (
   shareUrl?: string
 ): Promise<{ shared: boolean; copied: boolean }> => {
   const targetUrl = shareUrl || window.location.origin;
-  const element = document.getElementById(elementId);
-
-  // Si el elemento no existe en el DOM actual, comparte directamente texto y enlace
-  if (!element) {
-    return await shareOrCopy({ title, text, url: targetUrl });
-  }
-
-  try {
-    const dataUrl = await toPng(element, { 
-      cacheBust: false, 
-      pixelRatio: 2,
-      skipFonts: false 
-    });
-
-    if (Capacitor.isNativePlatform()) {
-      try {
-        await Share.share({
-          title,
-          text,
-          url: dataUrl,
-          dialogTitle: title,
-        });
-        return { shared: true, copied: false };
-      } catch (nativeErr: any) {
-        if (nativeErr?.message?.includes('canceled') || nativeErr?.message?.includes('cancelled')) {
-          return { shared: false, copied: false };
-        }
-      }
-    }
-
-    if (typeof fetch !== 'undefined' && typeof File !== 'undefined' && typeof navigator !== 'undefined') {
-      try {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        const file = new File([blob], fileName, { type: 'image/png' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title,
-            text: `${text}\n${targetUrl}`,
-            files: [file],
-          });
-          return { shared: true, copied: false };
-        }
-      } catch (fileShareErr: any) {
-        if (fileShareErr?.name === 'AbortError') {
-          return { shared: false, copied: false };
-        }
-        console.warn('File share attempt failed, falling back to text/URL share', fileShareErr);
-      }
-    }
-  } catch (e) {
-    console.warn('DOM to image capture failed, continuing with direct text share', e);
-  }
-
-  // Si no se pudo compartir como archivo de imagen, comparte texto y URL directamente
   return await shareOrCopy({ title, text, url: targetUrl });
 };
 
@@ -202,12 +149,18 @@ export const shareGameResults = async (
   correct: number, 
   total: number
 ): Promise<{ shared: boolean; copied: boolean }> => {
+  const targetUrl = window.location.origin;
   const text = `🎮 ¡Mira mis resultados en Biblos Games! 🎲🕊️\n` +
     `👤 Jugador: ${profile.name || 'Jugador Bíblico'}\n` +
     `🎯 Precisión: ${accuracy}%\n` +
-    `✅ Aciertos: ${correct}/${total}\n` +
-    `¡Juégalo tú también gratis! 📜✨`;
-  return await captureAndShareElement('final-summary-card', 'Mis Resultados en Biblos Games', text, 'biblos-resultado.png', window.location.origin);
+    `✅ Aciertos: ${correct}/${total}\n\n` +
+    `👉 ¡Juégalo tú también gratis entrando aquí:\n${targetUrl}`;
+
+  return await shareOrCopy({
+    title: 'Mis Resultados en Biblos Games',
+    text,
+    url: targetUrl
+  });
 };
 
 export const downloadGameResultsImage = async (): Promise<boolean> => {
@@ -215,7 +168,7 @@ export const downloadGameResultsImage = async (): Promise<boolean> => {
 };
 
 /**
- * Comparte el perfil del usuario de manera infalible en Railway / Web / Nativo
+ * Comparte el perfil del usuario de manera infalible con link de acceso
  */
 export const shareUserProfile = async (
   profile: UserProfile,
@@ -236,7 +189,7 @@ export const shareUserProfile = async (
     `🏆 Rating ELO: ${profile.rating || 1000} pts\n` +
     `⭐ Rango: ${profile.rank || 'Explorador Bíblico'}\n` +
     `🔥 Racha: ${profile.streak || 0} días\n\n` +
-    `📖 ¡Agrégame como amigo y compitamos en vivo!`;
+    `👉 ¡Agrégame como amigo y juguemos en vivo aquí:\n${inviteUrl}`;
 
   return await shareOrCopy({
     title: `Biblos Games - Perfil de ${profile.name || 'Jugador'}`,
@@ -250,20 +203,21 @@ export const downloadUserProfileImage = async (): Promise<boolean> => {
 };
 
 /**
- * Comparte la tarjeta o invitación de amistad
+ * Comparte la tarjeta o invitación de amistad con link de acceso
  */
 export const shareFriendInviteCard = async (
   playerName: string, 
   inviteUrl: string
 ): Promise<{ shared: boolean; copied: boolean }> => {
-  const text = `🎲🕊️ ¡Hola! Juguemos una partida bíblica en Biblos Games. 📖✨ Agrégame como amigo y compitamos en vivo. Entra aquí:`;
-  return await captureAndShareElement(
-    'biblos-friend-invite-card', 
-    '¡Juguemos en Biblos Games!', 
-    text, 
-    'invitacion-biblos-games.png', 
-    inviteUrl
-  );
+  const text = `🎲🕊️ ¡Hola! Juguemos una partida bíblica en Biblos Games. 📖✨\n` +
+    `👤 Jugador: ${playerName}\n\n` +
+    `👉 Agrégame como amigo y compitamos en vivo entrando aquí:\n${inviteUrl}`;
+
+  return await shareOrCopy({
+    title: '¡Juguemos en Biblos Games!',
+    text,
+    url: inviteUrl
+  });
 };
 
 export const downloadFriendInviteCard = async (): Promise<boolean> => {
