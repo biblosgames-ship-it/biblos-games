@@ -6636,6 +6636,71 @@ const handleAnswerClick = (index: number) => {
             </div>
 
             <div className="w-full space-y-3.5">
+              {/* ⚡ BANNER DE PARTIDA EN CURSO (SI HAY UNA SALA ONLINE O SESIÓN GUARDADA) */}
+              {(() => {
+                const activeSession = getSavedBoardSession();
+                const hasActiveGame = Boolean(onlineRoom) || Boolean(activeSession?.gameStarted);
+                if (!hasActiveGame) return null;
+
+                const matchTitle = onlineRoom
+                  ? (onlineRoom.code.startsWith('DUEL') ? 'Duelo 1 vs 1 en Vivo' : `Sala Online (${onlineRoom.code})`)
+                  : 'Partida de Tablero en Curso';
+
+                return (
+                  <div className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 p-3.5 rounded-2xl border-2 border-amber-300 shadow-2xl flex items-center justify-between gap-3 text-stone-950 animate-pulse">
+                    <div className="flex items-center gap-2.5 text-left min-w-0 flex-1">
+                      <div className="w-10 h-10 rounded-xl bg-black/30 border border-amber-950/40 text-amber-950 flex items-center justify-center text-xl shrink-0 shadow-inner font-black">
+                        ⚡
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] uppercase font-black tracking-widest text-black bg-amber-300 px-1.5 py-0.2 rounded font-mono border border-black/20">
+                            PARTIDA EN CURSO
+                          </span>
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-black text-stone-950 uppercase tracking-tight truncate mt-0.5">
+                          {matchTitle}
+                        </h4>
+                        <p className="text-[10px] text-stone-900 font-bold leading-tight">
+                          Tu partida está activa. Toca para volver al tablero.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound("correct");
+                          triggerHaptic("success");
+                          setShowWelcome(false);
+                          setScreen('TABLERO');
+                        }}
+                        className="px-3.5 py-2.5 bg-stone-950 hover:bg-black text-amber-300 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition active:scale-95 cursor-pointer flex items-center gap-1 border border-amber-400/40"
+                      >
+                        ⚡ Reanudar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound("select");
+                          clearSavedBoardSession();
+                          if (onlineRoom) {
+                            onlineService.leaveRoom();
+                            setOnlineRoom(null);
+                          }
+                          setFriendInviteNotification('Has salido de la partida.');
+                        }}
+                        className="p-2 bg-black/20 hover:bg-black/40 text-stone-900 font-black rounded-xl text-xs transition cursor-pointer border border-black/10"
+                        title="Abandonar y limpiar partida"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* CUADRÍCULA DE LOS 3 MODOS PRINCIPALES DE JUEGO */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full">
                 {/* 1. ONLINE MULTIJUGADOR (AZUL ZAFIRO) */}
