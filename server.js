@@ -33,7 +33,10 @@ const httpServer = createServer((req, res) => {
     try {
       const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
       let pathname = decodeURIComponent(parsedUrl.pathname);
-      if (pathname === '/') pathname = '/index.html';
+      if (pathname === '/api/version') {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+        return res.end(JSON.stringify({ version: '1.0.1', deployedAt: new Date().toISOString(), status: 'OK' }));
+      }
       
       let filePath = path.join(DIST_PATH, pathname);
       
