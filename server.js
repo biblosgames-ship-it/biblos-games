@@ -68,11 +68,23 @@ const httpServer = createServer((req, res) => {
   res.end('Biblos Games Server Activo 🎮');
 });
 
+// Optimización de TCP Keep-Alive para conexiones lentas o móviles
+httpServer.keepAliveTimeout = 65000;
+httpServer.headersTimeout = 66000;
+
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST']
-  }
+  },
+  transports: ['websocket', 'polling'],
+  allowUpgrades: true,
+  pingInterval: 10000,
+  pingTimeout: 8000,
+  connectTimeout: 20000,
+  maxHttpBufferSize: 1e6,
+  httpCompression: true,
+  perMessageDeflate: false
 });
 
 // Estructura de salas en memoria real del servidor local
@@ -652,6 +664,7 @@ io.on('connection', (socket) => {
     }
 
     socket.join(cleanCode);
+    socket.emit('ROOM_UPDATED', roomData);
     io.to(cleanCode).emit('ROOM_UPDATED', roomData);
     console.log(`[SOCKET] ${pName} se unió a la sala: ${cleanCode}`);
   });

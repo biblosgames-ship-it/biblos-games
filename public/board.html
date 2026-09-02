@@ -941,6 +941,7 @@
     ];
 
     let preguntasTrivia = []; // Base de datos cargada desde questions.json
+    let preguntasVistasMatch = new Set(); // Preguntas ya vistas en la partida actual para no repetirlas nunca
 
     // Paleta de colores atractiva para hasta 8 jugadores:
     const coloresDisponibles = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
@@ -1312,12 +1313,20 @@
       if (effect === "QUESTION") {
         titulo = `Trivia: ${info.period}`;
 
-        // Buscar preguntas que correspondan al periodo de esta casilla
-        const preguntasFiltradas = preguntasTrivia.filter(q => q.period === info.period);
+        // Buscar preguntas que correspondan al periodo de esta casilla y que NO se hayan visto en la partida
+        let preguntasDisponibles = preguntasTrivia.filter(q => q.period === info.period && !preguntasVistasMatch.has(q.id || q.question));
+        if (preguntasDisponibles.length === 0) {
+          // Relajar a cualquier pregunta no vista
+          preguntasDisponibles = preguntasTrivia.filter(q => !preguntasVistasMatch.has(q.id || q.question));
+        }
+        if (preguntasDisponibles.length === 0) {
+          preguntasDisponibles = preguntasTrivia.filter(q => q.period === info.period);
+        }
 
-        if (preguntasFiltradas.length > 0) {
+        if (preguntasDisponibles.length > 0) {
           // Escoger una pregunta al azar
-          const preguntaAlAzar = preguntasFiltradas[Math.floor(Math.random() * preguntasFiltradas.length)];
+          const preguntaAlAzar = preguntasDisponibles[Math.floor(Math.random() * preguntasDisponibles.length)];
+          preguntasVistasMatch.add(preguntaAlAzar.id || preguntaAlAzar.question);
           texto += preguntaAlAzar.question;
 
           // Lógica de Renderizar Opciones (Se encarga de bloquear botón normal)

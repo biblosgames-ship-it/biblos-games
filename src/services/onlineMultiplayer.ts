@@ -72,9 +72,15 @@ class OnlineMultiplayerService {
 
     this.socket = io(serverUrl, {
       transports: ['websocket', 'polling'],
+      upgrade: true,
+      rememberUpgrade: true,
+      timeout: 20000,
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 2500,
+      randomizationFactor: 0.3,
+      autoConnect: true
     });
 
     this.socket.on('connect', () => {
@@ -131,6 +137,10 @@ class OnlineMultiplayerService {
   cancelMatchmaking() {
     this.socket.emit('CANCEL_MATCHMAKING');
     this.socket.off('MATCH_FOUND');
+    if (this.currentRoom) {
+      this.leaveRoom();
+      this.currentRoom = null;
+    }
   }
 
   // 0.1 Matchmaking Grupal: "Todos Vs Todos" (3 a 8 Jugadores con 30 segundos)
@@ -161,6 +171,10 @@ class OnlineMultiplayerService {
     this.socket.emit('CANCEL_GROUP_MATCHMAKING');
     this.socket.off('GROUP_LOBBY_UPDATE');
     this.socket.off('GROUP_MATCH_START');
+    if (this.currentRoom) {
+      this.leaveRoom();
+      this.currentRoom = null;
+    }
   }
 
   // 0.2 Sala de Amigos en Vivo (Red de Amigos)
@@ -250,6 +264,9 @@ class OnlineMultiplayerService {
 
   async createRoomAsync(isPrivate: boolean, hostPlayer: { name: string; avatar: string }): Promise<OnlineRoom> {
     return new Promise((resolve) => {
+      let resolved = false;
+      let timeoutHandle: any = null;
+
       const fallbackCode = Math.floor(100000 + Math.random() * 900000).toString();
       const fallbackRoom: OnlineRoom = {
         code: fallbackCode,
@@ -267,11 +284,10 @@ class OnlineMultiplayerService {
         currentQuestionIndex: 0
       };
 
-      let resolved = false;
-
       const onRoomUpdated = (roomData: OnlineRoom) => {
         if (!resolved) {
           resolved = true;
+          if (timeoutHandle) clearTimeout(timeoutHandle);
           this.socket.off('ROOM_UPDATED', onRoomUpdated);
           this.currentRoom = roomData;
           this.notifyListeners();
@@ -280,10 +296,19 @@ class OnlineMultiplayerService {
       };
 
       this.socket.on('ROOM_UPDATED', onRoomUpdated);
-      this.socket.emit('CREATE_ROOM', { isPrivate, player: hostPlayer });
 
-      // Fallback a los 1500ms si el servidor no responde
-      setTimeout(() => {
+      const emitCreate = () => {
+        this.socket.emit('CREATE_ROOM', { isPrivate, player: hostPlayer });
+      };
+
+      if (this.socket.connected) {
+        emitCreate();
+      } else {
+        this.socket.once('connect', emitCreate);
+      }
+
+      // Tiempo de espera generoso (8s) para redes móviles o lentas
+      timeoutHandle = setTimeout(() => {
         if (!resolved) {
           resolved = true;
           this.socket.off('ROOM_UPDATED', onRoomUpdated);
@@ -291,7 +316,7 @@ class OnlineMultiplayerService {
           this.notifyListeners();
           resolve(fallbackRoom);
         }
-      }, 1500);
+      }, 8000);
     });
   }
 
@@ -304,27 +329,54 @@ class OnlineMultiplayerService {
   async joinRoomAsync(code: string, player: { name: string; avatar: string }): Promise<OnlineRoom | null> {
     return new Promise((resolve) => {
       let resolved = false;
+      let timeoutHandle: any = null;
+      const cleanCode = (code || '').trim().toUpperCase();
+
+      const cleanup = () => {
+        if (timeoutHandle) clearTimeout(timeoutHandle);
+        this.socket.off('ROOM_UPDATED', onRoomUpdated);
+        this.socket.off('JOIN_ERROR', onJoinError);
+      };
 
       const onRoomUpdated = (roomData: OnlineRoom) => {
-        if (!resolved && roomData.code === code) {
+        if (!resolved && roomData && roomData.code === cleanCode) {
           resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
+          cleanup();
           this.currentRoom = roomData;
           this.notifyListeners();
           resolve(roomData);
         }
       };
 
-      this.socket.on('ROOM_UPDATED', onRoomUpdated);
-      this.socket.emit('JOIN_ROOM', { code, player });
-
-      setTimeout(() => {
+      const onJoinError = () => {
         if (!resolved) {
           resolved = true;
-          this.socket.off('ROOM_UPDATED', onRoomUpdated);
+          cleanup();
+          resolve(null);
+        }
+      };
+
+      this.socket.on('ROOM_UPDATED', onRoomUpdated);
+      this.socket.on('JOIN_ERROR', onJoinError);
+
+      const emitJoin = () => {
+        this.socket.emit('JOIN_ROOM', { code: cleanCode, player });
+      };
+
+      if (this.socket.connected) {
+        emitJoin();
+      } else {
+        this.socket.once('connect', emitJoin);
+      }
+
+      // Tiempo de espera generoso (8s) para conexiones lentas
+      timeoutHandle = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          cleanup();
           resolve(this.currentRoom);
         }
-      }, 2000);
+      }, 8000);
     });
   }
 

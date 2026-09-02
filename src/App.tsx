@@ -342,8 +342,9 @@ function resetSeenQuestionsForPool(poolIds: string[]): void {
 
 /**
  * Algoritmo de Mazo Inteligente: Selecciona preguntas no vistas para el periodo y nivel
- * garantizando que NUNCA se repitan preguntas dentro de la misma partida grupal
- * y que el usuario explore el 100% REAL de la base de preguntas antes de repetir alguna.
+ * garantizando que NUNCA se repitan preguntas dentro de la misma partida (1v1, grupal o individual)
+ * ya que todos los jugadores en la sala ven la pregunta, y que el usuario explore el 100% REAL 
+ * de la base de preguntas antes de repetir alguna.
  */
 function pickSmartQuestionForPeriod(
   periodName: string, 
@@ -353,34 +354,60 @@ function pickSmartQuestionForPeriod(
   matchSeenIds?: Set<string>
 ): Question | null {
   const allMatching = getQuestionsForPeriod(periodName, theme, difficulty, customStudyFilter);
-  if (!allMatching || allMatching.length === 0) return null;
+  if (!allMatching || allMatching.length === 0) {
+    const fallbackPool = getActiveQuestionsPool();
+    if (!fallbackPool || fallbackPool.length === 0) return null;
+  }
 
   const persistentSeenIds = getBoardSeenQuestionIds();
   
-  // 1. Filtrar preguntas que NO se hayan visto en la partida actual
-  let matchAvailable = allMatching.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+  // 1. Filtrar preguntas que NO se hayan visto en la partida actual (GARANTÍA ESTRICTA ANTI-REPETICIÓN)
+  let matchAvailable = allMatching ? allMatching.filter(q => !matchSeenIds || !matchSeenIds.has(q.id)) : [];
+  
+  // Si en la partida actual se agotaron las preguntas con este filtro específico,
+  // relajamos filtros progresivamente buscando SIEMPRE preguntas que NO se hayan visto en esta partida:
   if (matchAvailable.length === 0) {
-    // Si en esta partida ya se agotó el grupo, permitir cualquiera del grupo
-    matchAvailable = allMatching;
+    // Intento 1: Misma casilla/período y temática, pero cualquier dificultad disponible no vista en la partida
+    const relaxedDiff = getQuestionsForPeriod(periodName, theme, 'MIXTO', customStudyFilter);
+    matchAvailable = relaxedDiff.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+  }
+  
+  if (matchAvailable.length === 0) {
+    // Intento 2: Misma casilla/período, cualquier temática y dificultad no vista en la partida
+    const relaxedTheme = getQuestionsForPeriod(periodName, undefined, undefined, customStudyFilter);
+    matchAvailable = relaxedTheme.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
   }
 
-  // 2. Filtrar preguntas que NO se hayan visto históricamente
+  if (matchAvailable.length === 0) {
+    // Intento 3: Buscar en todo el catálogo completo activo (660+ preguntas) cualquier pregunta no vista en la partida
+    const allPool = getActiveQuestionsPool();
+    matchAvailable = allPool.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+  }
+
+  // En el caso súper extremo de que se hayan visto todas las 660+ preguntas en una sola partida:
+  if (matchAvailable.length === 0) {
+    matchAvailable = (allMatching && allMatching.length > 0) ? allMatching : getActiveQuestionsPool();
+  }
+
+  // 2. Filtrar preguntas que NO se hayan visto históricamente en este dispositivo
   const unseenGlobally = matchAvailable.filter(q => !persistentSeenIds.has(q.id));
 
   let chosen: Question;
   if (unseenGlobally.length > 0) {
-    // Tomar aleatoriamente entre las preguntas que NUNCA ha visto
+    // Prioridad máxima: Tomar aleatoriamente entre las preguntas que NUNCA ha visto históricamente
     chosen = unseenGlobally[Math.floor(Math.random() * unseenGlobally.length)];
   } else {
-    // ¡Ha completado el 100% de las preguntas de este grupo! Reiniciar ciclo para este grupo específico
-    resetSeenQuestionsForPool(allMatching.map(q => q.id));
+    // Ha completado el ciclo histórico de este grupo: reiniciar ciclo histórico para este grupo de preguntas
+    if (allMatching && allMatching.length > 0) {
+      resetSeenQuestionsForPool(allMatching.map(q => q.id));
+    }
     chosen = matchAvailable[Math.floor(Math.random() * matchAvailable.length)];
   }
 
-  // Registrar en el histórico global
+  // Registrar en el histórico global persistente
   recordBoardSeenQuestion(chosen.id);
 
-  // Si hay un set de la partida actual, registrarla inmediatamente para que ningún otro jugador la vea
+  // Registrar en el set de la partida actual para que NINGÚN jugador (ni quien responde ni los demás en la sala) vuelva a verla
   if (matchSeenIds) {
     matchSeenIds.add(chosen.id);
   }
@@ -588,6 +615,52 @@ interface Player {
   tile9Count?: number;
 }
 
+interface SavedBoardSession {
+  gameStarted: boolean;
+  gameSubMode: 'SOLO' | 'GRUPO_LOCAL' | 'VS_BOTS';
+  numPlayers: number;
+  players: Player[];
+  activePlayerIndex: number;
+  localDifficulty: string;
+  localTheme: string;
+  customStudyFilter?: CustomStudyFilter | null;
+  matchSeenQuestionIds: string[];
+  sessionStartTime: number;
+  sessionCorrectCount: number;
+  sessionTotalQuestions: number;
+  sessionTurnsCount: number;
+  soloMatchDuration: number;
+  soloMatchTimeLeft: number;
+  soloTimeElapsed: number;
+  isOnline: boolean;
+  onlineRoomCode?: string;
+  timestamp: number;
+}
+
+const BOARD_SESSION_KEY = 'biblos_active_board_session_v2';
+
+function getSavedBoardSession(): SavedBoardSession | null {
+  try {
+    const raw = localStorage.getItem(BOARD_SESSION_KEY);
+    if (!raw) return null;
+    const data: SavedBoardSession = JSON.parse(raw);
+    if (data && data.gameStarted && (Date.now() - (data.timestamp || 0) < 3 * 3600 * 1000)) {
+      return data;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function clearSavedBoardSession(): void {
+  try {
+    localStorage.removeItem(BOARD_SESSION_KEY);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 function BoardGameMode({
   onExit,
   isOnline = false,
@@ -625,14 +698,19 @@ function BoardGameMode({
   onToggleSound?: () => void;
   onInsufficientTalents?: (info: { show: boolean; required: number; modeName: string }) => void;
 }) {
-  const [customStudyFilter] = useState<CustomStudyFilter | null>(initialCustomStudyFilter);
-  const [gameSubMode, setGameSubMode] = useState<'SOLO' | 'GRUPO_LOCAL' | 'VS_BOTS'>(initialSubMode);
+  const savedSession = useMemo(() => getSavedBoardSession(), []);
+
+  const [customStudyFilter] = useState<CustomStudyFilter | null>(() => savedSession?.customStudyFilter || initialCustomStudyFilter);
+  const [gameSubMode, setGameSubMode] = useState<'SOLO' | 'GRUPO_LOCAL' | 'VS_BOTS'>(() => savedSession?.gameSubMode || initialSubMode);
   const [friendInviteNotification, setFriendInviteNotification] = useState<string | null>(null);
-  const [selectedGroupPlayers, setSelectedGroupPlayers] = useState<number>(2);
+  const [selectedGroupPlayers, setSelectedGroupPlayers] = useState<number>(() => savedSession?.numPlayers || 2);
   const [selectedBotOpponents, setSelectedBotOpponents] = useState<number>(1);
-  const [numPlayers, setNumPlayers] = useState<number>(() => (isOnline && onlineRoom ? onlineRoom.players.length : (initialSubMode === 'SOLO' ? 1 : initialSubMode === 'VS_BOTS' ? 2 : 2)));
-  const [gameStarted, setGameStarted] = useState<boolean>(() => Boolean(isOnline && onlineRoom));
+  const [numPlayers, setNumPlayers] = useState<number>(() => (isOnline && onlineRoom ? onlineRoom.players.length : (savedSession?.numPlayers || (initialSubMode === 'SOLO' ? 1 : initialSubMode === 'VS_BOTS' ? 2 : 2))));
+  const [gameStarted, setGameStarted] = useState<boolean>(() => Boolean(savedSession?.gameStarted || (isOnline && onlineRoom)));
   const [players, setPlayers] = useState<Player[]>(() => {
+    if (savedSession && Array.isArray(savedSession.players) && savedSession.players.length > 0) {
+      return savedSession.players;
+    }
     const colors = [
       'bg-amber-500 text-black border-amber-300',
       'bg-blue-500 text-white border-blue-300',
@@ -665,7 +743,7 @@ function BoardGameMode({
     ];
   });
 
-  const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const [activePlayerIndex, setActivePlayerIndex] = useState<number>(() => savedSession?.activePlayerIndex ?? 0);
   const isSolo = players.length === 1;
   const [dice, setDice] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState<boolean>(false);
@@ -678,7 +756,7 @@ function BoardGameMode({
   const [logMessage, setLogMessage] = useState<string>(() =>
     isOnline
       ? "🎮 ¡Partida en Línea Iniciada! Turno del Jugador 1."
-      : "¡Elige la cantidad de jugadores para iniciar!"
+      : (savedSession?.gameStarted ? "🔄 Partida reanudada automáticamente." : "¡Elige la cantidad de jugadores para iniciar!")
   );
   const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
   const [activeQuestionTile, setActiveQuestionTile] = useState<number>(0);
@@ -686,13 +764,13 @@ function BoardGameMode({
   const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
   const [localInsufficientTalentsModal, setLocalInsufficientTalentsModal] = useState<{ show: boolean; required: number; modeName: string } | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [matchSeenQuestionIds, setMatchSeenQuestionIds] = useState<Set<string>>(() => new Set());
+  const [matchSeenQuestionIds, setMatchSeenQuestionIds] = useState<Set<string>>(() => new Set(savedSession?.matchSeenQuestionIds || []));
 
   // Estadísticas de la Sesión para Ranking y Solo Score
-  const [sessionCorrectCount, setSessionCorrectCount] = useState<number>(0);
-  const [sessionTotalQuestions, setSessionTotalQuestions] = useState<number>(0);
-  const [sessionTurnsCount, setSessionTurnsCount] = useState<number>(0);
-  const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
+  const [sessionCorrectCount, setSessionCorrectCount] = useState<number>(() => savedSession?.sessionCorrectCount ?? 0);
+  const [sessionTotalQuestions, setSessionTotalQuestions] = useState<number>(() => savedSession?.sessionTotalQuestions ?? 0);
+  const [sessionTurnsCount, setSessionTurnsCount] = useState<number>(() => savedSession?.sessionTurnsCount ?? 0);
+  const [sessionStartTime, setSessionStartTime] = useState<number>(() => savedSession?.sessionStartTime ?? Date.now());
   const [sessionSoloScoreResult, setSessionSoloScoreResult] = useState<SoloScoreResult | null>(null);
   const [sessionTalentsEarned, setSessionTalentsEarned] = useState<number | undefined>(undefined);
   const [userTalents, setUserTalentsState] = useState<number>(() => propUserTalents !== undefined ? propUserTalents : getTalentsBalance());
@@ -848,9 +926,15 @@ function BoardGameMode({
 
     setGameWinner(actualWinner);
     setIsGameOver(true);
-    playGameSound(completedGoal ? 'projection' : 'correct');
-    triggerHaptic('success');
-    confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+    if (isThisPlayerMe(actualWinner)) {
+      playCelebrationSound();
+      playGameSound(completedGoal ? 'projection' : 'correct');
+      triggerHaptic('success');
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+    } else {
+      playGameSound('wrong');
+      triggerHaptic('error');
+    }
 
     const currentTilePos = typeof actualWinner.position === 'number' ? actualWinner.position : 0;
     const isSolo = players.length === 1;
@@ -1122,6 +1206,17 @@ function BoardGameMode({
     position: 0,
     skipNextTurn: false
   };
+  const myPlayer: Player = useMemo(() => {
+    if (players[myPlayerIndex]) return players[myPlayerIndex];
+    return {
+      id: userProfile?.id || 1,
+      name: userProfile?.name || "Jugador 1",
+      avatar: userProfile?.avatar || "/avatars/david.jpg",
+      color: "bg-amber-500 text-black border-amber-300",
+      position: 0,
+      skipNextTurn: false
+    };
+  }, [players, myPlayerIndex, userProfile]);
   const currentPlayer = players[activePlayerIndex] || players[0] || defaultPlayer;
   const isMyTurn = !isOnline || activePlayerIndex === myPlayerIndex;
 
@@ -1206,15 +1301,27 @@ function BoardGameMode({
           }
 
           if (payload.newPos >= 75) {
-            setGameWinner(players[payload.playerIndex] || currentPlayer);
+            const winnerPlayer = players[payload.playerIndex] || players[0];
+            setGameWinner(winnerPlayer);
             setIsGameOver(true);
-            playGameSound('projection');
-            triggerHaptic('success');
-            confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+            if (isThisPlayerMe(winnerPlayer, payload.playerIndex)) {
+              playCelebrationSound();
+              playGameSound('projection');
+              triggerHaptic('success');
+              confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+            } else {
+              playGameSound('wrong');
+              triggerHaptic('error');
+            }
             return;
           }
 
           if (payload.question) {
+            if (payload.question.id) {
+              matchSeenQuestionIds.add(payload.question.id);
+              setMatchSeenQuestionIds(new Set(matchSeenQuestionIds));
+              recordBoardSeenQuestion(payload.question.id);
+            }
             setActiveQuestion(payload.question);
             setActiveQuestionTile(payload.newPos);
             setShowAnswer(false);
@@ -1268,11 +1375,18 @@ function BoardGameMode({
             }
 
             if (payload.newFinalPos >= 75) {
-              setGameWinner(players[payload.playerIndex] || currentPlayer);
+              const winnerPlayer = players[payload.playerIndex] || players[0];
+              setGameWinner(winnerPlayer);
               setIsGameOver(true);
-              playGameSound('projection');
-              triggerHaptic('success');
-              confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+              if (isThisPlayerMe(winnerPlayer, payload.playerIndex)) {
+                playCelebrationSound();
+                playGameSound('projection');
+                triggerHaptic('success');
+                confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+              } else {
+                playGameSound('wrong');
+                triggerHaptic('error');
+              }
               return;
             }
           }
@@ -1308,23 +1422,31 @@ function BoardGameMode({
         });
         setGameWinner(winner);
         setIsGameOver(true);
-        playGameSound('projection');
-        triggerHaptic('success');
-        confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
-
-        // Si soy el ganador porque el rival se rindió, acreditar los talentos de victoria
-        if (winner.id === currentPlayer?.id || winner.name === (userProfile?.name || 'Jugador Bíblico')) {
+        if (isThisPlayerMe(winner)) {
+          playCelebrationSound();
+          playGameSound('projection');
+          triggerHaptic('success');
+          confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
           addTalents(FEES.MATCH_1V1_WIN, 'Victoria por Abandono del Rival (+2 🪙)', 'MATCH_1V1_WIN');
           setSessionTalentsEarned(FEES.MATCH_1V1_WIN);
           setUserTalents(getTalentsBalance());
+        } else {
+          playGameSound('wrong');
+          triggerHaptic('error');
         }
       } else if (action === 'GAME_OVER') {
         const winner = players.find(p => String(p.id) === String(payload.winnerId)) || players[0];
         setGameWinner(winner);
         setIsGameOver(true);
-        playGameSound('projection');
-        triggerHaptic('success');
-        confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+        if (isThisPlayerMe(winner)) {
+          playCelebrationSound();
+          playGameSound('projection');
+          triggerHaptic('success');
+          confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+        } else {
+          playGameSound('wrong');
+          triggerHaptic('error');
+        }
       } else if (action === 'RESTART_GAME') {
         playGameSound('select');
         setPlayers(prev => prev.map(p => ({ ...p, position: 0, skipNextTurn: false })));
@@ -1356,6 +1478,121 @@ function BoardGameMode({
 
     return () => unsubscribe();
   }, [isOnline, players, currentPlayer, turnTimeLimit]);
+
+  // 💾 Guardado automático continuo del estado de la partida para protegerla ante llamadas o salidas accidentales
+  useEffect(() => {
+    if (gameStarted && !isGameOver) {
+      try {
+        const session: SavedBoardSession = {
+          gameStarted: true,
+          gameSubMode,
+          numPlayers,
+          players,
+          activePlayerIndex,
+          localDifficulty,
+          localTheme,
+          customStudyFilter,
+          matchSeenQuestionIds: Array.from(matchSeenQuestionIds),
+          sessionStartTime,
+          sessionCorrectCount,
+          sessionTotalQuestions,
+          sessionTurnsCount,
+          soloMatchDuration,
+          soloMatchTimeLeft,
+          soloTimeElapsed,
+          isOnline: Boolean(isOnline),
+          onlineRoomCode: onlineRoom?.code,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(BOARD_SESSION_KEY, JSON.stringify(session));
+      } catch (err) {
+        console.error('Error auto-guardando sesión de juego:', err);
+      }
+    } else if (isGameOver) {
+      clearSavedBoardSession();
+    }
+  }, [
+    gameStarted,
+    isGameOver,
+    gameSubMode,
+    numPlayers,
+    players,
+    activePlayerIndex,
+    localDifficulty,
+    localTheme,
+    customStudyFilter,
+    matchSeenQuestionIds,
+    sessionStartTime,
+    sessionCorrectCount,
+    sessionTotalQuestions,
+    sessionTurnsCount,
+    soloMatchDuration,
+    soloMatchTimeLeft,
+    soloTimeElapsed,
+    isOnline,
+    onlineRoom?.code
+  ]);
+
+  // 🛡️ Protección contra Botón "Atrás" accidental (Android / Navegador / Gestos)
+  useEffect(() => {
+    if (!gameStarted || isGameOver) return;
+
+    // Empujar estado virtual en el historial para interceptar el botón Atrás
+    window.history.pushState({ biblosBoardActive: true }, '');
+
+    const handlePopState = () => {
+      // Re-empujar inmediatamente para no abandonar la aplicación por accidente
+      window.history.pushState({ biblosBoardActive: true }, '');
+      setShowExitConfirmModal(true);
+      triggerHaptic('warning');
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (gameStarted && !isGameOver) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [gameStarted, isGameOver]);
+
+  // 📞 Recuperación y reconexión automática tras llamadas telefónicas o cambio de app
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        // Si la conexión Socket se interrumpió durante una llamada o bloqueo de pantalla, reanudar
+        if (isOnline && onlineRoom?.code) {
+          const socket = onlineService.getSocket();
+          if (!socket.connected) {
+            socket.connect();
+          }
+          const myId = userProfile?.id || (players[myPlayerIndex] ? players[myPlayerIndex].id : '');
+          const myName = userProfile?.name || (players[myPlayerIndex] ? players[myPlayerIndex].name : 'Jugador Bíblico');
+          try {
+            await onlineService.reconnectToMatch(onlineRoom.code, String(myId), myName);
+          } catch (err) {
+            console.warn('[RECONEXIÓN TRAS LLAMADA]', err);
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, [isOnline, onlineRoom?.code, userProfile, players, myPlayerIndex]);
 
   const startNewGame = (count: number, isBotMatch: boolean = false) => {
     // Validar y descontar 1 Talento por entrada de partida
@@ -3713,7 +3950,7 @@ function BoardGameMode({
         isSolo={players.length === 1}
         isOnline={isOnline}
         gameWinner={gameWinner}
-        currentPlayer={currentPlayer}
+        currentPlayer={myPlayer}
         players={players}
         soloScoreResult={sessionSoloScoreResult}
         soloMatchDuration={soloMatchDuration}
@@ -3782,6 +4019,7 @@ function BoardGameMode({
                   type="button"
                   onClick={() => {
                     setShowExitConfirmModal(false);
+                    clearSavedBoardSession();
                     onExit();
                   }}
                   className="w-full py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition active:scale-95 cursor-pointer"
@@ -4142,7 +4380,18 @@ export default function App() {
   const [soloTimeFilter, setSoloTimeFilter] = useState<string>('TODOS');
   const [ratingRegionFilter, setRatingRegionFilter] = useState<string>('TODAS');
   const [ratingCountryFilter, setRatingCountryFilter] = useState<string>('TODOS');
-  const [screen, setScreen] = useState<'WELCOME' | 'TRIVIA' | 'TABLERO'>('WELCOME');
+  const [screen, setScreen] = useState<'WELCOME' | 'TRIVIA' | 'TABLERO'>(() => {
+    try {
+      const saved = localStorage.getItem(BOARD_SESSION_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.gameStarted && Date.now() - (parsed.timestamp || 0) < 3 * 3600 * 1000) {
+          return 'TABLERO';
+        }
+      }
+    } catch {}
+    return 'WELCOME';
+  });
   const [isSoundOn, setIsSoundOn] = useState(true);
 
   // --- ADMINISTRADOR EXCLUSIVO DE PREGUNTAS GENERALES Y AJUSTES DE APP ---
@@ -4274,6 +4523,11 @@ export default function App() {
   const [searchAvatarIndex, setSearchAvatarIndex] = useState(0);
   const [duelMatchedPlayer, setDuelMatchedPlayer] = useState<{ name: string; avatar: string; country?: string; countryFlag?: string; rating: number } | null>(null);
   const [duelNoOpponent, setDuelNoOpponent] = useState(false);
+
+  // Referencias para temporizadores de búsqueda y transición de salas
+  const duelTimeoutRef = useRef<any>(null);
+  const duelMatchFoundTimeoutRef = useRef<any>(null);
+  const groupMatchFoundTimeoutRef = useRef<any>(null);
 
   // Todos vs Todos (Matchmaking Grupal 3 a 8 jugadores - 1 minuto / 60 segundos)
   const [isSearchingGroup, setIsSearchingGroup] = useState(false);
@@ -4554,6 +4808,10 @@ export default function App() {
   const start1v1Matchmaking = () => {
     playSound("select");
 
+    // Limpiar temporizadores previos
+    if (duelTimeoutRef.current) clearTimeout(duelTimeoutRef.current);
+    if (duelMatchFoundTimeoutRef.current) clearTimeout(duelMatchFoundTimeoutRef.current);
+
     // Verificar si el jugador tiene un bloqueo temporal por abandono
     const banStatus = checkMatchmakingBanStatus();
     if (banStatus.isBanned) {
@@ -4592,12 +4850,13 @@ export default function App() {
     onlineService.startMatchmaking(
       { name: pName, avatar: pAvatar, rating: pRating },
       (matchData) => {
+        if (duelTimeoutRef.current) clearTimeout(duelTimeoutRef.current);
         isMatched = true;
         setDuelMatchedPlayer(matchData.opponent);
         playSound("correct");
         triggerHaptic("success");
 
-        setTimeout(() => {
+        duelMatchFoundTimeoutRef.current = setTimeout(() => {
           setIsSearchingDuel(false);
           setOnlineRoom(matchData.room);
           setShowOnlineModal(false);
@@ -4608,7 +4867,7 @@ export default function App() {
     );
 
     // 2. Si transcurren los 20 segundos sin emparejamiento, detener y notificar
-    setTimeout(() => {
+    duelTimeoutRef.current = setTimeout(() => {
       if (!isMatched) {
         onlineService.cancelMatchmaking();
         setIsSearchingDuel(false);
@@ -4619,11 +4878,19 @@ export default function App() {
   };
 
   const cancel1v1Matchmaking = () => {
+    if (duelTimeoutRef.current) clearTimeout(duelTimeoutRef.current);
+    if (duelMatchFoundTimeoutRef.current) clearTimeout(duelMatchFoundTimeoutRef.current);
     onlineService.cancelMatchmaking();
+    if (onlineRoom) {
+      onlineService.leaveRoom();
+      setOnlineRoom(null);
+    }
+    clearSavedBoardSession();
     setIsSearchingDuel(false);
     setDuelSearchTime(0);
     setDuelMatchedPlayer(null);
     setDuelNoOpponent(false);
+    setOnlineSubTab('MENU');
     // Reembolsar talento por cancelación
     addTalents(FEES.MATCH_1V1, 'Reembolso por Duelo 1 vs 1 cancelado', 'MATCH_1V1_FEE');
     setUserTalents(getTalentsBalance());
@@ -4633,6 +4900,7 @@ export default function App() {
   // Matchmaking Grupal: "Todos Vs Todos" (3 a 8 jugadores, 1 minuto / 60 segundos)
   const startTodosVsTodosMatchmaking = () => {
     playSound("select");
+    if (groupMatchFoundTimeoutRef.current) clearTimeout(groupMatchFoundTimeoutRef.current);
 
     // Validar saldo de Talentos (Cuesta 2 Talentos)
     if (!canAffordTalents(FEES.GROUP_MATCH)) {
@@ -4671,7 +4939,7 @@ export default function App() {
         playSound("correct");
         triggerHaptic("success");
 
-        setTimeout(() => {
+        groupMatchFoundTimeoutRef.current = setTimeout(() => {
           setIsSearchingGroup(false);
           setGroupMatchStarting(false);
           setOnlineRoom(matchData.room);
@@ -4684,11 +4952,18 @@ export default function App() {
   };
 
   const cancelTodosVsTodosMatchmaking = () => {
+    if (groupMatchFoundTimeoutRef.current) clearTimeout(groupMatchFoundTimeoutRef.current);
     onlineService.cancelGroupMatchmaking();
+    if (onlineRoom) {
+      onlineService.leaveRoom();
+      setOnlineRoom(null);
+    }
+    clearSavedBoardSession();
     setIsSearchingGroup(false);
     setGroupTimeRemaining(60);
     setGroupLobbyPlayers([]);
     setGroupMatchStarting(false);
+    setOnlineSubTab('MENU');
     // Reembolsar talentos por cancelación
     addTalents(FEES.GROUP_MATCH, 'Reembolso por Todos Vs Todos cancelado', 'GROUP_MATCH_FEE');
     setUserTalents(getTalentsBalance());
@@ -6294,6 +6569,7 @@ const handleAnswerClick = (index: number) => {
           initialSubMode={boardSubMode}
           initialCustomStudyFilter={activeCustomStudyFilter}
           onExit={() => {
+            clearSavedBoardSession();
             if (onlineRoom) {
               onlineService.leaveRoom();
               setOnlineRoom(null);
@@ -9672,7 +9948,15 @@ const handleAnswerClick = (index: number) => {
         <div 
           className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md"
           onClick={() => {
-            if (!isSearchingDuel) setShowOnlineModal(false);
+            if (!isSearchingDuel && !isSearchingGroup) {
+              if (onlineRoom) {
+                onlineService.leaveRoom();
+                setOnlineRoom(null);
+              }
+              clearSavedBoardSession();
+              setOnlineSubTab('MENU');
+              setShowOnlineModal(false);
+            }
           }}
         >
           <div 
@@ -9683,10 +9967,17 @@ const handleAnswerClick = (index: number) => {
               <div className="bg-gradient-to-r from-stone-900 via-[#2A2318] to-stone-900 p-4 sm:p-5 text-center relative border-b border-amber-900/40 shrink-0">
                 <button 
                   onClick={() => {
+                    if (isSearchingDuel || duelNoOpponent) {
+                      cancel1v1Matchmaking();
+                    }
+                    if (isSearchingGroup) {
+                      cancelTodosVsTodosMatchmaking();
+                    }
                     if (onlineRoom) {
                       onlineService.leaveRoom();
                       setOnlineRoom(null);
                     }
+                    clearSavedBoardSession();
                     setOnlineSubTab('MENU');
                     setShowOnlineModal(false);
                   }}
@@ -9714,7 +10005,15 @@ const handleAnswerClick = (index: number) => {
                 {onlineSubTab !== 'MENU' && !onlineRoom && (
                   <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/40">
                     <button
-                      onClick={() => setOnlineSubTab('MENU')}
+                      onClick={() => {
+                        if (isSearchingDuel || duelNoOpponent) {
+                          cancel1v1Matchmaking();
+                        }
+                        if (isSearchingGroup) {
+                          cancelTodosVsTodosMatchmaking();
+                        }
+                        setOnlineSubTab('MENU');
+                      }}
                       className="px-3 py-1 bg-stone-800 hover:bg-stone-700 text-amber-300 text-xs font-bold rounded-lg flex items-center gap-1 transition cursor-pointer"
                     >
                       <ChevronLeft size={14} /> Volver a Modos
@@ -10241,7 +10540,10 @@ const handleAnswerClick = (index: number) => {
 
                               {/* Botón Salir */}
                               <button
-                                onClick={cancel1v1Matchmaking}
+                                onClick={() => {
+                                  cancel1v1Matchmaking();
+                                  setShowOnlineModal(false);
+                                }}
                                 className="w-full py-2 bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-stone-200 font-bold rounded-xl text-xs uppercase tracking-wider border border-stone-800 transition cursor-pointer"
                               >
                                 Cancelar y Salir
