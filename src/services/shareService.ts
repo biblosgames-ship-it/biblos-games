@@ -29,7 +29,9 @@ export const copyTextToClipboard = async (text: string): Promise<boolean> => {
     textArea.focus();
     textArea.select();
     const successful = document.execCommand('copy');
-    document.body.removeChild(textArea);
+    if (textArea.parentNode) {
+      textArea.parentNode.removeChild(textArea);
+    }
     return successful;
   } catch (err) {
     console.error('Fallback clipboard copy failed:', err);
@@ -118,7 +120,9 @@ export const downloadElementAsImage = async (
     link.href = dataUrl;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
     return true;
   } catch (e) {
     console.error('Error downloading image', e);

@@ -459,7 +459,9 @@ async function copyToClipboard(text: string): Promise<boolean> {
     textArea.select();
     textArea.setSelectionRange(0, text.length);
     const successful = document.execCommand("copy");
-    document.body.removeChild(textArea);
+    if (textArea.parentNode) {
+      textArea.parentNode.removeChild(textArea);
+    }
     return successful;
   } catch (err) {
     console.error("Error en fallback execCommand:", err);

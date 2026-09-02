@@ -8,24 +8,61 @@ import './index.css';
 if (typeof Node !== 'undefined' && Node.prototype) {
   const originalRemoveChild = Node.prototype.removeChild;
   Node.prototype.removeChild = function <T extends Node>(child: T): T {
-    if (child.parentNode !== this) {
-      if (child.parentNode) {
-        return child.parentNode.removeChild(child) as T;
+    try {
+      if (child && child.parentNode !== this) {
+        if (child.parentNode) {
+          return child.parentNode.removeChild(child) as T;
+        }
+        return child;
+      }
+      return originalRemoveChild.call(this, child) as T;
+    } catch (e) {
+      console.warn('[DOM Safeguard] Handled removeChild error:', e);
+      if (child && child.parentNode) {
+        try {
+          return child.parentNode.removeChild(child) as T;
+        } catch {
+          return child;
+        }
       }
       return child;
     }
-    return originalRemoveChild.call(this, child) as T;
   };
 
   const originalInsertBefore = Node.prototype.insertBefore;
   Node.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
-    if (referenceNode && referenceNode.parentNode !== this) {
-      if (referenceNode.parentNode) {
-        return referenceNode.parentNode.insertBefore(newNode, referenceNode) as T;
+    try {
+      if (referenceNode && referenceNode.parentNode !== this) {
+        if (referenceNode.parentNode) {
+          return referenceNode.parentNode.insertBefore(newNode, referenceNode) as T;
+        }
+        return this.appendChild(newNode) as T;
       }
-      return this.appendChild(newNode) as T;
+      return originalInsertBefore.call(this, newNode, referenceNode) as T;
+    } catch (e) {
+      console.warn('[DOM Safeguard] Handled insertBefore error:', e);
+      try {
+        return this.appendChild(newNode) as T;
+      } catch {
+        return newNode;
+      }
     }
-    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+  };
+
+  const originalReplaceChild = Node.prototype.replaceChild;
+  Node.prototype.replaceChild = function <T extends Node>(newChild: Node, oldChild: T): T {
+    try {
+      if (oldChild && oldChild.parentNode !== this) {
+        if (oldChild.parentNode) {
+          return oldChild.parentNode.replaceChild(newChild, oldChild) as T;
+        }
+        return oldChild;
+      }
+      return originalReplaceChild.call(this, newChild, oldChild) as T;
+    } catch (e) {
+      console.warn('[DOM Safeguard] Handled replaceChild error:', e);
+      return oldChild;
+    }
   };
 }
 
