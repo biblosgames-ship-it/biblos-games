@@ -43,6 +43,8 @@ export interface OnlineRoom {
   winningDifficulty?: string;
   currentQuestionIndex: number;
   startTime?: number;
+  seenQuestionIds?: string[];
+  difficulty?: string;
 }
 
 class OnlineMultiplayerService {

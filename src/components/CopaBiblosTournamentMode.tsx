@@ -1412,12 +1412,14 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
               </div>
 
               {/* TEXTO DE LA PREGUNTA */}
-              <h4 className="text-base sm:text-lg font-bold text-amber-200 leading-snug">
-                {activeQuestion.question}
-              </h4>
+              <div className="bg-stone-950/90 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 shadow-lg">
+                <h4 className="text-lg sm:text-xl md:text-2xl font-black text-amber-100 leading-snug">
+                  {activeQuestion.question}
+                </h4>
+              </div>
 
               {/* OPCIONES DE RESPUESTA */}
-              <div className="space-y-2 pt-1">
+              <div className="space-y-2.5 pt-1">
                 {activeQuestion.options.map((option, idx) => {
                   let btnColor = "bg-stone-800 text-amber-100 border-stone-700 font-bold hover:border-amber-400 hover:bg-amber-900/70 cursor-pointer";
                   if (isAnswerSubmitted) {
@@ -1435,14 +1437,19 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
                       key={idx}
                       disabled={isAnswerSubmitted}
                       onClick={() => handleSelectOption(idx)}
-                      className={`w-full p-3 rounded-2xl border text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between ${btnColor}`}
+                      className={`w-full p-3.5 sm:p-4 rounded-2xl border text-left text-sm sm:text-base font-bold transition flex items-center justify-between ${btnColor}`}
                     >
-                      <span className="pr-2">{option}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-900/80 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-black text-amber-300 shrink-0">
+                          {String.fromCharCode(65 + idx)}
+                        </span>
+                        <span className="pr-2">{option}</span>
+                      </div>
                       {isAnswerSubmitted && idx === activeQuestion.correctAnswer && (
-                        <CheckCircle2 size={18} className="text-emerald-300 shrink-0" />
+                        <CheckCircle2 size={20} className="text-emerald-300 shrink-0" />
                       )}
                       {isAnswerSubmitted && idx === selectedOption && idx !== activeQuestion.correctAnswer && (
-                        <XCircle size={18} className="text-rose-300 shrink-0" />
+                        <XCircle size={20} className="text-rose-300 shrink-0" />
                       )}
                     </button>
                   );

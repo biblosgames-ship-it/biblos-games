@@ -237,23 +237,25 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                 <span className="text-[10px] bg-amber-500/20 text-amber-300 font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   Pregunta {currentIdx + 1} de 10
                 </span>
-                <span className="text-[11px] font-serif font-bold text-stone-400">
+                <span className="text-xs font-bold text-stone-400">
                   {currentQ.reference}
                 </span>
               </div>
 
-              <h3 className="text-sm sm:text-base font-bold text-stone-100 leading-snug">
-                {currentQ.question}
-              </h3>
+              <div className="bg-stone-900/90 border-2 border-amber-500/50 rounded-2xl p-4 sm:p-5 shadow-inner">
+                <h3 className="text-base sm:text-lg md:text-xl font-black text-amber-100 leading-snug">
+                  {currentQ.question}
+                </h3>
+              </div>
             </div>
 
             {/* Opciones de Respuesta */}
-            <div className="grid grid-cols-1 gap-2 text-left">
+            <div className="grid grid-cols-1 gap-2.5 text-left">
               {currentQ.options.map((opt, oIdx) => {
-                let btnStyle = "bg-stone-900/90 hover:bg-stone-800 border-stone-700 text-stone-200";
+                let btnStyle = "bg-stone-900 hover:bg-stone-800 border-stone-700 text-stone-100";
                 if (showAnswerFeedback) {
                   if (oIdx === currentQ.correctAnswer) {
-                    btnStyle = "bg-emerald-700 border-emerald-400 text-white font-bold animate-pulse";
+                    btnStyle = "bg-emerald-700 border-emerald-400 text-white font-bold animate-pulse ring-2 ring-emerald-400";
                   } else if (oIdx === selectedOption) {
                     btnStyle = "bg-rose-900 border-rose-500 text-rose-200";
                   } else {
@@ -266,19 +268,19 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                     key={oIdx}
                     disabled={showAnswerFeedback}
                     onClick={() => handleSelectOption(oIdx)}
-                    className={`p-3 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between cursor-pointer active:scale-98 shadow ${btnStyle}`}
+                    className={`p-3.5 sm:p-4 rounded-xl border text-sm sm:text-base font-bold transition-all flex items-center justify-between cursor-pointer active:scale-98 shadow ${btnStyle}`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-full bg-stone-800 border border-stone-600 flex items-center justify-center text-[10px] font-black text-amber-300 shrink-0">
+                    <div className="flex items-center gap-3">
+                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-black text-amber-300 shrink-0">
                         {String.fromCharCode(65 + oIdx)}
                       </span>
-                      <span className="font-medium leading-snug">{opt}</span>
+                      <span className="leading-snug">{opt}</span>
                     </div>
 
                     {showAnswerFeedback && oIdx === currentQ.correctAnswer && (
-                      <div className="flex items-center gap-1 text-emerald-300 shrink-0 font-black text-xs">
+                      <div className="flex items-center gap-1.5 text-emerald-300 shrink-0 font-black text-sm">
                         <span>+1 ⭐</span>
-                        <CheckCircle size={16} />
+                        <CheckCircle size={18} />
                       </div>
                     )}
                   </button>

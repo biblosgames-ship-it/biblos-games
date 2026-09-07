@@ -1,7 +1,7 @@
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { toPng } from 'html-to-image';
-import { UserProfile } from './userProfile';
+import { UserProfile, getRankTier } from './userProfile';
 import { generateFriendInviteUrl } from './friendsService';
 
 /**
@@ -191,7 +191,7 @@ export const shareUserProfile = async (
     `👤 Jugador: ${profile.name || 'Jugador Bíblico'}\n` +
     `🎯 Precisión: ${profile.accuracy || 0}%\n` +
     `🏆 Rating ELO: ${profile.rating || 1000} pts\n` +
-    `⭐ Rango: ${profile.rank || 'Explorador Bíblico'}\n` +
+    `⭐ Rango: ${(profile as any).rank || getRankTier(profile.rating || 1000).title}\n` +
     `🔥 Racha: ${profile.streak || 0} días\n\n` +
     `👉 ¡Agrégame como amigo y juguemos en vivo aquí:\n${inviteUrl}`;
 

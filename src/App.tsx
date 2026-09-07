@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { initAdMob, showInterstitialAd, showRewardedAd, canWatchRewardedAd, markRewardedAdWatched, getTimeUntilNextRewardedAd, onQuestionAnswered, resetAdCounter } from './services/adService';
 import {
@@ -362,26 +362,26 @@ function pickSmartQuestionForPeriod(
   const persistentSeenIds = getBoardSeenQuestionIds();
   
   // 1. Filtrar preguntas que NO se hayan visto en la partida actual (GARANTÍA ESTRICTA ANTI-REPETICIÓN)
-  let matchAvailable = allMatching ? allMatching.filter(q => !matchSeenIds || !matchSeenIds.has(q.id)) : [];
+  let matchAvailable = allMatching ? allMatching.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id))) : [];
   
   // Si en la partida actual se agotaron las preguntas con este filtro específico,
   // relajamos filtros progresivamente buscando SIEMPRE preguntas que NO se hayan visto en esta partida:
   if (matchAvailable.length === 0) {
     // Intento 1: Misma casilla/período y temática, pero cualquier dificultad disponible no vista en la partida
     const relaxedDiff = getQuestionsForPeriod(periodName, theme, 'MIXTO', customStudyFilter);
-    matchAvailable = relaxedDiff.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+    matchAvailable = relaxedDiff.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
   }
   
   if (matchAvailable.length === 0) {
     // Intento 2: Misma casilla/período, cualquier temática y dificultad no vista en la partida
     const relaxedTheme = getQuestionsForPeriod(periodName, undefined, undefined, customStudyFilter);
-    matchAvailable = relaxedTheme.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+    matchAvailable = relaxedTheme.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
   }
 
   if (matchAvailable.length === 0) {
     // Intento 3: Buscar en todo el catálogo completo activo (660+ preguntas) cualquier pregunta no vista en la partida
     const allPool = getActiveQuestionsPool();
-    matchAvailable = allPool.filter(q => !matchSeenIds || !matchSeenIds.has(q.id));
+    matchAvailable = allPool.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
   }
 
   // En el caso súper extremo de que se hayan visto todas las 660+ preguntas en una sola partida:
@@ -390,7 +390,7 @@ function pickSmartQuestionForPeriod(
   }
 
   // 2. Filtrar preguntas que NO se hayan visto históricamente en este dispositivo
-  const unseenGlobally = matchAvailable.filter(q => !persistentSeenIds.has(q.id));
+  const unseenGlobally = matchAvailable.filter(q => !persistentSeenIds.has(String(q.id)));
 
   let chosen: Question;
   if (unseenGlobally.length > 0) {
@@ -399,17 +399,17 @@ function pickSmartQuestionForPeriod(
   } else {
     // Ha completado el ciclo histórico de este grupo: reiniciar ciclo histórico para este grupo de preguntas
     if (allMatching && allMatching.length > 0) {
-      resetSeenQuestionsForPool(allMatching.map(q => q.id));
+      resetSeenQuestionsForPool(allMatching.map(q => String(q.id)));
     }
     chosen = matchAvailable[Math.floor(Math.random() * matchAvailable.length)];
   }
 
   // Registrar en el histórico global persistente
-  recordBoardSeenQuestion(chosen.id);
+  recordBoardSeenQuestion(String(chosen.id));
 
   // Registrar en el set de la partida actual para que NINGÚN jugador (ni quien responde ni los demás en la sala) vuelva a verla
   if (matchSeenIds) {
-    matchSeenIds.add(chosen.id);
+    matchSeenIds.add(String(chosen.id));
   }
 
   return shuffleQuestionOptions(chosen);
@@ -767,6 +767,15 @@ function BoardGameMode({
   const [localInsufficientTalentsModal, setLocalInsufficientTalentsModal] = useState<{ show: boolean; required: number; modeName: string } | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [matchSeenQuestionIds, setMatchSeenQuestionIds] = useState<Set<string>>(() => new Set(savedSession?.matchSeenQuestionIds || []));
+  const matchSeenIdsRef = useRef<Set<string>>(new Set(savedSession?.matchSeenQuestionIds || []));
+
+  const recordSeenQuestionInMatch = (id: string | number | undefined) => {
+    if (!id) return;
+    const strId = String(id);
+    matchSeenIdsRef.current.add(strId);
+    setMatchSeenQuestionIds(new Set(matchSeenIdsRef.current));
+    recordBoardSeenQuestion(strId);
+  };
 
   // Estadísticas de la Sesión para Ranking y Solo Score
   const [sessionCorrectCount, setSessionCorrectCount] = useState<number>(() => savedSession?.sessionCorrectCount ?? 0);
@@ -863,9 +872,37 @@ function BoardGameMode({
   // Modo de Preguntas y Complejidad para Tablero Local (Adaptado dinámicamente según Nivel y Rating)
   const [localTheme, setLocalTheme] = useState<string>('PERIODOS');
   const [localDifficulty, setLocalDifficulty] = useState<'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | 'MIXTO'>(() => {
+    if (isOnline && onlineRoom) {
+      const roomDiff = onlineRoom.winningDifficulty || onlineRoom.difficulty;
+      if (roomDiff) {
+        const dUpper = String(roomDiff).toUpperCase();
+        return (dUpper === 'BASIC' ? 'PRINCIPIANTE' : (dUpper === 'ADVANCED' ? 'AVANZADO' : (dUpper === 'INTERMEDIATE' ? 'INTERMEDIO' : dUpper))) as any;
+      }
+    }
     const diffInfo = getAvailableDifficulties(userProfile?.rating || 1000);
     return diffInfo.defaultDifficulty;
   });
+
+  // Sincronizar dinámicamente dificultad, temática y preguntas vistas de la sala online para equidad competitiva estricta
+  useEffect(() => {
+    if (isOnline && onlineRoom) {
+      const roomDiff = onlineRoom.winningDifficulty || onlineRoom.difficulty;
+      if (roomDiff) {
+        const dUpper = String(roomDiff).toUpperCase();
+        const normalized = (dUpper === 'BASIC' ? 'PRINCIPIANTE' : (dUpper === 'ADVANCED' ? 'AVANZADO' : (dUpper === 'INTERMEDIATE' ? 'INTERMEDIO' : dUpper))) as any;
+        setLocalDifficulty(normalized);
+      }
+      if (onlineRoom.winningTheme) {
+        setLocalTheme(onlineRoom.winningTheme);
+      }
+      if (Array.isArray(onlineRoom.seenQuestionIds) && onlineRoom.seenQuestionIds.length > 0) {
+        onlineRoom.seenQuestionIds.forEach(id => {
+          if (id) matchSeenIdsRef.current.add(String(id));
+        });
+        setMatchSeenQuestionIds(new Set(matchSeenIdsRef.current));
+      }
+    }
+  }, [isOnline, onlineRoom?.winningDifficulty, onlineRoom?.difficulty, onlineRoom?.winningTheme, onlineRoom?.seenQuestionIds]);
 
   // Estado de Rendición / Abandono de Duelo
   const [showSurrenderConfirm, setShowSurrenderConfirm] = useState<boolean>(false);
@@ -1271,6 +1308,20 @@ function BoardGameMode({
       const currentSocketId = onlineService.getSocketId();
       if (senderId && currentSocketId && senderId === currentSocketId) return;
 
+      // Incorporar preguntas vistas sincronizadas por la sala para que jamás se repitan
+      if (payload?.roomSeenQuestionIds && Array.isArray(payload.roomSeenQuestionIds)) {
+        payload.roomSeenQuestionIds.forEach((id: string) => {
+          if (id) matchSeenIdsRef.current.add(String(id));
+        });
+        setMatchSeenQuestionIds(new Set(matchSeenIdsRef.current));
+      }
+      if (Array.isArray(payload?.seenIds)) {
+        payload.seenIds.forEach((id: string) => {
+          if (id) matchSeenIdsRef.current.add(String(id));
+        });
+        setMatchSeenQuestionIds(new Set(matchSeenIdsRef.current));
+      }
+
       if (action === 'SET_TIME_LIMIT') {
         setQuestionTimeLimit(payload.timeLimit);
       } else if (action === 'ROLL_DICE') {
@@ -1320,9 +1371,7 @@ function BoardGameMode({
 
           if (payload.question) {
             if (payload.question.id) {
-              matchSeenQuestionIds.add(payload.question.id);
-              setMatchSeenQuestionIds(new Set(matchSeenQuestionIds));
-              recordBoardSeenQuestion(payload.question.id);
+              recordSeenQuestionInMatch(payload.question.id);
             }
             setActiveQuestion(payload.question);
             setActiveQuestionTile(payload.newPos);
@@ -1346,6 +1395,9 @@ function BoardGameMode({
           }
         }, 400);
       } else if (action === 'ANSWER_QUESTION') {
+        if (payload?.chainedQuestion?.id) {
+          recordSeenQuestionInMatch(payload.chainedQuestion.id);
+        }
         setSelectedOption(payload.optionIdx);
         setShowAnswer(true);
         setIsBoardTimerRunning(false);
@@ -1494,7 +1546,7 @@ function BoardGameMode({
           localDifficulty,
           localTheme,
           customStudyFilter,
-          matchSeenQuestionIds: Array.from(matchSeenQuestionIds),
+          matchSeenQuestionIds: Array.from(matchSeenIdsRef.current),
           sessionStartTime,
           sessionCorrectCount,
           sessionTotalQuestions,
@@ -1636,6 +1688,7 @@ function BoardGameMode({
     setIsGameOver(false);
     setGameWinner(null);
     setMatchSeenQuestionIds(new Set());
+    matchSeenIdsRef.current = new Set();
 
     if (isBotMatch) {
       // Configurar jugador humano + bots bíblicos
@@ -2224,7 +2277,10 @@ function BoardGameMode({
         let questionToTrigger: Question | null = null;
         if (!isMoveInvalid && (isSolo || (destTile && destTile.effect === 'QUESTION'))) {
           const periodToQuery = destTile?.period || 'El Principio';
-          questionToTrigger = pickSmartQuestionForPeriod(periodToQuery, localTheme, localDifficulty, customStudyFilter, matchSeenQuestionIds);
+          questionToTrigger = pickSmartQuestionForPeriod(periodToQuery, localTheme, localDifficulty, customStudyFilter, matchSeenIdsRef.current);
+          if (questionToTrigger?.id) {
+            recordSeenQuestionInMatch(questionToTrigger.id);
+          }
         }
 
         const nextIdx = (activePlayerIndex + 1) % players.length;
@@ -2260,6 +2316,7 @@ function BoardGameMode({
             timeLimit: questionTimeLimit,
             nextIndex: (destTile?.effect === 'QUESTION' || rollAgain) ? activePlayerIndex : nextIdx,
             logMessage: msg,
+            seenIds: Array.from(matchSeenIdsRef.current)
           });
         }
       });
@@ -2359,6 +2416,7 @@ function BoardGameMode({
         nextIndex: nextIdx,
         shouldAdvanceTurn,
         logMessage: msg,
+        seenIds: Array.from(matchSeenIdsRef.current)
       });
     }
 
@@ -2374,7 +2432,10 @@ function BoardGameMode({
         if (newFinalPos < 75) {
           if (isChainedQuestion && destTile) {
             // Encadenar nueva pregunta al MISMO jugador
-            const chainedQuestion = pickSmartQuestionForPeriod(destTile.period, localTheme, localDifficulty, customStudyFilter, matchSeenQuestionIds);
+            const chainedQuestion = pickSmartQuestionForPeriod(destTile.period, localTheme, localDifficulty, customStudyFilter, matchSeenIdsRef.current);
+            if (chainedQuestion?.id) {
+              recordSeenQuestionInMatch(chainedQuestion.id);
+            }
 
             setActiveQuestion(chainedQuestion);
             setActiveQuestionTile(newFinalPos);
@@ -2393,6 +2454,7 @@ function BoardGameMode({
                 nextIndex: activePlayerIndex,
                 timeLimit: questionTimeLimit,
                 logMessage: `⚠️ ${playerAtTurn.name} cayó en la casilla ${newFinalPos} de Trivia (${destTile.period}). Debe responder.`,
+                seenIds: Array.from(matchSeenIdsRef.current)
               });
             }
             return;
@@ -3816,10 +3878,10 @@ function BoardGameMode({
 
       {/* MODAL DE PREGUNTA BÍBLICA SI CAE EN CASILLA QUESTION */}
       {activeQuestion && (
-        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
-          <div className="bg-[#2A2621] border-2 border-amber-500 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-amber-100 space-y-4 relative overflow-hidden">
+        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center animate-fade-in">
+          <div className="bg-[#241E18] border-2 border-amber-500/90 rounded-3xl p-5 sm:p-7 max-w-xl w-full shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-amber-100 space-y-4 relative overflow-hidden">
             {/* BARRA DE CRONÓMETRO REGRESIVO */}
-            <div className="w-full bg-stone-800 h-3 rounded-full overflow-hidden mb-1 border border-stone-700">
+            <div className="w-full bg-stone-900 h-3.5 rounded-full overflow-hidden mb-1 border border-stone-700 shadow-inner">
               <div
                 className={`h-full transition-all duration-1000 ${
                   questionTimeLimit >= 99999
@@ -3837,16 +3899,18 @@ function BoardGameMode({
             </div>
 
             {/* Encabezado de Pregunta */}
-            <div className="flex justify-between items-center border-b border-amber-900/50 pb-3">
+            <div className="flex justify-between items-center border-b border-amber-900/60 pb-3">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-400 block">
                   {activeQuestion.period || 'Trivia Bíblica'}
                 </span>
-                <p className="text-[10px] text-stone-400 leading-none mt-0.5">Cita: {activeQuestion.reference || 'Biblia'}</p>
+                <p className="text-xs sm:text-sm font-medium text-stone-300 leading-tight mt-0.5">
+                  Cita: <strong className="text-amber-200">{activeQuestion.reference || 'Biblia'}</strong>
+                </p>
               </div>
 
               <div
-                className={`px-3 sm:px-4 py-1.5 rounded-2xl font-mono font-black text-lg sm:text-xl shadow-xl flex items-center gap-1.5 ${
+                className={`px-3.5 sm:px-4 py-1.5 rounded-2xl font-mono font-black text-lg sm:text-xl shadow-xl flex items-center gap-1.5 ${
                   questionTimeLimit >= 99999
                     ? 'bg-emerald-900/80 text-emerald-200 border border-emerald-500'
                     : boardTimeLeft <= 5
@@ -3862,37 +3926,37 @@ function BoardGameMode({
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-2 p-2.5 bg-stone-900/90 rounded-xl border border-stone-800 text-[11px] font-bold shadow">
-              <div className="flex items-center gap-1 text-emerald-400">
+            <div className="flex items-center justify-between gap-2 p-2.5 bg-stone-900/95 rounded-xl border border-stone-800 text-xs font-bold shadow">
+              <div className="flex items-center gap-1.5 text-emerald-400">
                 <span>🎯 Acierto:</span>
-                <span className="bg-emerald-950/80 px-2 py-0.5 rounded-lg border border-emerald-700/60 font-black text-xs">
+                <span className="bg-emerald-950/90 px-2.5 py-0.5 rounded-lg border border-emerald-700/60 font-black text-xs sm:text-sm">
                   {activeConsequence.bien === 0 ? 'No se devuelve (+0)' : `+${activeConsequence.bien} ${activeConsequence.bien === 1 ? 'casilla' : 'casillas'}`}
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-rose-400">
+              <div className="flex items-center gap-1.5 text-rose-400">
                 <span>⚠️ Fallo:</span>
-                <span className="bg-rose-950/80 px-2 py-0.5 rounded-lg border border-rose-700/60 font-black text-xs">
+                <span className="bg-rose-950/90 px-2.5 py-0.5 rounded-lg border border-rose-700/60 font-black text-xs sm:text-sm">
                   -{Math.abs(activeConsequence.mal)} {Math.abs(activeConsequence.mal) === 1 ? 'casilla' : 'casillas'}
                 </span>
               </div>
             </div>
 
             {showAnswer ? (
-              <div className={`p-3 rounded-2xl border text-center animate-bounce shadow-xl ${
+              <div className={`p-3.5 rounded-2xl border-2 text-center animate-bounce shadow-2xl ${
                 selectedOption === activeQuestion.correctAnswer
                   ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/50'
-                  : 'bg-rose-950/95 border-rose-500 text-rose-200'
+                  : 'bg-rose-950/95 border-rose-500 text-rose-200 ring-2 ring-rose-400/50'
               }`}>
-                <p className="text-sm font-black flex items-center justify-center gap-1.5">
+                <p className="text-base sm:text-lg font-black flex items-center justify-center gap-2">
                   {selectedOption === activeQuestion.correctAnswer ? (
                     <>
-                      <span className="text-base">🎉</span>
+                      <span className="text-xl">🎉</span>
                       <span className="tracking-wide">¡¡RESPUESTA CORRECTA!! ✨ ¡Excelente!</span>
-                      <span className="text-base">🎊</span>
+                      <span className="text-xl">🎊</span>
                     </>
                   ) : (
                     <>
-                      <span className="text-base">❌</span>
+                      <span className="text-xl">❌</span>
                       <span className="tracking-wide">¡Respuesta Incorrecta!</span>
                     </>
                   )}
@@ -3900,29 +3964,45 @@ function BoardGameMode({
               </div>
             ) : (
               <div className={`p-2.5 rounded-xl border text-center ${
-                isMyTurn ? 'bg-amber-950/70 border-amber-400 shadow-md' : 'bg-black/50 border-stone-700'
+                isMyTurn ? 'bg-amber-950/70 border-amber-400/80 shadow-md' : 'bg-black/50 border-stone-700'
               }`}>
-                <p className="text-xs font-black text-amber-200">
+                <p className="text-xs sm:text-sm font-black text-amber-200">
                   {isMyTurn ? "👉 ¡TU TURNO! Selecciona la respuesta correcta:" : `⏳ Responde: ${currentPlayer.name} (Observando partida)`}
                 </p>
               </div>
             )}
 
-            <h4 className="text-base sm:text-lg font-bold text-amber-200 leading-snug">{activeQuestion.question}</h4>
+            {/* CONTENEDOR DESTACADO DE PREGUNTA BÍBLICA (LETRAS GRANDES Y MÁXIMO CONTRASTE) */}
+            <div className="p-4 sm:p-5 bg-gradient-to-b from-[#181410] to-[#241D16] rounded-2xl border-2 border-amber-500/70 shadow-lg text-left space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 text-stone-950">
+                  📖 Pregunta Bíblica
+                </span>
+                {activeQuestion.difficulty && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase bg-stone-800 text-amber-200 border border-stone-700">
+                    Nivel: {activeQuestion.difficulty}
+                  </span>
+                )}
+              </div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-snug tracking-tight">
+                {activeQuestion.question}
+              </h3>
+            </div>
 
-            <div className="space-y-2 pt-1">
+            {/* OPCIONES DE RESPUESTA EN TAMAÑO DESTACADO */}
+            <div className="space-y-2.5 pt-1">
               {Array.isArray(activeQuestion.options) && activeQuestion.options.map((option, idx) => {
-                let btnColor = "bg-stone-800 text-amber-100 border-stone-700";
+                let btnColor = "bg-stone-800 text-stone-100 border-stone-700";
                 if (showAnswer) {
                   if (idx === activeQuestion.correctAnswer) {
-                    btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-lg font-bold";
+                    btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-xl font-bold ring-2 ring-emerald-300";
                   } else if (idx === selectedOption) {
-                    btnColor = "bg-red-800 text-white border-red-500";
+                    btnColor = "bg-red-800 text-white border-red-500 font-bold ring-2 ring-red-400";
                   } else {
-                    btnColor = "bg-stone-900 text-stone-500 border-stone-800 opacity-60";
+                    btnColor = "bg-stone-900/60 text-stone-500 border-stone-800 opacity-40";
                   }
                 } else if (isMyTurn) {
-                  btnColor = "bg-stone-800 hover:bg-amber-900/70 text-amber-100 border-stone-600 hover:border-amber-400 active:scale-[0.98] cursor-pointer";
+                  btnColor = "bg-stone-850 hover:bg-amber-950/80 text-stone-100 hover:text-amber-100 border-stone-600 hover:border-amber-400 active:scale-[0.98] cursor-pointer shadow-md";
                 } else {
                   btnColor = "bg-stone-900/90 text-stone-300 border-stone-800 cursor-default opacity-80";
                 }
@@ -3932,10 +4012,12 @@ function BoardGameMode({
                     key={idx}
                     disabled={showAnswer || !isMyTurn}
                     onClick={() => handleQuestionAnswer(idx)}
-                    className={`w-full text-left p-3 rounded-xl border text-sm font-medium transition ${btnColor}`}
+                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border-2 text-base sm:text-lg font-bold transition flex items-center gap-3 ${btnColor}`}
                   >
-                    <span className="font-bold mr-2 text-amber-400">{String.fromCharCode(65 + idx)}.</span>
-                    {option}
+                    <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-black text-sm sm:text-base shrink-0 bg-stone-900/90 border border-amber-500/40 text-amber-300 shadow">
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span className="flex-1 leading-snug">{option}</span>
                   </button>
                 );
               })}
@@ -7730,12 +7812,14 @@ const handleAnswerClick = (index: number) => {
                 </div>
               </div>
               
-              <div className="p-4 sm:p-5 md:p-6 space-y-3">
-                <h2 className="text-base sm:text-lg md:text-xl font-serif font-bold leading-snug text-slate-900 text-balance">
-                  {currentQuestion.question}
-                </h2>
+              <div className="p-4 sm:p-6 space-y-4">
+                <div className="bg-stone-900 text-white p-4 sm:p-5 rounded-2xl border-2 border-amber-500/50 shadow-md">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-black leading-snug text-balance">
+                    {currentQuestion.question}
+                  </h2>
+                </div>
 
-                <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:gap-2.5">
                   {currentQuestion.options.map((option, idx) => {
                     const isCorrect = idx === currentQuestion.correctAnswer;
                     return (
@@ -7744,29 +7828,29 @@ const handleAnswerClick = (index: number) => {
                         disabled={showAnswer}
                         onClick={() => handleAnswerClick(idx)}
                         className={`
-                          w-full py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer
+                          w-full py-3 px-3.5 sm:py-3.5 sm:px-4 rounded-xl border-2 text-left transition-all flex items-center justify-between group cursor-pointer
                           ${showAnswer 
                             ? isCorrect 
-                              ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold ring-1 ring-emerald-400' 
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-2 ring-emerald-400' 
                               : 'bg-stone-50 border-stone-200 text-stone-400 opacity-60'
-                            : 'bg-white border-stone-200 hover:border-bible-gold hover:bg-amber-50/40 active:scale-[0.99] text-stone-800'
+                            : 'bg-white border-stone-200 hover:border-amber-500 hover:bg-amber-50/50 active:scale-[0.99] text-stone-800'
                           }
                         `}
                       >
-                        <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div className="flex items-center gap-3">
                           <span className={`
-                            w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold border shrink-0
+                            w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm font-black border shrink-0
                             ${showAnswer 
                               ? isCorrect ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-stone-100 border-stone-200 text-stone-400'
-                              : 'bg-stone-100 border-stone-300 text-stone-600 group-hover:border-bible-gold group-hover:bg-amber-500 group-hover:text-black'
+                              : 'bg-stone-100 border-stone-300 text-stone-700 group-hover:border-amber-500 group-hover:bg-amber-500 group-hover:text-black'
                             }
                           `}>
                             {String.fromCharCode(65 + idx)}
                           </span>
-                          <span className="text-xs sm:text-sm font-medium leading-snug">{option}</span>
+                          <span className="text-sm sm:text-base font-bold leading-snug">{option}</span>
                         </div>
-                        {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-600 shrink-0" size={20} />}
-                        {showAnswer && !isCorrect && <XCircle className="text-stone-300 shrink-0" size={18} />}
+                        {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-600 shrink-0" size={22} />}
+                        {showAnswer && !isCorrect && <XCircle className="text-stone-300 shrink-0" size={20} />}
                       </button>
                     );
                   })}

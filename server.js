@@ -35,7 +35,7 @@ const httpServer = createServer((req, res) => {
       let pathname = decodeURIComponent(parsedUrl.pathname);
       if (pathname === '/api/version') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-        return res.end(JSON.stringify({ version: '1.0.1', deployedAt: new Date().toISOString(), status: 'OK' }));
+        return res.end(JSON.stringify({ version: '1.0.2', deployedAt: new Date().toISOString(), status: 'OK' }));
       }
       
       let filePath = path.join(DIST_PATH, pathname);
@@ -212,7 +212,10 @@ function startGroupMatch() {
     isPrivate: false,
     status: 'LOBBY',
     players: finalPlayers,
-    currentQuestionIndex: 0
+    currentQuestionIndex: 0,
+    seenQuestionIds: [],
+    difficulty: 'INTERMEDIO',
+    winningDifficulty: 'INTERMEDIO'
   };
 
   rooms.set(lobby.code, roomData);
@@ -297,12 +300,18 @@ io.on('connection', (socket) => {
         ready: true
       };
 
+      const avgRating = Math.round(((opponent.rating || 1000) + (player.rating || 1000)) / 2);
+      const sharedDiff = avgRating < 900 ? 'PRINCIPIANTE' : (avgRating > 1400 ? 'AVANZADO' : 'INTERMEDIO');
+
       const roomData = {
         code: roomCode,
         isPrivate: false,
         status: 'LOBBY',
         players: [player1, player2],
-        currentQuestionIndex: 0
+        currentQuestionIndex: 0,
+        seenQuestionIds: [],
+        difficulty: sharedDiff,
+        winningDifficulty: sharedDiff
       };
 
       rooms.set(roomCode, roomData);
@@ -578,7 +587,10 @@ io.on('connection', (socket) => {
       isPrivate: true,
       status: 'LOBBY',
       players: finalPlayers,
-      currentQuestionIndex: 0
+      currentQuestionIndex: 0,
+      seenQuestionIds: [],
+      difficulty: 'INTERMEDIO',
+      winningDifficulty: 'INTERMEDIO'
     };
 
     rooms.set(cleanCode, roomData);
@@ -627,7 +639,10 @@ io.on('connection', (socket) => {
       isPrivate,
       status: 'LOBBY',
       players: [hostPlayer],
-      currentQuestionIndex: 0
+      currentQuestionIndex: 0,
+      seenQuestionIds: [],
+      difficulty: 'INTERMEDIO',
+      winningDifficulty: 'INTERMEDIO'
     };
 
     rooms.set(code, roomData);
@@ -691,6 +706,28 @@ io.on('connection', (socket) => {
     const cleanCode = code ? code.trim().toUpperCase() : '';
     const roomData = rooms.get(cleanCode);
     if (roomData) {
+      if (!roomData.seenQuestionIds) roomData.seenQuestionIds = [];
+
+      // Registro estricto de preguntas vistas para que NUNCA se repitan entre competidores
+      if (payload?.question?.id && !roomData.seenQuestionIds.includes(payload.question.id)) {
+        roomData.seenQuestionIds.push(payload.question.id);
+      }
+      if (payload?.chainedQuestion?.id && !roomData.seenQuestionIds.includes(payload.chainedQuestion.id)) {
+        roomData.seenQuestionIds.push(payload.chainedQuestion.id);
+      }
+      if (Array.isArray(payload?.seenIds)) {
+        payload.seenIds.forEach(id => {
+          if (id && !roomData.seenQuestionIds.includes(id)) {
+            roomData.seenQuestionIds.push(id);
+          }
+        });
+      }
+
+      // Adjuntar siempre la lista maestra acumulada de preguntas vistas en la sala
+      if (payload) {
+        payload.roomSeenQuestionIds = [...roomData.seenQuestionIds];
+      }
+
       // Persistir las posiciones y sanciones de los jugadores en el servidor
       if (action === 'ROLL_DICE' && payload?.playerIndex !== undefined) {
         if (roomData.players[payload.playerIndex]) {
@@ -741,6 +778,7 @@ io.on('connection', (socket) => {
         }
       } else if (action === 'RESTART_GAME') {
         roomData.players.forEach(p => { p.position = 0; p.skipNextTurn = false; });
+        roomData.seenQuestionIds = [];
       }
 
       io.to(cleanCode).emit('GAME_ACTION_RECEIVED', { action, payload, senderId: socket.id });
