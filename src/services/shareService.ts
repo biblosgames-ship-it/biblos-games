@@ -2,7 +2,7 @@ import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { toPng } from 'html-to-image';
 import { UserProfile, getRankTier } from './userProfile';
-import { generateFriendInviteUrl } from './friendsService';
+import { generateFriendInviteUrl, getAppPublicUrl } from './friendsService';
 
 /**
  * Copia texto al portapapeles de manera infalible en navegadores web modernos y legacy.
@@ -48,7 +48,7 @@ export const shareOrCopy = async (options: {
   text: string;
   url?: string;
 }): Promise<{ shared: boolean; copied: boolean }> => {
-  const targetUrl = options.url || window.location.origin;
+  const targetUrl = options.url || getAppPublicUrl();
   const fullTextWithLink = options.text.includes(targetUrl)
     ? options.text
     : `${options.text}\n\n👉 Juega gratis y entra aquí:\n${targetUrl}`;
@@ -140,7 +140,7 @@ export const captureAndShareElement = async (
   fileName: string = 'biblos-resultado.png',
   shareUrl?: string
 ): Promise<{ shared: boolean; copied: boolean }> => {
-  const targetUrl = shareUrl || window.location.origin;
+  const targetUrl = shareUrl || getAppPublicUrl();
   return await shareOrCopy({ title, text, url: targetUrl });
 };
 
@@ -153,7 +153,7 @@ export const shareGameResults = async (
   correct: number, 
   total: number
 ): Promise<{ shared: boolean; copied: boolean }> => {
-  const targetUrl = window.location.origin;
+  const targetUrl = getAppPublicUrl();
   const text = `🎮 ¡Mira mis resultados en Biblos Games! 🎲🕊️\n` +
     `👤 Jugador: ${profile.name || 'Jugador Bíblico'}\n` +
     `🎯 Precisión: ${accuracy}%\n` +
@@ -227,3 +227,46 @@ export const shareFriendInviteCard = async (
 export const downloadFriendInviteCard = async (): Promise<boolean> => {
   return await downloadElementAsImage('biblos-friend-invite-card', 'invitacion-biblos-games.png');
 };
+
+/**
+ * Comparte texto y enlace a Instagram.
+ * Copia el contenido al portapapeles y abre el menú nativo o la app/web de Instagram.
+ */
+export const shareToInstagram = async (options: {
+  title: string;
+  text: string;
+  url?: string;
+}): Promise<{ shared: boolean; copied: boolean }> => {
+  const targetUrl = options.url || getAppPublicUrl();
+  const fullText = `${options.text}\n\n👉 Juega gratis aquí:\n${targetUrl}`;
+  
+  const copied = await copyTextToClipboard(fullText);
+
+  if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    try {
+      await navigator.share({
+        title: options.title,
+        text: fullText,
+        url: targetUrl,
+      });
+      return { shared: true, copied: true };
+    } catch (e: any) {
+      if (e?.name === 'AbortError') {
+        return { shared: false, copied: true };
+      }
+    }
+  }
+
+  const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = 'instagram://camera';
+    setTimeout(() => {
+      window.open('https://www.instagram.com/', '_blank');
+    }, 500);
+  } else {
+    window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener,noreferrer');
+  }
+
+  return { shared: false, copied: true };
+};
+

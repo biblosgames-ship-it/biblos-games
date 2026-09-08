@@ -182,7 +182,7 @@ export const GuidedSimulatorTutorial: React.FC<GuidedSimulatorTutorialProps> = (
                   </span>
                 </div>
 
-                <h4 className="text-xs sm:text-sm font-bold text-white leading-snug">
+                <h4 className="text-xs sm:text-sm font-normal text-white leading-snug">
                   ¿Quién construyó el arca por mandato divino para salvar a su familia?
                 </h4>
 
@@ -191,8 +191,8 @@ export const GuidedSimulatorTutorial: React.FC<GuidedSimulatorTutorialProps> = (
                     const isSelected = selectedOption === idx;
                     let style = "bg-stone-900 border-stone-700 text-stone-300 hover:border-amber-400";
                     if (isAnswering) {
-                      if (idx === 1) style = "bg-emerald-600 border-emerald-300 text-white font-black animate-pulse";
-                      else if (isSelected) style = "bg-rose-900 border-rose-500 text-rose-200";
+                      if (idx === 1) style = "bg-emerald-600 border-emerald-300 text-white font-normal animate-pulse";
+                      else if (isSelected) style = "bg-rose-900 border-rose-500 text-rose-200 font-normal";
                     }
 
                     return (
@@ -200,9 +200,9 @@ export const GuidedSimulatorTutorial: React.FC<GuidedSimulatorTutorialProps> = (
                         key={idx}
                         disabled={isAnswering}
                         onClick={() => handleAnswerQuestion(idx)}
-                        className={`p-2 rounded-xl border text-[11px] font-bold transition flex items-center justify-between cursor-pointer active:scale-95 ${style}`}
+                        className={`p-2 rounded-xl border text-[11px] font-normal transition flex items-center justify-between cursor-pointer active:scale-95 ${style}`}
                       >
-                        <span>{opt}</span>
+                        <span className="font-normal">{opt}</span>
                         {isAnswering && idx === 1 && <CheckCircle2 size={13} className="text-white" />}
                       </button>
                     );

@@ -35,7 +35,7 @@ const httpServer = createServer((req, res) => {
       let pathname = decodeURIComponent(parsedUrl.pathname);
       if (pathname === '/api/version') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-        return res.end(JSON.stringify({ version: '1.0.2', deployedAt: new Date().toISOString(), status: 'OK' }));
+        return res.end(JSON.stringify({ version: '1.0.3', deployedAt: new Date().toISOString(), status: 'OK' }));
       }
       
       let filePath = path.join(DIST_PATH, pathname);
@@ -210,7 +210,7 @@ function startGroupMatch() {
   const roomData = {
     code: lobby.code,
     isPrivate: false,
-    status: 'LOBBY',
+    status: 'PLAYING',
     players: finalPlayers,
     currentQuestionIndex: 0,
     seenQuestionIds: [],
@@ -306,7 +306,7 @@ io.on('connection', (socket) => {
       const roomData = {
         code: roomCode,
         isPrivate: false,
-        status: 'LOBBY',
+        status: 'PLAYING',
         players: [player1, player2],
         currentQuestionIndex: 0,
         seenQuestionIds: [],

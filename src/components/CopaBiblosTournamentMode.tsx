@@ -913,7 +913,12 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
       <div className="max-w-md sm:max-w-lg w-full h-full sm:h-[92vh] bg-[#1c1917] sm:rounded-3xl border border-amber-500/40 shadow-2xl flex flex-col overflow-hidden text-stone-200 relative">
         
         {/* CABECERA MÓVIL SUPERIOR (EL TROFEO CONTIENE EL GESTO SECRETO DE ADMINISTRADOR) */}
-        <header className="bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 px-4 py-3 border-b border-amber-500/30 flex items-center justify-between shrink-0 shadow-md">
+        <header 
+          className="bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 px-4 pb-3 border-b border-amber-500/30 flex items-center justify-between shrink-0 shadow-md"
+          style={{
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)'
+          }}
+        >
           <div className="flex items-center gap-2.5">
             <button
               type="button"
@@ -1354,106 +1359,112 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
 
         {/* MODAL PRINCIPAL DE PREGUNTA BÍBLICA */}
         {activeQuestion && (
-          <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
-            <div className="bg-[#2A2621] border-2 border-amber-500 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-amber-100 space-y-4 relative overflow-hidden">
+          <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center animate-fade-in">
+            <div className="bg-[#2A2621] border-2 border-amber-500 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 max-w-lg w-full shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-amber-100 relative max-h-[92dvh] flex flex-col my-auto overflow-hidden">
               
-              {/* BARRA DE CRONÓMETRO REGRESIVO */}
-              <div className="w-full bg-stone-800 h-3 rounded-full overflow-hidden mb-1 border border-stone-700">
-                <div
-                  className={`h-full transition-all duration-1000 ${
-                    questionTimeLeft > currentQuestionMaxTime * 0.5
-                      ? "bg-emerald-500"
-                      : questionTimeLeft > 5
-                      ? "bg-amber-500"
-                      : "bg-red-600"
-                  }`}
-                  style={{
-                    width: `${Math.max(0, Math.min(100, (questionTimeLeft / currentQuestionMaxTime) * 100))}%`
-                  }}
-                />
-              </div>
-
-              {/* ENCABEZADO DE LA TRIVIA */}
-              <div className="flex justify-between items-center border-b border-amber-900/50 pb-3">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                    📖 {activeQuestion.period || "Desafío Bíblico"}
-                  </span>
-                  <p className="text-[10px] text-stone-400 leading-none mt-0.5">
-                    Participante: <span className="text-white font-bold">{mePlayer.name}</span>
-                  </p>
+              {/* CABECERA FIJA */}
+              <div className="shrink-0 space-y-2 pb-1.5 border-b border-amber-900/50">
+                {/* BARRA DE CRONÓMETRO REGRESIVO */}
+                <div className="w-full bg-stone-800 h-2.5 rounded-full overflow-hidden border border-stone-700">
+                  <div
+                    className={`h-full transition-all duration-1000 ${
+                      questionTimeLeft > currentQuestionMaxTime * 0.5
+                        ? "bg-emerald-500"
+                        : questionTimeLeft > 5
+                        ? "bg-amber-500"
+                        : "bg-red-600"
+                    }`}
+                    style={{
+                      width: `${Math.max(0, Math.min(100, (questionTimeLeft / currentQuestionMaxTime) * 100))}%`
+                    }}
+                  />
                 </div>
 
-                <div
-                  className={`px-3.5 py-1.5 rounded-2xl font-mono font-black text-lg sm:text-xl shadow-xl flex items-center gap-1.5 ${
-                    questionTimeLeft <= 5
-                      ? "bg-red-600 text-white animate-bounce ring-4 ring-red-400/50"
-                      : "bg-gradient-to-r from-amber-500 to-amber-600 text-amber-950 ring-2 ring-amber-300"
-                  }`}
-                >
-                  <span>⏱️ 00:{questionTimeLeft < 10 ? `0${questionTimeLeft}` : questionTimeLeft}</span>
+                {/* ENCABEZADO DE LA TRIVIA */}
+                <div className="flex justify-between items-center gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-400 block truncate">
+                      📖 {activeQuestion.period || "Desafío Bíblico"}
+                    </span>
+                    <p className="text-[10px] sm:text-[11px] text-stone-400 leading-none mt-0.5 truncate">
+                      Participante: <span className="text-white font-bold">{mePlayer.name}</span>
+                    </p>
+                  </div>
+
+                  <div
+                    className={`px-2.5 sm:px-3 py-1 rounded-xl font-mono font-black text-sm sm:text-base shadow-md shrink-0 flex items-center gap-1 ${
+                      questionTimeLeft <= 5
+                        ? "bg-red-600 text-white animate-bounce ring-2 ring-red-400/50"
+                        : "bg-gradient-to-r from-amber-500 to-amber-600 text-amber-950 ring-1 ring-amber-300"
+                    }`}
+                  >
+                    <span>⏱️ 00:{questionTimeLeft < 10 ? `0${questionTimeLeft}` : questionTimeLeft}</span>
+                  </div>
+                </div>
+
+                {/* CONSECUENCIAS Y TURNO */}
+                <div className="flex items-center justify-between gap-1.5 p-1.5 sm:p-2 bg-stone-900/90 rounded-xl border border-stone-800 text-[11px] font-bold shadow">
+                  <div className="flex items-center gap-1 text-emerald-400">
+                    <span>🎯 Acierto:</span>
+                    <span className="bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/60 font-black text-[10px] sm:text-xs">
+                      +1 Casilla & Bono
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-rose-400">
+                    <span>⚠️ Fallo:</span>
+                    <span className="bg-rose-950/80 px-2 py-0.5 rounded-md border border-rose-700/60 font-black text-[10px] sm:text-xs">
+                      -1 Casilla
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* CONSECUENCIAS Y TURNO */}
-              <div className="flex items-center justify-between gap-2 p-2.5 bg-stone-900/90 rounded-xl border border-stone-800 text-[11px] font-bold shadow">
-                <div className="flex items-center gap-1 text-emerald-400">
-                  <span>🎯 Acierto:</span>
-                  <span className="bg-emerald-950/80 px-2 py-0.5 rounded-lg border border-emerald-700/60 font-black text-xs">
-                    +1 Casilla & Bono de Velocidad
-                  </span>
+              {/* CONTENIDO DESPLAZABLE */}
+              <div className="overflow-y-auto custom-scrollbar space-y-2.5 pt-2 pr-0.5 flex-1 min-h-0">
+                {/* TEXTO DE LA PREGUNTA */}
+                <div className="bg-stone-950/90 border-2 border-amber-500/60 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-md">
+                  <h4 className="text-sm sm:text-base md:text-lg font-normal text-amber-100 leading-snug">
+                    {activeQuestion.question}
+                  </h4>
                 </div>
-                <div className="flex items-center gap-1 text-rose-400">
-                  <span>⚠️ Fallo:</span>
-                  <span className="bg-rose-950/80 px-2 py-0.5 rounded-lg border border-rose-700/60 font-black text-xs">
-                    -1 Casilla
-                  </span>
-                </div>
-              </div>
 
-              {/* TEXTO DE LA PREGUNTA */}
-              <div className="bg-stone-950/90 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 shadow-lg">
-                <h4 className="text-lg sm:text-xl md:text-2xl font-black text-amber-100 leading-snug">
-                  {activeQuestion.question}
-                </h4>
-              </div>
-
-              {/* OPCIONES DE RESPUESTA */}
-              <div className="space-y-2.5 pt-1">
-                {activeQuestion.options.map((option, idx) => {
-                  let btnColor = "bg-stone-800 text-amber-100 border-stone-700 font-bold hover:border-amber-400 hover:bg-amber-900/70 cursor-pointer";
-                  if (isAnswerSubmitted) {
-                    if (idx === activeQuestion.correctAnswer) {
-                      btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-lg font-bold";
-                    } else if (idx === selectedOption) {
-                      btnColor = "bg-red-800 text-white border-red-500";
-                    } else {
-                      btnColor = "bg-stone-900 text-stone-500 border-stone-800 opacity-60";
+                {/* OPCIONES DE RESPUESTA */}
+                <div className="space-y-2">
+                  {activeQuestion.options.map((option, idx) => {
+                    let btnColor = "bg-stone-800 text-amber-100 border-stone-700 font-normal hover:border-amber-400 hover:bg-amber-900/70 cursor-pointer";
+                    if (isAnswerSubmitted) {
+                      if (idx === activeQuestion.correctAnswer) {
+                        btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-lg font-normal";
+                      } else if (idx === selectedOption) {
+                        btnColor = "bg-red-800 text-white border-red-500 font-normal";
+                      } else {
+                        btnColor = "bg-stone-900 text-stone-500 border-stone-800 opacity-60 font-normal";
+                      }
                     }
-                  }
 
-                  return (
-                    <button
-                      key={idx}
-                      disabled={isAnswerSubmitted}
-                      onClick={() => handleSelectOption(idx)}
-                      className={`w-full p-3.5 sm:p-4 rounded-2xl border text-left text-sm sm:text-base font-bold transition flex items-center justify-between ${btnColor}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-900/80 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-black text-amber-300 shrink-0">
-                          {String.fromCharCode(65 + idx)}
-                        </span>
-                        <span className="pr-2">{option}</span>
-                      </div>
-                      {isAnswerSubmitted && idx === activeQuestion.correctAnswer && (
-                        <CheckCircle2 size={20} className="text-emerald-300 shrink-0" />
-                      )}
-                      {isAnswerSubmitted && idx === selectedOption && idx !== activeQuestion.correctAnswer && (
-                        <XCircle size={20} className="text-rose-300 shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={idx}
+                        disabled={isAnswerSubmitted}
+                        onClick={() => handleSelectOption(idx)}
+                        className={`w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-left text-xs sm:text-sm md:text-base font-normal transition flex items-center justify-between gap-2 ${btnColor}`}
+                      >
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-900/80 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-bold text-amber-300 shrink-0">
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="leading-snug font-normal">{option}</span>
+                        </div>
+                        {isAnswerSubmitted && idx === activeQuestion.correctAnswer && (
+                          <CheckCircle2 size={18} className="text-emerald-300 shrink-0" />
+                        )}
+                        {isAnswerSubmitted && idx === selectedOption && idx !== activeQuestion.correctAnswer && (
+                          <XCircle size={18} className="text-rose-300 shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

@@ -52,7 +52,7 @@ export interface DailyChallengeStreakState {
 export interface DailyChallengeState {
   date: string; // YYYY-MM-DD
   title: string;
-  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC";
+  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC" | "GEOGRAFIA" | "DIOS" | "HISTORIA" | "MANDAMIENTOS" | "SALVACION";
   themeName: string;
   description: string;
   icon: string;
@@ -72,7 +72,7 @@ export interface DailyChallengeState {
   }[];
 }
 
-const DAILY_CHALLENGE_STORAGE_KEY = "biblos_daily_challenge_v2";
+const DAILY_CHALLENGE_STORAGE_KEY = "biblos_daily_challenge_v3";
 const DAILY_STREAK_STORAGE_KEY = "biblos_daily_streak_v1";
 
 function matchesKeyword(text: string | undefined, keywords: string[]): boolean {
@@ -81,12 +81,31 @@ function matchesKeyword(text: string | undefined, keywords: string[]): boolean {
   return keywords.some(k => lower.includes(k.toLowerCase()));
 }
 
+function isMode(q: Question, targetMode: string): boolean {
+  return Array.isArray(q.mode) ? (q.mode as string[]).includes(targetMode) : q.mode === targetMode;
+}
+
+const GEO_KEYWORDS = [
+  "monte", "río", "rio ", "rio,", "ciudad", "lugar", "tierra prometida", "desierto", 
+  "egipto", "jerusalén", "jerusalen", "belén", "belen", "nazaret", "samaria", "galilea", 
+  "jericó", "jerico", "jordán", "jordan", "babilonia", "nínive", "ninive", "antioquía", "antioquia",
+  "damasco", "roma", "corinto", "éfeso", "efeso", "filipos", "colosas", "sodoma", "gomorra",
+  "ararat", "sinaí", "sinai", "horeb", "carmelo", "olivos", "hebrón", "hebron", "betel",
+  "patmos", "ur de los", "caná", "cana de", "canaán", "canaan", "nilo", "mar rojo", "mar de galilea",
+  "estanque", "getsemaní", "getsemani", "gólgota", "golgota", "calvario"
+];
+
+const DIOS_KEYWORDS = [
+  "trinidad", "espíritu santo", "espiritu santo", "omnipotente", "omnisciente", "omnipresente", 
+  "jehová", "jehova", "yahvé", "yahve", "creador", "elohim", "el shaddai", "soberanía", "soberania", 
+  "nombre de dios", "voluntad de dios", "trono de dios", "gloria de dios", "atributos de dios", "santidad de dios"
+];
+
 const HEROES_KEYWORDS = [
   "abraham", "moisés", "moises", "david", "daniel", "josué", "josue", "elías", "elias", "eliseo", "noé", "noe", 
   "josé", "jose", "pedro", "pablo", "juan", "ester", "rut", "ruth", "samuel", "salomón", "salomon", 
   "gedeón", "gedeon", "sansón", "sanson", "enoc", "isaac", "jacob", "esteban", "bernabé", "bernabe",
-  "timoteo", "nehemías", "nehemias", "esdras", "jonás", "jonas", "maría", "maria", "débora", "debora",
-  "fe", "héroe", "siervo", "profeta", "apóstol", "patriarca"
+  "timoteo", "nehemías", "nehemias", "esdras", "jonás", "jonas", "maría", "maria", "débora", "debora"
 ];
 
 const VILLAINS_EXCLUSIONS = [
@@ -94,10 +113,22 @@ const VILLAINS_EXCLUSIONS = [
   "apolion", "jezabel", "faraón", "faraon", "judas iscariote", "herodes", "goliat", "abismo"
 ];
 
+const MILAGROS_KEYWORDS = [
+  "mar rojo", "maná", "mana", "agua de la peña", "plagas", "jericó", "jerico", "fuego del cielo", 
+  "horno de fuego", "foso de los leones", "resurrección", "resurreccion", "resucitó", "resucito", 
+  "sanó", "sano", "ciego", "leproso", "caminar sobre el agua", "tempestad", "multiplicación", "multiplicacion",
+  "peces", "panes", "lázaro", "lazaro", "vino de caná", "milagro", "maravilla", "sol se detuvo", "lepra"
+];
+
+const MUJERES_KEYWORDS = [
+  "ester", "rut", "ruth", "maría", "maria", "débora", "debora", "sara", "sarai", "rebeca", "raquel", "lea", 
+  "ana", "rahab", "marta", "elisabet", "elizabeth", "priscila", "dorcas", "lidia", "mujer", "reina de sabá", "madre", "viuda"
+];
+
 export interface DailyThemeConfig {
   id: string;
   title: string;
-  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC";
+  themeType: "PERIOD" | "VERSICULOS" | "PERSONAJES" | "BOOK" | "THEMATIC" | "GEOGRAFIA" | "DIOS" | "HISTORIA" | "MANDAMIENTOS" | "SALVACION";
   themeName: string;
   description: string;
   icon: string;
@@ -107,8 +138,8 @@ export interface DailyThemeConfig {
 
 export const DAILY_THEMES_ROTATION: DailyThemeConfig[] = [
   {
-    id: "GENESIS",
-    title: "Génesis y Los Orígenes",
+    id: "PERIODOS_PRINCIPIO",
+    title: "Períodos Bíblicos: El Principio",
     themeType: "PERIOD",
     themeName: "El Principio",
     description: "10 preguntas sobre la Creación, Adán y Eva, el Arca de Noé y los patriarcas en Génesis.",
@@ -117,8 +148,45 @@ export const DAILY_THEMES_ROTATION: DailyThemeConfig[] = [
     filter: (q: Question) => q.period === Period.PRINCIPIO,
   },
   {
-    id: "EXODO_LEY",
-    title: "El Éxodo y la Ley Divina",
+    id: "MODO_DIOS",
+    title: "La Grandeza y Atributos de Dios",
+    themeType: "DIOS",
+    themeName: "Modo Dios",
+    description: "10 preguntas sobre los atributos, la soberanía, la Trinidad y los nombres sagrados de Dios.",
+    icon: "👑",
+    filter: (q: Question) => {
+      const txt = (q.question + " " + q.options.join(" ")).toLowerCase();
+      return (isMode(q, "DIOS") || matchesKeyword(txt, DIOS_KEYWORDS)) && q.period !== Period.TIEMPOS_FINALES;
+    },
+  },
+  {
+    id: "GEOGRAFIA_BIBLICA",
+    title: "Geografía y Lugares Sagrados",
+    themeType: "GEOGRAFIA",
+    themeName: "Geografía Bíblica",
+    description: "10 preguntas sobre montes, ríos, ciudades, mares y regiones históricas de la Biblia.",
+    icon: "🗺️",
+    filter: (q: Question) => {
+      const txt = (q.question + " " + q.options.join(" ") + " " + (q.reference || "")).toLowerCase();
+      return (isMode(q, "GEOGRAFIA") || matchesKeyword(txt, GEO_KEYWORDS)) && q.period !== Period.TIEMPOS_FINALES;
+    },
+  },
+  {
+    id: "PERSONAJES_FE",
+    title: "Héroes y Siervos de la Fe",
+    themeType: "PERSONAJES",
+    themeName: "Personajes Bíblicos",
+    description: "10 preguntas sobre las vidas, hazañas de fe y testimonios de los siervos de Dios.",
+    icon: "🛡️",
+    filter: (q: Question) => {
+      const hasHero = matchesKeyword(q.question, HEROES_KEYWORDS) || matchesKeyword(q.options.join(" "), HEROES_KEYWORDS);
+      const isVillain = matchesKeyword(q.question, VILLAINS_EXCLUSIONS);
+      return (isMode(q, "PERSONAJES") || hasHero) && !isVillain && q.period !== Period.TIEMPOS_FINALES;
+    },
+  },
+  {
+    id: "PERIODOS_LEY",
+    title: "Períodos Bíblicos: La Ley y el Éxodo",
     themeType: "PERIOD",
     themeName: "El Pueblo de Dios y la Ley",
     description: "10 preguntas sobre Moisés, la liberación de Egipto, el desierto y los mandamientos.",
@@ -127,69 +195,55 @@ export const DAILY_THEMES_ROTATION: DailyThemeConfig[] = [
     filter: (q: Question) => q.period === Period.LEY,
   },
   {
-    id: "REYES_PROFETAS",
-    title: "Reyes, Salmos y Profetas",
-    themeType: "PERIOD",
-    themeName: "Reyes, Profetas y Poetas",
-    description: "10 preguntas sobre David, Salomón, los profetas del Antiguo Testamento y las alabanzas.",
-    icon: "👑",
-    period: Period.REYES_PROFETAS,
-    filter: (q: Question) => q.period === Period.REYES_PROFETAS,
+    id: "MANDAMIENTOS_SABIDURIA",
+    title: "Mandamientos y Sabiduría Divina",
+    themeType: "MANDAMIENTOS",
+    themeName: "Mandamientos y Sabiduría",
+    description: "10 preguntas sobre los mandamientos de Dios, Proverbios y consejos de sabiduría.",
+    icon: "🧭",
+    filter: (q: Question) => {
+      const isWisdom = !!(q.reference && (q.reference.startsWith("Proverbios") || q.reference.startsWith("Eclesiastés") || q.reference.startsWith("Santiago")));
+      return (isMode(q, "MANDAMIENTOS") || isWisdom) && q.period !== Period.TIEMPOS_FINALES;
+    },
   },
   {
-    id: "JESUCRISTO",
-    title: "Jesucristo: Vida y Evangelios",
+    id: "JESUCRISTO_EVANGELIOS",
+    title: "Jesucristo: Vida y Enseñanzas",
     themeType: "PERIOD",
     themeName: "Jesús y la Redención",
-    description: "10 preguntas sobre las enseñanzas, milagros, ministerio, muerte y resurrección de Jesús.",
+    description: "10 preguntas sobre el ministerio, parábolas, milagros y enseñanzas de Jesús.",
     icon: "✝️",
     period: Period.REDENCION,
     filter: (q: Question) => q.period === Period.REDENCION,
   },
   {
-    id: "HECHOS_CARTAS",
-    title: "Hechos y la Iglesia Apostólica",
+    id: "HISTORIA_BIBLICA",
+    title: "Historia y Acontecimientos Bíblicos",
+    themeType: "HISTORIA",
+    themeName: "Historia Bíblica",
+    description: "10 desafíos sobre los eventos históricos más impactantes del pueblo de Dios.",
+    icon: "🏛️",
+    filter: (q: Question) => isMode(q, "HISTORIA") && q.period !== Period.TIEMPOS_FINALES,
+  },
+  {
+    id: "PERIODOS_REYES_PROFETAS",
+    title: "Períodos Bíblicos: Reyes, Salmos y Profetas",
     themeType: "PERIOD",
-    themeName: "La Iglesia Cristiana",
-    description: "10 desafíos sobre Pentecostés, los viajes misioneros de Pablo y las cartas de la iglesia.",
-    icon: "🕊️",
-    period: Period.IGLESIA,
-    filter: (q: Question) => q.period === Period.IGLESIA,
+    themeName: "Reyes, Profetas y Poetas",
+    description: "10 preguntas sobre David, Salomón, los profetas y la alabanza en Israel.",
+    icon: "⚔️",
+    period: Period.REYES_PROFETAS,
+    filter: (q: Question) => q.period === Period.REYES_PROFETAS,
   },
   {
-    id: "PROFECIAS_FINALES",
-    title: "Profecías y Tiempos Finales",
-    themeType: "PERIOD",
-    themeName: "Tiempos Finales",
-    description: "10 revelaciones proféticas sobre el regreso del Señor, las promesas y la gloria venidera.",
-    icon: "🌟",
-    period: Period.TIEMPOS_FINALES,
-    filter: (q: Question) => q.period === Period.TIEMPOS_FINALES,
-  },
-  {
-    id: "HEROES_FE",
-    title: "Grandes Héroes y Siervos de la Fe",
-    themeType: "PERSONAJES",
-    themeName: "Hombres y Mujeres de Dios",
-    description: "10 preguntas sobre las vidas, hazañas de fe y testimonios de los siervos de Dios.",
-    icon: "🛡️",
-    filter: (q: Question) => {
-      const isModePersonaje = Array.isArray(q.mode) ? q.mode.includes("PERSONAJES") : q.mode === "PERSONAJES";
-      const hasHero = matchesKeyword(q.question, HEROES_KEYWORDS) || matchesKeyword(q.options.join(" "), HEROES_KEYWORDS);
-      const isVillain = matchesKeyword(q.question, VILLAINS_EXCLUSIONS);
-      return (isModePersonaje || hasHero) && !isVillain && q.period !== Period.TIEMPOS_FINALES;
-    },
-  },
-  {
-    id: "VERSICULOS_CITAS",
-    title: "Especial de Versículos y Citas Clave",
+    id: "VERSICULOS_MEMORIZACION",
+    title: "Versículos y Citas Clave",
     themeType: "VERSICULOS",
-    themeName: "Memorización y Citas Bíblicas",
+    themeName: "Memorización y Citas",
     description: "10 preguntas para completar versículos memorables y reconocer citas de la Escritura.",
     icon: "📖",
     filter: (q: Question) => {
-      const isModeVersiculo = Array.isArray(q.mode) ? q.mode.includes("VERSICULOS") : q.mode === "VERSICULOS";
-      const txt = (q.question + " " + q.reference).toLowerCase();
+      const txt = (q.question + " " + (q.reference || "")).toLowerCase();
       const hasVersePattern = 
         txt.includes("completa el versículo") || 
         txt.includes("completa el versiculo") || 
@@ -206,76 +260,98 @@ export const DAILY_THEMES_ROTATION: DailyThemeConfig[] = [
         txt.includes("¿que libro dice") ||
         txt.includes("está escrito") ||
         txt.includes("cita bíblica");
-      return isModeVersiculo || hasVersePattern;
+      return (isMode(q, "VERSICULOS") || hasVersePattern) && q.period !== Period.TIEMPOS_FINALES;
     },
   },
   {
-    id: "MILAGROS_SENALES",
+    id: "MILAGROS_PRODIGIOS",
     title: "Milagros y Grandes Prodigios",
     themeType: "THEMATIC",
-    themeName: "El Poder de Dios en Acción",
+    themeName: "Poder y Maravillas",
     description: "10 preguntas sobre las intervenciones sobrenaturales y milagros de Dios en la Biblia.",
     icon: "⚡",
     filter: (q: Question) => {
-      const keywords = [
-        "mar rojo", "maná", "mana", "agua de la peña", "plagas", "jericó", "jerico", "fuego del cielo", 
-        "horno de fuego", "foso de los leones", "resurrección", "resurreccion", "resucitó", "resucito", 
-        "sanó", "sano", "ciego", "leproso", "caminar sobre el agua", "tempestad", "multiplicación", "multiplicacion",
-        "peces", "panes", "lázaro", "lazaro", "vino de caná", "milagro", "maravilla", "sol se detuvo", "lepra"
-      ];
-      return matchesKeyword(q.question, keywords) || matchesKeyword(q.options.join(" "), keywords);
-    },
-  },
-  {
-    id: "MANDAMIENTOS_SABIDURIA",
-    title: "Mandamientos y Sabiduría Bíblica",
-    themeType: "THEMATIC",
-    themeName: "Enseñanzas Morales y Espirituales",
-    description: "10 preguntas sobre los mandamientos de Dios, Proverbios y consejos de sabiduría.",
-    icon: "🧭",
-    filter: (q: Question) => {
-      const isModeMandamientos = Array.isArray(q.mode) ? q.mode.includes("MANDAMIENTOS") : q.mode === "MANDAMIENTOS";
-      const isWisdom = q.reference && (q.reference.startsWith("Proverbios") || q.reference.startsWith("Eclesiastés") || q.reference.startsWith("Santiago"));
-      return isModeMandamientos || isWisdom;
+      const txt = q.question + " " + q.options.join(" ");
+      return matchesKeyword(txt, MILAGROS_KEYWORDS) && q.period !== Period.TIEMPOS_FINALES;
     },
   },
   {
     id: "MUJERES_VALIENTES",
-    title: "Mujeres Ejemplares de la Biblia",
-    themeType: "THEMATIC",
-    themeName: "Mujeres de Fe y Valentía",
+    title: "Mujeres Ejemplares de la Fe",
+    themeType: "PERSONAJES",
+    themeName: "Mujeres de la Biblia",
     description: "10 preguntas dedicadas a las mujeres de fe, reinas, profetisas y madres en la Biblia.",
-    icon: "👑",
+    icon: "🌸",
     filter: (q: Question) => {
-      const mujeresKeywords = [
-        "ester", "rut", "ruth", "maría", "maria", "débora", "debora", "sara", "sarai", "rebeca", "raquel", "lea", 
-        "ana", "rahab", "marta", "elisabet", "elizabeth", "priscila", "dorcas", "lidia", "mujer", "reina de sabá", "madre", "viuda"
-      ];
       const isNotVillain = !matchesKeyword(q.question, ["jezabel", "herodías", "atalía"]);
-      return matchesKeyword(q.question, mujeresKeywords) && isNotVillain;
+      return matchesKeyword(q.question, MUJERES_KEYWORDS) && isNotVillain && q.period !== Period.TIEMPOS_FINALES;
     },
+  },
+  {
+    id: "PERIODOS_IGLESIA",
+    title: "Períodos Bíblicos: La Iglesia Apostólica",
+    themeType: "PERIOD",
+    themeName: "La Iglesia Cristiana",
+    description: "10 desafíos sobre Pentecostés, los viajes de Pablo y las cartas a las iglesias.",
+    icon: "🕊️",
+    period: Period.IGLESIA,
+    filter: (q: Question) => q.period === Period.IGLESIA,
   },
   {
     id: "SALVACION_GRACIA",
     title: "El Plan de Salvación y la Gracia",
-    themeType: "THEMATIC",
-    themeName: "Amor, Redención y Perdón",
+    themeType: "SALVACION",
+    themeName: "Salvación y Redención",
     description: "10 preguntas sobre el perdón de pecados, el sacrificio en la cruz y la vida eterna.",
     icon: "💖",
-    filter: (q: Question) => {
-      return Array.isArray(q.mode) ? q.mode.includes("SALVACION") : q.mode === "SALVACION";
-    },
+    filter: (q: Question) => isMode(q, "SALVACION") && q.period !== Period.TIEMPOS_FINALES,
+  },
+  {
+    id: "PROFECIAS_PROMESAS",
+    title: "Profecías Bíblicas y Promesas Eternas",
+    themeType: "PERIOD",
+    themeName: "Tiempos Finales y Promesas",
+    description: "10 revelaciones proféticas sobre las promesas del Señor y la gloria venidera.",
+    icon: "🌟",
+    period: Period.TIEMPOS_FINALES,
+    filter: (q: Question) => q.period === Period.TIEMPOS_FINALES,
   },
 ];
 
-function getDaySeed(dateStr: string): number {
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    const char = dateStr.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
+export function getDayNumber(dateStr: string): number {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const epoch = new Date(Date.UTC(2025, 0, 1));
+  const diffTime = date.getTime() - epoch.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function mulberry32(a: number): () => number {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function getSeedFromString(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  return Math.abs(hash);
+  return h >>> 0;
+}
+
+function shuffleWithSeed<T>(array: T[], seedStr: string): T[] {
+  const rng = mulberry32(getSeedFromString(seedStr));
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 export function getTodayDateString(): string {
@@ -320,6 +396,11 @@ export function getDailyChallenge(): DailyChallengeState {
   const todayStr = getTodayDateString();
   const rawStored = localStorage.getItem(DAILY_CHALLENGE_STORAGE_KEY);
 
+  // Limpiar almacenamiento legado de versión anterior si existe
+  try {
+    localStorage.removeItem("biblos_daily_challenge_v2");
+  } catch {}
+
   if (rawStored) {
     try {
       const parsed: DailyChallengeState = JSON.parse(rawStored);
@@ -339,23 +420,21 @@ export function getDailyChallenge(): DailyChallengeState {
     }
   }
 
-  const seed = getDaySeed(todayStr);
-  const themeIndex = seed % DAILY_THEMES_ROTATION.length;
+  const dayNum = getDayNumber(todayStr);
+  // Rotación consecutiva de temas día a día (offset +1 para sincronización armónica de temas principales)
+  const themeIndex = ((dayNum + 1) % DAILY_THEMES_ROTATION.length + DAILY_THEMES_ROTATION.length) % DAILY_THEMES_ROTATION.length;
   const themeConfig = DAILY_THEMES_ROTATION[themeIndex];
 
   const allQuestions = getAllGameQuestions();
   let pool = allQuestions.filter(themeConfig.filter);
 
+  // Si la temática tuviese menos de 10 preguntas por catálogo custom, usar preguntas sin Tiempos Finales como respaldo
   if (pool.length < 10) {
-    pool = allQuestions;
+    pool = allQuestions.filter(q => q.period !== Period.TIEMPOS_FINALES);
   }
 
-  const shuffled = [...pool].sort((a, b) => {
-    const seedA = getDaySeed(todayStr + a.id);
-    const seedB = getDaySeed(todayStr + b.id);
-    return seedA - seedB;
-  });
-
+  // Barajado pseudo-aleatorio completamente uniforme y determinista (Fisher-Yates con Mulberry32)
+  const shuffled = shuffleWithSeed(pool, todayStr);
   const selected10Questions = shuffled.slice(0, 10);
 
   const newChallenge: DailyChallengeState = {

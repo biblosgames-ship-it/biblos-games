@@ -19,16 +19,25 @@
   --color-period-finales: #6A0DAD;
 }
 
+/* Soporte integral de Safe Area para iPhone (Dynamic Island, Notch y Barra de Estado) */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+.safe-header {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 0.625rem);
+  padding-left: max(env(safe-area-inset-left, 0px), 0.75rem);
+  padding-right: max(env(safe-area-inset-right, 0px), 0.75rem);
+}
+
 @layer base {
   body {
     @apply text-stone-900 font-sans antialiased select-none;
     background-color: #fdfaf3;
-    background-image: 
-      linear-gradient(to bottom, rgba(253, 250, 243, 0.8), rgba(253, 250, 243, 0.8)),
-      url('https://images.unsplash.com/photo-1586075010633-24441bd95634?auto=format&fit=crop&q=80&w=1920');
-    background-size: cover;
-    background-attachment: fixed;
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 50%, rgba(253, 250, 243, 0.6) 0%, rgba(245, 242, 233, 0.95) 100%);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
@@ -36,6 +45,17 @@
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      background-image: 
+        linear-gradient(to bottom, rgba(253, 250, 243, 0.85), rgba(253, 250, 243, 0.85)),
+        url('https://images.unsplash.com/photo-1586075010633-24441bd95634?auto=format&fit=crop&q=80&w=1920');
+      background-size: cover;
+      background-attachment: fixed;
+      background-blend-mode: overlay;
+    }
   }
 
   button, a {
@@ -59,32 +79,26 @@
 @layer utilities {
   .bg-period-principio {
     background-color: #556B2F;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
   .bg-period-ley {
     background-color: #8B5A2B;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
   .bg-period-reyes {
     background-color: #26619C;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
   .bg-period-redencion {
     background-color: #A52A2A;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
   .bg-period-iglesia {
     background-color: #C2B280;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
   .bg-period-finales {
     background-color: #6A0DAD;
-    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 70%), linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%);
   }
 }

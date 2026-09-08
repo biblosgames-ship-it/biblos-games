@@ -14,7 +14,7 @@ export interface Friend {
   isOnline?: boolean;
   lastPlayed?: string;
   status: FriendStatus;
-  socialPlatform?: "whatsapp" | "facebook" | "telegram" | "twitter" | "link" | "code";
+  socialPlatform?: "whatsapp" | "facebook" | "instagram" | "telegram" | "twitter" | "link" | "code";
   isReported?: boolean;
   reportReason?: string;
 }
@@ -79,7 +79,7 @@ export function addFriend(
   avatar: string = "/avatars/david.jpg",
   country: string = "DO",
   countryFlag: string = "🇩🇴",
-  socialPlatform: "whatsapp" | "facebook" | "telegram" | "twitter" | "link" | "code" = "code",
+  socialPlatform: "whatsapp" | "facebook" | "instagram" | "telegram" | "twitter" | "link" | "code" = "code",
   status: FriendStatus = "ACCEPTED"
 ): Friend {
   const current = getSavedFriends();
@@ -199,6 +199,22 @@ export function reportUser(
 }
 
 
+export const PRODUCTION_APP_URL = "https://biblos-games-production.up.railway.app";
+
+/**
+ * Retorna la URL pública de producción para compartir enlaces a amigos y redes.
+ * Si se ejecuta en localhost o red local, usa la URL pública de Railway para que
+ * los enlaces siempre funcionen en los dispositivos de los amigos.
+ */
+export function getAppPublicUrl(): string {
+  if (typeof window === 'undefined') return PRODUCTION_APP_URL;
+  const { hostname, origin } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
+    return PRODUCTION_APP_URL;
+  }
+  return origin;
+}
+
 export function generateFriendInviteUrl(player: {
   name: string;
   code: string;
@@ -206,7 +222,7 @@ export function generateFriendInviteUrl(player: {
   country?: string;
   countryFlag?: string;
 }): string {
-  const baseUrl = window.location.origin + window.location.pathname;
+  const baseUrl = getAppPublicUrl();
   const params = new URLSearchParams();
   params.set("inviteFriendCode", player.code || "BIBLOS-FRIEND");
   params.set("friendName", player.name || "Un Amigo");
@@ -214,20 +230,51 @@ export function generateFriendInviteUrl(player: {
   if (player.country) params.set("friendCountry", player.country);
   if (player.countryFlag) params.set("friendFlag", player.countryFlag);
 
-  return `${baseUrl}?${params.toString()}`;
+  return `${baseUrl}/?${params.toString()}`;
+}
+
+export function getChallengeShareText(inviterName: string, inviteUrl: string): string {
+  return `⚔️ ¡Hola! Te reto a una partida bíblica en Biblos Games 🎲🕊️\n\n👤 Desafiante: ${inviterName}\n📖 Demuestra tu conocimiento de las Escrituras.\n\n👉 Entra a jugar aquí:\n${inviteUrl}`;
 }
 
 export function shareInviteToSocial(
-  platform: "whatsapp" | "facebook" | "telegram" | "twitter" | "native",
+  platform: "whatsapp" | "facebook" | "instagram" | "telegram" | "twitter" | "native",
   player: { name: string; code: string; avatar?: string; country?: string; countryFlag?: string }
 ): { opened: boolean; url: string; text: string } {
   const inviteUrl = generateFriendInviteUrl(player);
-  const shareText = `🎲🕊️ ¡Hola! Juguemos una partida bíblica en Biblos Games. 📖✨ Agrégame como amigo y compitamos en vivo. Entra aquí:`;
+  const shareText = `🎲🕊️ ¡Hola! Juguemos una partida bíblica en Biblos Games. 📖✨\n` +
+    `👤 Jugador: ${player.name || 'Hermano en la Fe'}\n` +
+    `Agrégame como amigo y compitamos en vivo.\n\n` +
+    `👉 Entra a jugar gratis aquí:\n${inviteUrl}`;
 
   switch (platform) {
     case "whatsapp": {
-      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + inviteUrl)}`;
+      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
+      return { opened: true, url: inviteUrl, text: shareText };
+    }
+    case "instagram": {
+      try {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareText);
+        }
+      } catch (e) {}
+
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        navigator.share({
+          title: "Biblos Games - ¡Juguemos una partida bíblica!",
+          text: shareText,
+          url: inviteUrl,
+        }).catch(() => {});
+      } else {
+        const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = 'instagram://camera';
+          setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 500);
+        } else {
+          window.open("https://www.instagram.com/direct/inbox/", "_blank", "noopener,noreferrer");
+        }
+      }
       return { opened: true, url: inviteUrl, text: shareText };
     }
     case "facebook": {
@@ -247,7 +294,7 @@ export function shareInviteToSocial(
       return { opened: true, url: inviteUrl, text: shareText };
     }
     case "native": {
-      if (navigator.share) {
+      if (typeof navigator !== 'undefined' && navigator.share) {
         navigator.share({
           title: "Biblos Games - ¡Juguemos una partida bíblica!",
           text: shareText,

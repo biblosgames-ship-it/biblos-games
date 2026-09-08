@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Trophy, BookOpen, XCircle, CheckCircle, ArrowRight, RotateCcw, Award, Share2, Flame } from "lucide-react";
+import { Sparkles, Trophy, BookOpen, XCircle, CheckCircle, ArrowRight, RotateCcw, Award, Share2, Flame, Instagram, MessageCircle, Facebook } from "lucide-react";
 import { Question } from "../types";
 import {
   DailyChallengeState,
@@ -103,7 +103,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
     }, 1600);
   };
 
-  const handleShare = (platform: "WHATSAPP" | "FACEBOOK") => {
+  const handleShare = (platform: "WHATSAPP" | "FACEBOOK" | "INSTAGRAM") => {
     playSound("select");
     if (triggerHaptic) triggerHaptic("medium");
 
@@ -113,9 +113,32 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
     if (platform === "WHATSAPP") {
       const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
       window.open(waUrl, "_blank");
-    } else {
+    } else if (platform === "FACEBOOK") {
       const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
       window.open(fbUrl, "_blank");
+    } else if (platform === "INSTAGRAM") {
+      try {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(`${shareText}\n\n👉 Juega gratis aquí:\n${shareUrl}`);
+        }
+      } catch (e) {}
+      setShareFeedback("📋 ¡Texto y enlace copiados! Pégalo en tu Historia o Chat de Instagram.");
+
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        navigator.share({
+          title: "Desafío Bíblico - Biblos Games",
+          text: shareText,
+          url: shareUrl,
+        }).catch(() => {});
+      } else {
+        const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = 'instagram://camera';
+          setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 500);
+        } else {
+          window.open("https://www.instagram.com/direct/inbox/", "_blank", "noopener,noreferrer");
+        }
+      }
     }
 
     if (!challenge.shareBonusClaimed) {
@@ -138,24 +161,32 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto"
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.5rem)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)'
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className="bg-[#24201A] border-2 border-amber-500/80 rounded-3xl max-w-lg w-full p-4 sm:p-5 text-center space-y-3 shadow-2xl relative overflow-hidden text-stone-200"
+        className="bg-[#24201A] border-2 border-amber-500/80 rounded-3xl max-w-lg w-full shadow-2xl relative overflow-hidden text-stone-200 my-auto flex flex-col max-h-[92dvh]"
       >
-        {/* Botón Cerrar */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-stone-400 hover:text-white rounded-full bg-stone-800/80 cursor-pointer transition z-10"
-        >
-          <XCircle size={22} />
-        </button>
+        {/* Encabezado Fijo del Desafío Bíblico */}
+        <div className="p-3.5 sm:p-4 border-b border-amber-900/40 bg-[#1E1B15] relative shrink-0 text-center">
+          {/* Botón Cerrar */}
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 text-stone-400 hover:text-white rounded-full bg-stone-800/90 hover:bg-stone-700 cursor-pointer transition z-10"
+            title="Cerrar"
+          >
+            <XCircle size={22} />
+          </button>
 
-        {/* Encabezado del Desafío Bíblico de Hoy con Medidor de Racha */}
-        <div className="space-y-1 text-center">
-          <div className="flex items-center justify-center gap-1.5 flex-wrap">
+          {/* Badges de Racha y Tema */}
+          <div className="flex items-center justify-center gap-1.5 flex-wrap pr-8 sm:pr-0">
             <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-full text-[10px] font-black uppercase tracking-wider shadow animate-pulse">
               <Flame size={12} className="text-orange-400" />
               <span>Racha: {streakState.currentStreak} {streakState.currentStreak === 1 ? "Día" : "Días"}</span>
@@ -170,15 +201,14 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
             </div>
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-serif font-black text-amber-100 leading-tight">
+          <h2 className="text-lg sm:text-xl font-black text-amber-100 leading-tight mt-1.5">
             {challenge.title}
           </h2>
-          <p className="text-xs text-stone-400 max-w-md mx-auto leading-relaxed">
-            {challenge.description}
-          </p>
         </div>
 
-        {/* Barra de Progreso de 10 Hitos / Casillas */}
+        {/* Contenido con scroll interno */}
+        <div className="p-3.5 sm:p-4 overflow-y-auto custom-scrollbar flex-1 space-y-3 text-center">
+          {/* Barra de Progreso de 10 Hitos / Casillas */}
         <div className="bg-stone-900/90 p-2.5 rounded-2xl border border-amber-900/40 space-y-2">
           <div className="flex items-center justify-between text-[11px] font-bold">
             <span className="text-amber-300 flex items-center gap-1">
@@ -243,7 +273,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
               </div>
 
               <div className="bg-stone-900/90 border-2 border-amber-500/50 rounded-2xl p-4 sm:p-5 shadow-inner">
-                <h3 className="text-base sm:text-lg md:text-xl font-black text-amber-100 leading-snug">
+                <h3 className="text-base sm:text-lg md:text-xl font-normal text-amber-100 leading-snug">
                   {currentQ.question}
                 </h3>
               </div>
@@ -255,11 +285,11 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                 let btnStyle = "bg-stone-900 hover:bg-stone-800 border-stone-700 text-stone-100";
                 if (showAnswerFeedback) {
                   if (oIdx === currentQ.correctAnswer) {
-                    btnStyle = "bg-emerald-700 border-emerald-400 text-white font-bold animate-pulse ring-2 ring-emerald-400";
+                    btnStyle = "bg-emerald-700 border-emerald-400 text-white font-normal animate-pulse ring-2 ring-emerald-400";
                   } else if (oIdx === selectedOption) {
-                    btnStyle = "bg-rose-900 border-rose-500 text-rose-200";
+                    btnStyle = "bg-rose-900 border-rose-500 text-rose-200 font-normal";
                   } else {
-                    btnStyle = "bg-stone-900/40 border-stone-800 text-stone-600 opacity-50";
+                    btnStyle = "bg-stone-900/40 border-stone-800 text-stone-600 opacity-50 font-normal";
                   }
                 }
 
@@ -268,13 +298,13 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                     key={oIdx}
                     disabled={showAnswerFeedback}
                     onClick={() => handleSelectOption(oIdx)}
-                    className={`p-3.5 sm:p-4 rounded-xl border text-sm sm:text-base font-bold transition-all flex items-center justify-between cursor-pointer active:scale-98 shadow ${btnStyle}`}
+                    className={`p-3.5 sm:p-4 rounded-xl border text-sm sm:text-base font-normal transition-all flex items-center justify-between cursor-pointer active:scale-98 shadow ${btnStyle}`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-black text-amber-300 shrink-0">
+                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 border border-stone-600 flex items-center justify-center text-xs sm:text-sm font-bold text-amber-300 shrink-0">
                         {String.fromCharCode(65 + oIdx)}
                       </span>
-                      <span className="leading-snug">{opt}</span>
+                      <span className="leading-snug font-normal">{opt}</span>
                     </div>
 
                     {showAnswerFeedback && oIdx === currentQ.correctAnswer && (
@@ -378,20 +408,31 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                 </p>
               )}
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <button
                   onClick={() => handleShare("WHATSAPP")}
-                  className="py-2 px-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
+                  className="py-2 px-1.5 sm:px-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                  title="Compartir en WhatsApp"
                 >
-                  <span>💬</span>
+                  <MessageCircle size={14} className="shrink-0" />
                   <span>WhatsApp</span>
                 </button>
 
                 <button
-                  onClick={() => handleShare("FACEBOOK")}
-                  className="py-2 px-3 bg-blue-700 hover:bg-blue-600 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
+                  onClick={() => handleShare("INSTAGRAM")}
+                  className="py-2 px-1.5 sm:px-2 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white rounded-xl text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer border border-pink-400/40"
+                  title="Compartir en Instagram"
                 >
-                  <span>📘</span>
+                  <Instagram size={14} className="shrink-0" />
+                  <span>Instagram</span>
+                </button>
+
+                <button
+                  onClick={() => handleShare("FACEBOOK")}
+                  className="py-2 px-1.5 sm:px-2 bg-blue-700 hover:bg-blue-600 text-white rounded-xl text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                  title="Compartir en Facebook"
+                >
+                  <Facebook size={14} className="shrink-0" />
                   <span>Facebook</span>
                 </button>
               </div>
@@ -427,6 +468,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
             </button>
           </div>
         )}
+        </div>
       </motion.div>
 
       {/* 🧭 TUTORIAL INTERACTIVO DEL DESAFÍO DIARIO */}

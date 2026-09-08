@@ -121,7 +121,7 @@ class OnlineMultiplayerService {
 
   // 0. Matchmaking 1 vs 1 (Cola en tiempo real)
   startMatchmaking(
-    player: { name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
+    player: { userId?: string; name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
     onMatchFound: (data: { room: OnlineRoom; opponent: { name: string; avatar: string; country?: string; countryFlag?: string; rating: number } }) => void
   ) {
     this.socket.emit('START_MATCHMAKING', player);
@@ -147,7 +147,7 @@ class OnlineMultiplayerService {
 
   // 0.1 Matchmaking Grupal: "Todos Vs Todos" (3 a 8 Jugadores con 30 segundos)
   startGroupMatchmaking(
-    player: { name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
+    player: { userId?: string; name: string; avatar: string; country?: string; countryFlag?: string; rating?: number },
     onLobbyUpdate: (data: { code: string; timeRemaining: number; players: OnlinePlayer[] }) => void,
     onMatchStart: (data: { room: OnlineRoom }) => void
   ) {

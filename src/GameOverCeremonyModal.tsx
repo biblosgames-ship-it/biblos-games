@@ -17,6 +17,7 @@ import {
   Flame,
   Share2,
   MessageCircle,
+  Instagram,
   Facebook,
   Copy,
   Check
@@ -31,6 +32,9 @@ interface PlayerInfo {
   country?: string;
   countryFlag?: string;
   position?: number;
+  score?: number;
+  finishRank?: number;
+  hasFinished?: boolean;
 }
 
 interface GameOverCeremonyModalProps {
@@ -88,6 +92,13 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
     avatar: '/avatars/david.jpg',
     position: 0,
   };
+
+  const sortedPodium = [...players].sort((a, b) => {
+    if (a.finishRank && b.finishRank) return a.finishRank - b.finishRank;
+    if (a.finishRank) return -1;
+    if (b.finishRank) return 1;
+    return (b.position || 0) - (a.position || 0);
+  });
 
   const currentPos = typeof winner.position === 'number' ? winner.position : 0;
   const completedMeta = currentPos >= 75;
@@ -166,6 +177,39 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
+  const handleShareInstagram = async () => {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+      }
+    } catch (e) {}
+    setIsCopiedResult(true);
+    setTimeout(() => setIsCopiedResult(false), 2500);
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Resultados de Biblos Games',
+          text: shareText,
+          url: window.location.origin,
+        });
+        return;
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'instagram://camera';
+      setTimeout(() => {
+        window.open('https://www.instagram.com/', '_blank');
+      }, 500);
+    } else {
+      window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const handleShareFacebook = () => {
     const url = encodeURIComponent(window.location.origin);
     const quote = encodeURIComponent(shareText);
@@ -204,11 +248,17 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
   }
 
   return (
-    <div className={`fixed inset-0 z-[10000] w-full h-full flex flex-col justify-between items-center p-3 sm:p-6 overflow-y-auto ${
-      isMeWinner 
-        ? 'bg-gradient-to-b from-[#0b241b] via-[#05130e] to-[#020806] text-emerald-100' 
-        : 'bg-gradient-to-b from-[#240b0e] via-[#130507] to-[#080203] text-rose-100'
-    }`}>
+    <div 
+      className={`fixed inset-0 z-[10000] w-full h-full flex flex-col justify-between items-center px-3 sm:px-6 overflow-y-auto ${
+        isMeWinner 
+          ? 'bg-gradient-to-b from-[#0b241b] via-[#05130e] to-[#020806] text-emerald-100' 
+          : 'bg-gradient-to-b from-[#240b0e] via-[#130507] to-[#080203] text-rose-100'
+      }`}
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)'
+      }}
+    >
       {/* RESPLANDOR Y HALO DE FONDO */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className={`absolute -top-24 left-1/2 -translate-x-1/2 w-[650px] h-[650px] rounded-full blur-[120px] opacity-35 animate-pulse ${
@@ -310,6 +360,81 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
             )}
           </p>
         </div>
+
+        {/* 🏆 PODIO DE LA PARTIDA GRUPAL (1º, 2º y 3º Lugar) */}
+        {players.length >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3.5 bg-gradient-to-b from-stone-900/95 to-black/90 rounded-2xl border-2 border-amber-500/60 shadow-2xl space-y-2.5 text-center"
+          >
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-1.5">
+              <span className="text-[11px] font-black uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
+                <Crown size={14} className="text-yellow-400" />
+                Podio de la Partida
+              </span>
+              <span className="text-[10px] text-stone-400 font-bold">
+                {players.length} Competidores
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-2 items-end">
+              {/* 2º LUGAR */}
+              {sortedPodium[1] ? (
+                <div className="flex flex-col items-center p-2 rounded-xl bg-stone-850/80 border border-slate-400/40 shadow">
+                  <span className="text-xl">🥈</span>
+                  <img
+                    src={sortedPodium[1].avatar || '/avatars/david.jpg'}
+                    alt={sortedPodium[1].name}
+                    className="w-10 h-10 rounded-full border-2 border-slate-300 object-cover my-1 shadow"
+                  />
+                  <span className="text-xs font-black text-slate-200 truncate w-full text-center">
+                    {sortedPodium[1].name}
+                  </span>
+                  <span className="text-[9px] font-bold text-slate-400">
+                    {sortedPodium[1].hasFinished ? 'Meta 75' : `Casilla ${sortedPodium[1].position || 0}`}
+                  </span>
+                </div>
+              ) : <div />}
+
+              {/* 1º LUGAR (CENTRO MÁS ALTO) */}
+              {sortedPodium[0] ? (
+                <div className="flex flex-col items-center p-2.5 rounded-xl bg-amber-950/80 border-2 border-amber-400 shadow-lg -translate-y-1.5 ring-2 ring-amber-400/30">
+                  <span className="text-2xl animate-bounce">🥇</span>
+                  <img
+                    src={sortedPodium[0].avatar || '/avatars/david.jpg'}
+                    alt={sortedPodium[0].name}
+                    className="w-12 h-12 rounded-full border-2 border-amber-300 object-cover my-1 shadow-md ring-2 ring-amber-400/40"
+                  />
+                  <span className="text-xs font-black text-amber-300 truncate w-full text-center">
+                    {sortedPodium[0].name}
+                  </span>
+                  <span className="text-[10px] font-black text-emerald-400">
+                    ¡1º Lugar!
+                  </span>
+                </div>
+              ) : <div />}
+
+              {/* 3º LUGAR */}
+              {sortedPodium[2] ? (
+                <div className="flex flex-col items-center p-2 rounded-xl bg-stone-850/80 border border-amber-700/40 shadow">
+                  <span className="text-xl">🥉</span>
+                  <img
+                    src={sortedPodium[2].avatar || '/avatars/david.jpg'}
+                    alt={sortedPodium[2].name}
+                    className="w-10 h-10 rounded-full border-2 border-amber-600/60 object-cover my-1 shadow"
+                  />
+                  <span className="text-xs font-black text-amber-200/90 truncate w-full text-center">
+                    {sortedPodium[2].name}
+                  </span>
+                  <span className="text-[9px] font-bold text-amber-500/80">
+                    {sortedPodium[2].hasFinished ? 'Meta 75' : `Casilla ${sortedPodium[2].position || 0}`}
+                  </span>
+                </div>
+              ) : <div />}
+            </div>
+          </motion.div>
+        )}
 
         {/* 🥇 1. POSICIONAMIENTO EN EL SALÓN DE LA FAMA */}
         <motion.div
@@ -524,24 +649,37 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 pt-1">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 pt-1">
             {/* WhatsApp */}
             <button
               type="button"
               onClick={handleShareWhatsApp}
-              className="py-2.5 px-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer border border-emerald-400/40"
+              className="py-2.5 px-1 sm:px-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black text-[11px] sm:text-xs rounded-xl shadow-md flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer border border-emerald-400/40"
+              title="Compartir por WhatsApp"
             >
-              <MessageCircle size={15} />
+              <MessageCircle size={15} className="shrink-0" />
               <span>WhatsApp</span>
+            </button>
+
+            {/* Instagram */}
+            <button
+              type="button"
+              onClick={handleShareInstagram}
+              className="py-2.5 px-1 sm:px-2 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-black text-[11px] sm:text-xs rounded-xl shadow-md flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer border border-pink-400/40"
+              title="Compartir por Instagram"
+            >
+              <Instagram size={15} className="shrink-0" />
+              <span>Instagram</span>
             </button>
 
             {/* Facebook */}
             <button
               type="button"
               onClick={handleShareFacebook}
-              className="py-2.5 px-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer border border-blue-400/40"
+              className="py-2.5 px-1 sm:px-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-[11px] sm:text-xs rounded-xl shadow-md flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer border border-blue-400/40"
+              title="Compartir por Facebook"
             >
-              <Facebook size={15} />
+              <Facebook size={15} className="shrink-0" />
               <span>Facebook</span>
             </button>
 
@@ -549,9 +687,10 @@ export const GameOverCeremonyModal: React.FC<GameOverCeremonyModalProps> = ({
             <button
               type="button"
               onClick={handleShareNative}
-              className="py-2.5 px-2 bg-stone-800 hover:bg-stone-700 text-amber-300 hover:text-white font-black text-xs rounded-xl border border-amber-500/40 shadow-md flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer"
+              className="py-2.5 px-1 sm:px-2 bg-stone-800 hover:bg-stone-700 text-amber-300 hover:text-white font-black text-[11px] sm:text-xs rounded-xl border border-amber-500/40 shadow-md flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer"
+              title="Copiar texto o más opciones"
             >
-              {isCopiedResult ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+              {isCopiedResult ? <Check size={15} className="text-emerald-400 shrink-0" /> : <Copy size={15} className="shrink-0" />}
               <span>{isCopiedResult ? '¡Copiado!' : 'Copiar'}</span>
             </button>
           </div>

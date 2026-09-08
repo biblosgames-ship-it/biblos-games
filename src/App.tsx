@@ -10,6 +10,7 @@ import {
   BookOpen,
   RotateCcw,
   ChevronLeft,
+  ChevronRight,
   Eye,
   EyeOff,
   Sparkles,
@@ -29,6 +30,7 @@ import {
   MapPin,
   Landmark,
   MessageCircle,
+  Instagram,
   Facebook,
   Share2,
   Copy,
@@ -61,9 +63,26 @@ import {
   FileText,
   UploadCloud,
   Menu,
-  AlertTriangle
+  AlertTriangle,
+  Search
 } from "lucide-react";
-import confetti from 'canvas-confetti';
+import rawConfetti from 'canvas-confetti';
+
+// Safe confetti wrapper: limits particles on mobile devices to prevent high-DPI canvas out-of-memory crashes
+const confetti = (options?: Parameters<typeof rawConfetti>[0]) => {
+  try {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const requested = options?.particleCount ?? 50;
+    const safeCount = isMobile ? Math.min(requested, 35) : Math.min(requested, 85);
+    rawConfetti({
+      ...options,
+      particleCount: safeCount,
+      disableForReducedMotion: true,
+    });
+  } catch (e) {
+    console.warn('[Confetti] Skipped to prevent memory pressure:', e);
+  }
+};
 import { Period, Question, PERIOD_COLORS, PERIOD_ICONS, Difficulty } from './types';
 import questionsData from './data/questions.json';
 import { 
@@ -94,6 +113,8 @@ import {
   isUserBlocked,
   generateFriendInviteUrl,
   shareInviteToSocial,
+  getAppPublicUrl,
+  getChallengeShareText,
   Friend
 } from './services/friendsService';
 import { getWeeklyEventConfig, saveWeeklyEventConfig, loadRemoteEventQuestions, WeeklyEvent, getCopaBiblosChampions, CopaBiblosChampion } from './services/eventsService';
@@ -303,7 +324,7 @@ function getQuestionsForPeriod(periodName: string, theme?: string, difficulty?: 
   return periodQuestions;
 }
 
-const BOARD_SEEN_QUESTIONS_KEY = 'biblos_persistent_seen_questions_v3';
+const BOARD_SEEN_QUESTIONS_KEY = 'biblos_persistent_seen_questions_v4';
 
 function getBoardSeenQuestionIds(): Set<string> {
   try {
@@ -319,7 +340,7 @@ function getBoardSeenQuestionIds(): Set<string> {
 function recordBoardSeenQuestion(id: string): void {
   try {
     const seen = getBoardSeenQuestionIds();
-    seen.add(id);
+    seen.add(String(id));
     localStorage.setItem(BOARD_SEEN_QUESTIONS_KEY, JSON.stringify(Array.from(seen)));
   } catch (err) {
     console.error('Error guardando pregunta vista:', err);
@@ -333,7 +354,7 @@ function recordBoardSeenQuestion(id: string): void {
 function resetSeenQuestionsForPool(poolIds: string[]): void {
   try {
     const seen = getBoardSeenQuestionIds();
-    poolIds.forEach(id => seen.delete(id));
+    poolIds.forEach(id => seen.delete(String(id)));
     localStorage.setItem(BOARD_SEEN_QUESTIONS_KEY, JSON.stringify(Array.from(seen)));
   } catch (err) {
     console.error('Error reseteando preguntas agotadas:', err);
@@ -343,8 +364,8 @@ function resetSeenQuestionsForPool(poolIds: string[]): void {
 /**
  * Algoritmo de Mazo Inteligente: Selecciona preguntas no vistas para el periodo y nivel
  * garantizando que NUNCA se repitan preguntas dentro de la misma partida (1v1, grupal o individual)
- * ya que todos los jugadores en la sala ven la pregunta, y que el usuario explore el 100% REAL 
- * de la base de preguntas antes de repetir alguna.
+ * y que el usuario agote el 100% REAL de las preguntas existentes en la categoría/período
+ * antes de repetir alguna.
  */
 function pickSmartQuestionForPeriod(
   periodName: string, 
@@ -353,61 +374,95 @@ function pickSmartQuestionForPeriod(
   customStudyFilter?: CustomStudyFilter | null,
   matchSeenIds?: Set<string>
 ): Question | null {
-  const allMatching = getQuestionsForPeriod(periodName, theme, difficulty, customStudyFilter);
-  if (!allMatching || allMatching.length === 0) {
-    const fallbackPool = getActiveQuestionsPool();
-    if (!fallbackPool || fallbackPool.length === 0) return null;
-  }
+  const allPool = getActiveQuestionsPool();
+  if (!allPool || allPool.length === 0) return null;
 
+  const targetPeriod = (!periodName || periodName === 'Inicio') ? 'El Principio' : periodName;
   const persistentSeenIds = getBoardSeenQuestionIds();
-  
-  // 1. Filtrar preguntas que NO se hayan visto en la partida actual (GARANTÍA ESTRICTA ANTI-REPETICIÓN)
-  let matchAvailable = allMatching ? allMatching.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id))) : [];
-  
-  // Si en la partida actual se agotaron las preguntas con este filtro específico,
-  // relajamos filtros progresivamente buscando SIEMPRE preguntas que NO se hayan visto en esta partida:
-  if (matchAvailable.length === 0) {
-    // Intento 1: Misma casilla/período y temática, pero cualquier dificultad disponible no vista en la partida
-    const relaxedDiff = getQuestionsForPeriod(periodName, theme, 'MIXTO', customStudyFilter);
-    matchAvailable = relaxedDiff.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
-  }
-  
-  if (matchAvailable.length === 0) {
-    // Intento 2: Misma casilla/período, cualquier temática y dificultad no vista en la partida
-    const relaxedTheme = getQuestionsForPeriod(periodName, undefined, undefined, customStudyFilter);
-    matchAvailable = relaxedTheme.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
-  }
 
-  if (matchAvailable.length === 0) {
-    // Intento 3: Buscar en todo el catálogo completo activo (660+ preguntas) cualquier pregunta no vista en la partida
-    const allPool = getActiveQuestionsPool();
-    matchAvailable = allPool.filter(q => !matchSeenIds || !matchSeenIds.has(String(q.id)));
-  }
+  // Helper para verificar si una pregunta ya fue vista en la partida actual
+  const notSeenInMatch = (q: Question) => !matchSeenIds || !matchSeenIds.has(String(q.id));
+  // Helper para verificar si una pregunta nunca ha sido vista históricamente
+  const notSeenHistorically = (q: Question) => !persistentSeenIds.has(String(q.id));
 
-  // En el caso súper extremo de que se hayan visto todas las 660+ preguntas en una sola partida:
-  if (matchAvailable.length === 0) {
-    matchAvailable = (allMatching && allMatching.length > 0) ? allMatching : getActiveQuestionsPool();
-  }
-
-  // 2. Filtrar preguntas que NO se hayan visto históricamente en este dispositivo
-  const unseenGlobally = matchAvailable.filter(q => !persistentSeenIds.has(String(q.id)));
-
-  let chosen: Question;
-  if (unseenGlobally.length > 0) {
-    // Prioridad máxima: Tomar aleatoriamente entre las preguntas que NUNCA ha visto históricamente
-    chosen = unseenGlobally[Math.floor(Math.random() * unseenGlobally.length)];
-  } else {
-    // Ha completado el ciclo histórico de este grupo: reiniciar ciclo histórico para este grupo de preguntas
-    if (allMatching && allMatching.length > 0) {
-      resetSeenQuestionsForPool(allMatching.map(q => String(q.id)));
+  // CASO ESPECIAL: ESTUDIO BÍBLICO PERSONALIZADO (Filtrado por libro/testamento/tema)
+  if (customStudyFilter) {
+    const studyPool = filterQuestionsForCustomStudy(allPool, customStudyFilter);
+    if (studyPool.length > 0) {
+      // 1. No vistas en partida ni históricamente
+      const fresh = studyPool.filter(q => notSeenInMatch(q) && notSeenHistorically(q));
+      if (fresh.length > 0) {
+        const chosen = fresh[Math.floor(Math.random() * fresh.length)];
+        recordBoardSeenQuestion(String(chosen.id));
+        if (matchSeenIds) matchSeenIds.add(String(chosen.id));
+        return shuffleQuestionOptions(chosen);
+      }
+      // 2. Si ya vio todas históricamente en este filtro, liberar y reiniciar ciclo
+      resetSeenQuestionsForPool(studyPool.map(q => String(q.id)));
+      const poolInMatch = studyPool.filter(notSeenInMatch);
+      const chosen = (poolInMatch.length > 0 ? poolInMatch : studyPool)[Math.floor(Math.random() * (poolInMatch.length > 0 ? poolInMatch.length : studyPool.length))];
+      recordBoardSeenQuestion(String(chosen.id));
+      if (matchSeenIds) matchSeenIds.add(String(chosen.id));
+      return shuffleQuestionOptions(chosen);
     }
-    chosen = matchAvailable[Math.floor(Math.random() * matchAvailable.length)];
   }
 
-  // Registrar en el histórico global persistente
+  // 1. Obtener todas las preguntas correspondientes al Periodo Bíblico de la casilla (100+ preguntas)
+  const periodAll = allPool.filter(q => matchPeriodName(q.period, targetPeriod));
+  const basePeriodPool = periodAll.length > 0 ? periodAll : allPool;
+
+  // 2. Si hay temática activa (ej: MODO DIOS, GEOGRAFIA, PERSONAJES, HISTORIA, MANDAMIENTOS, SALVACION)
+  let themedPeriodPool = basePeriodPool;
+  if (theme && theme !== 'PERIODOS' && theme !== 'MIXTO') {
+    const tPool = basePeriodPool.filter(q => Array.isArray(q.mode) ? (q.mode as string[]).includes(theme) : q.mode === theme);
+    if (tPool.length >= 2) {
+      themedPeriodPool = tPool;
+    }
+  }
+
+  // 3. Helper de dificultad
+  const dUpper = difficulty ? difficulty.toUpperCase() : 'MIXTO';
+  const matchExactDiff = (q: Question) => {
+    if (dUpper === 'MIXTO') return true;
+    const qd = String(q.difficulty || '').toUpperCase();
+    if (dUpper === 'PRINCIPIANTE' || dUpper === 'BASIC') return qd === 'BASIC' || qd === 'PRINCIPIANTE';
+    if (dUpper === 'INTERMEDIO' || dUpper === 'INTERMEDIATE') return qd === 'INTERMEDIATE' || qd === 'INTERMEDIO';
+    if (dUpper === 'AVANZADO' || dUpper === 'ADVANCED') return qd === 'ADVANCED' || qd === 'AVANZADO';
+    return true;
+  };
+
+  // --- JERARQUÍA ESTRICTA: AGOTAR EL 100% ANTES DE REPETIR ---
+
+  // Nivel 1: Preguntas no vistas históricamente con dificultad exacta en este período/temática
+  let candidates = themedPeriodPool.filter(q => notSeenInMatch(q) && notSeenHistorically(q) && matchExactDiff(q));
+
+  // Nivel 2: Si ya vio todas de esa dificultad exacta, buscar preguntas NO VISTAS en el mismo período/temática (dificultades adyacentes)
+  // (Evita repetir prematuramente y abre el resto del banco de más de 100 preguntas del período)
+  if (candidates.length === 0) {
+    candidates = themedPeriodPool.filter(q => notSeenInMatch(q) && notSeenHistorically(q));
+  }
+
+  // Nivel 3: Si se agotó la temática en este período, buscar CUALQUIER pregunta NO VISTA en este período bíblico
+  if (candidates.length === 0) {
+    candidates = basePeriodPool.filter(q => notSeenInMatch(q) && notSeenHistorically(q));
+  }
+
+  // Nivel 4: Si se agotaron TODAS las preguntas de este período bíblico (¡las 100+ preguntas ya fueron vistas por el usuario!):
+  // Solo en ese momento se reinicia el historial de este período para comenzar un nuevo ciclo completo
+  if (candidates.length === 0) {
+    resetSeenQuestionsForPool(basePeriodPool.map(q => String(q.id)));
+    // Evitar al menos repetir las preguntas que ya salieron en la partida actual
+    const poolInMatch = basePeriodPool.filter(notSeenInMatch);
+    candidates = poolInMatch.length > 0 ? poolInMatch : basePeriodPool;
+  }
+
+  // Selección aleatoria uniforme entre los candidatos
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // Registrar en histórico persistente
   recordBoardSeenQuestion(String(chosen.id));
 
-  // Registrar en el set de la partida actual para que NINGÚN jugador (ni quien responde ni los demás en la sala) vuelva a verla
+  // Registrar en el set de la partida actual
   if (matchSeenIds) {
     matchSeenIds.add(String(chosen.id));
   }
@@ -615,6 +670,8 @@ interface Player {
   isBot?: boolean;
   consecutiveSixes?: number;
   tile9Count?: number;
+  finishRank?: number;
+  hasFinished?: boolean;
 }
 
 interface SavedBoardSession {
@@ -682,6 +739,7 @@ function BoardGameMode({
   onToggleSound,
   onInsufficientTalents,
 }: {
+  key?: React.Key;
   onExit: () => void;
   isOnline?: boolean;
   onlineRoom?: OnlineRoom | null;
@@ -766,6 +824,7 @@ function BoardGameMode({
   const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
   const [localInsufficientTalentsModal, setLocalInsufficientTalentsModal] = useState<{ show: boolean; required: number; modeName: string } | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [podiumCelebration, setPodiumCelebration] = useState<{ show: boolean; rank: number; player: Player; remainingCount: number } | null>(null);
   const [matchSeenQuestionIds, setMatchSeenQuestionIds] = useState<Set<string>>(() => new Set(savedSession?.matchSeenQuestionIds || []));
   const matchSeenIdsRef = useRef<Set<string>>(new Set(savedSession?.matchSeenQuestionIds || []));
 
@@ -924,8 +983,8 @@ function BoardGameMode({
     playGameSound('wrong');
     triggerHaptic('error');
 
-    const me = currentPlayer || players[0];
-    const opponent = players.find(p => p.id !== me.id) || players[1] || players[0];
+    const me = myPlayer;
+    const opponent = players.find(p => p.id !== me.id) || players.find(p => !isThisPlayerMe(p)) || players[1] || players[0];
 
     setSurrenderInfo({
       surrenderedName: me.name,
@@ -946,15 +1005,17 @@ function BoardGameMode({
   };
 
   // Función robusta para finalizar partida y registrar puntuación
-  const handleGameVictory = (winner?: Player, completedGoal = true) => {
+  const handleGameVictory = (winner?: Player, completedGoal = true, finalPlayersList?: Player[]) => {
     setActiveQuestion(null);
     setShowAnswer(false);
     setSelectedOption(null);
     setIsBoardTimerRunning(false);
     setIsTurnProcessing(false);
     setIsRolling(false);
+    setPodiumCelebration(null);
 
-    const actualWinner: Player = winner || players[activePlayerIndex] || players[0] || currentPlayer || {
+    const playersToUse = finalPlayersList || players;
+    const actualWinner: Player = winner || playersToUse.find(p => p.finishRank === 1) || playersToUse[activePlayerIndex] || playersToUse[0] || currentPlayer || {
       id: 1,
       name: userProfile?.name || 'Jugador Bíblico',
       avatar: userProfile?.avatar || '/avatars/david.jpg',
@@ -1040,15 +1101,20 @@ function BoardGameMode({
 
     // CALCULAR Y APLICAR RECOMPENSA DE TALENTOS BÍBLICOS
     let earnedTalents = 0;
-    const isPlayerWinner = actualWinner.id === currentPlayer?.id || actualWinner.name === (userProfile?.name || 'Jugador Bíblico');
+    const isPlayerWinner = isThisPlayerMe(actualWinner);
 
     if (isOnline) {
       const isFriendRoom = onlineRoom?.code?.startsWith('AMIGOS-') || onlineRoom?.isPrivate;
 
       if (isFriendRoom) {
         // Partidas con Amigos: No cuesta nada entrar y siempre premia a los 3 primeros con talentos del sistema
-        const sorted = [...players].sort((a, b) => (b.position || 0) - (a.position || 0));
-        const myRank = sorted.findIndex(p => p.id === currentPlayer?.id || p.name === (userProfile?.name || 'Jugador Bíblico')) + 1;
+        const sorted = [...playersToUse].sort((a, b) => {
+          if (a.finishRank && b.finishRank) return a.finishRank - b.finishRank;
+          if (a.finishRank) return -1;
+          if (b.finishRank) return 1;
+          return (b.position || 0) - (a.position || 0);
+        });
+        const myRank = sorted.findIndex(p => isThisPlayerMe(p)) + 1;
         
         if (myRank === 1) {
           earnedTalents = 3;
@@ -1078,8 +1144,13 @@ function BoardGameMode({
         }
       } else if (players.length >= 3) {
         // Todos Vs Todos (3 a 8 jugadores):
-        const sorted = [...players].sort((a, b) => (b.position || 0) - (a.position || 0));
-        const myRank = sorted.findIndex(p => p.id === currentPlayer?.id || p.name === (userProfile?.name || 'Jugador Bíblico')) + 1;
+        const sorted = [...playersToUse].sort((a, b) => {
+          if (a.finishRank && b.finishRank) return a.finishRank - b.finishRank;
+          if (a.finishRank) return -1;
+          if (b.finishRank) return 1;
+          return (b.position || 0) - (a.position || 0);
+        });
+        const myRank = sorted.findIndex(p => isThisPlayerMe(p)) + 1;
         if (myRank === 1) {
           earnedTalents = 3;
           addTalents(3, '🥇 1º Lugar en Todos Vs Todos (+3 🪙)', 'GROUP_MATCH_WIN');
@@ -1115,6 +1186,86 @@ function BoardGameMode({
 
     setSessionTalentsEarned(earnedTalents);
     setUserTalents(getTalentsBalance());
+  };
+
+  // Gestión de llegada a la meta y continuación en grupo para definir 2º y 3º puesto
+  const handlePlayerFinish = (finishingPlayer: Player, finalPos: number = 75, broadcastOnline = true) => {
+    const isGroup = players.length >= 3;
+    const alreadyFinished = players.filter(p => p.hasFinished && p.id !== finishingPlayer.id);
+    const currentRank = (alreadyFinished.length + 1) as 1 | 2 | 3;
+
+    // Actualizar al jugador como finalizado
+    const updatedPlayers = players.map(p =>
+      p.id === finishingPlayer.id
+        ? { ...p, position: 75, hasFinished: true, finishRank: currentRank }
+        : p
+    );
+    setPlayers(updatedPlayers);
+
+    // Calcular cuántos competidores continúan en carrera
+    const remainingUnfinished = updatedPlayers.filter(p => !p.hasFinished);
+
+    // Si es Solitario o 1vs1 (2 jugadores), o ya es el 3er lugar o solo queda 1 jugador restante:
+    if (!isGroup || currentRank >= 3 || remainingUnfinished.length <= 1) {
+      let finalPlayerList = updatedPlayers;
+      if (isGroup && remainingUnfinished.length === 1 && currentRank < 3) {
+        finalPlayerList = updatedPlayers.map(p =>
+          p.id === remainingUnfinished[0].id
+            ? { ...p, finishRank: (currentRank + 1) as 1 | 2 | 3 }
+            : p
+        );
+        setPlayers(finalPlayerList);
+      }
+
+      const firstPlaceWinner = finalPlayerList.find(p => p.finishRank === 1) || finishingPlayer;
+      handleGameVictory(firstPlaceWinner, true, finalPlayerList);
+      return;
+    }
+
+    // Modo Grupo (3+ jugadores) y se definió 1º o 2º Lugar -> Fanfarria y opción de continuar
+    playCelebrationSound();
+    playGameSound('projection');
+    triggerHaptic('success');
+    confetti({ particleCount: currentRank === 1 ? 180 : 120, spread: 100, origin: { y: 0.4 } });
+
+    const rankLabel = currentRank === 1 ? '🥇 1º LUGAR' : '🥈 2º LUGAR';
+    setLogMessage(`🎉 ¡¡${finishingPlayer.name} ha ganado el ${rankLabel}!! La partida continúa para definir los siguientes puestos.`);
+
+    if (isOnline && broadcastOnline) {
+      onlineService.sendGameAction('PLAYER_FINISHED_PODIUM', {
+        playerId: finishingPlayer.id,
+        finishRank: currentRank,
+        playerName: finishingPlayer.name
+      });
+    }
+
+    setPodiumCelebration({
+      show: true,
+      rank: currentRank,
+      player: finishingPlayer,
+      remainingCount: remainingUnfinished.length
+    });
+  };
+
+  const continueGroupMatchAfterCelebration = () => {
+    setPodiumCelebration(null);
+    playGameSound('select');
+    triggerHaptic('medium');
+
+    if (isOnline) {
+      onlineService.sendGameAction('CONTINUE_GROUP_MATCH', {});
+    }
+
+    const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
+    setActivePlayerIndex(nextIdx);
+    setTurnTimeLeft(turnTimeLimit);
+    setTimeout(() => setCamera({ x: 50, y: 50, zoom: 1 }), 600);
+  };
+
+  const concludeGroupMatchAndShowPodium = () => {
+    setPodiumCelebration(null);
+    const firstPlace = players.find(p => p.finishRank === 1) || players[0];
+    handleGameVictory(firstPlace, true, players);
   };
 
   // Animación del Dado 3D y paso a paso
@@ -1257,13 +1408,15 @@ function BoardGameMode({
     };
   }, [players, myPlayerIndex, userProfile]);
   const currentPlayer = players[activePlayerIndex] || players[0] || defaultPlayer;
-  const isMyTurn = !isOnline || activePlayerIndex === myPlayerIndex;
+  const isMyTurn = (!isOnline || activePlayerIndex === myPlayerIndex) && !myPlayer?.hasFinished;
 
   // Automatización de turnos para Rivales Bíblicos / Bots en 1v1
   useEffect(() => {
     if (!gameStarted || isGameOver) return;
     const currentP = players[activePlayerIndex];
-    if (!currentP || !currentP.isBot) return;
+    if (!currentP || !currentP.isBot || currentP.hasFinished) return;
+    // En partidas multijugador online, solo el anfitrión (host / índice 0) procesa los turnos del Bot
+    if (isOnline && myPlayerIndex !== 0) return;
 
     if (currentP.skipNextTurn) {
       const skipTimer = setTimeout(() => {
@@ -1355,17 +1508,7 @@ function BoardGameMode({
 
           if (payload.newPos >= 75) {
             const winnerPlayer = players[payload.playerIndex] || players[0];
-            setGameWinner(winnerPlayer);
-            setIsGameOver(true);
-            if (isThisPlayerMe(winnerPlayer, payload.playerIndex)) {
-              playCelebrationSound();
-              playGameSound('projection');
-              triggerHaptic('success');
-              confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
-            } else {
-              playGameSound('wrong');
-              triggerHaptic('error');
-            }
+            handlePlayerFinish(winnerPlayer, payload.newPos, false);
             return;
           }
 
@@ -1430,17 +1573,7 @@ function BoardGameMode({
 
             if (payload.newFinalPos >= 75) {
               const winnerPlayer = players[payload.playerIndex] || players[0];
-              setGameWinner(winnerPlayer);
-              setIsGameOver(true);
-              if (isThisPlayerMe(winnerPlayer, payload.playerIndex)) {
-                playCelebrationSound();
-                playGameSound('projection');
-                triggerHaptic('success');
-                confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
-              } else {
-                playGameSound('wrong');
-                triggerHaptic('error');
-              }
+              handlePlayerFinish(winnerPlayer, payload.newFinalPos, false);
               return;
             }
           }
@@ -1527,11 +1660,52 @@ function BoardGameMode({
             idx === payload.playerIndex ? { ...p, avatar: payload.avatar } : p
           )
         );
+      } else if (action === 'PLAYER_FINISHED_PODIUM') {
+        const finishedP = players.find(p => String(p.id) === String(payload.playerId)) || players[0];
+        setPlayers(prev =>
+          prev.map(p =>
+            String(p.id) === String(payload.playerId)
+              ? { ...p, position: 75, hasFinished: true, finishRank: payload.finishRank }
+              : p
+          )
+        );
+        playCelebrationSound();
+        playGameSound('projection');
+        triggerHaptic('success');
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.4 } });
+        setPodiumCelebration({
+          show: true,
+          rank: payload.finishRank,
+          player: finishedP,
+          remainingCount: Math.max(1, players.length - (payload.finishRank || 1))
+        });
+      } else if (action === 'CONTINUE_GROUP_MATCH') {
+        setPodiumCelebration(null);
+        const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
+        setActivePlayerIndex(nextIdx);
+        setTurnTimeLeft(turnTimeLimit);
       }
     });
 
-    return () => unsubscribe();
-  }, [isOnline, players, currentPlayer, turnTimeLimit]);
+    const unsubAbandoned = onlineService.onOpponentAbandoned((data) => {
+      setSurrenderInfo({
+        surrenderedName: data.leaverName || 'El rival',
+        isMeSurrendered: false
+      });
+      setGameWinner(myPlayer);
+      setIsGameOver(true);
+      playCelebrationSound();
+      playGameSound('projection');
+      triggerHaptic('success');
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+      setLogMessage(`🏆 ${data.message || 'El rival abandonó la partida. ¡Victoria por abandono!'}`);
+    });
+
+    return () => {
+      unsubscribe();
+      unsubAbandoned();
+    };
+  }, [isOnline, players, currentPlayer, turnTimeLimit, myPlayer]);
 
   // 💾 Guardado automático continuo del estado de la partida para protegerla ante llamadas o salidas accidentales
   useEffect(() => {
@@ -1863,6 +2037,18 @@ function BoardGameMode({
                 }
               });
             }, 400);
+          } else {
+            // Protección de seguridad para el espectador: si el rival se desconecta o no responde, desbloquear tras 3.5s
+            setTimeout(() => {
+              setActiveQuestion(prevQ => {
+                if (prevQ) {
+                  setShowAnswer(false);
+                  setSelectedOption(null);
+                  advanceTurn();
+                }
+                return null;
+              });
+            }, 3500);
           }
           return 0;
         }
@@ -1878,8 +2064,19 @@ function BoardGameMode({
     };
   }, [activeQuestion, isBoardTimerRunning, showAnswer]);
 
+  const getNextActivePlayerIndex = (currentIdx: number, playersList: Player[] = players): number => {
+    if (playersList.length <= 1) return 0;
+    let next = (currentIdx + 1) % playersList.length;
+    let loopCount = 0;
+    while (playersList[next]?.hasFinished && loopCount < playersList.length) {
+      next = (next + 1) % playersList.length;
+      loopCount++;
+    }
+    return next;
+  };
+
   const advanceTurn = () => {
-    const nextIdx = (activePlayerIndex + 1) % players.length;
+    const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
     setActivePlayerIndex(nextIdx);
     setTurnTimeLeft(turnTimeLimit);
     setTimeout(() => setCamera({ x: 50, y: 50, zoom: 1 }), 600);
@@ -1894,8 +2091,8 @@ function BoardGameMode({
       )
     );
 
-    // 2. Avanzar el turno limpiamente al siguiente jugador
-    const nextIdx = (activePlayerIndex + 1) % players.length;
+    // 2. Avanzar el turno limpiamente al siguiente jugador que no haya terminado
+    const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
     setActivePlayerIndex(nextIdx);
     setTurnTimeLeft(turnTimeLimit);
     const msg = `⏳ ${currentPlayer.name} cumplió su turno de sanción. Turno de ${players[nextIdx]?.name || 'siguiente jugador'}.`;
@@ -1961,7 +2158,7 @@ function BoardGameMode({
             playGameSound('wrong');
             triggerHaptic('error');
             setLogMessage(`⏰ ¡Tiempo agotado! Turno del siguiente jugador.`);
-            const nextIdx = (activePlayerIndex + 1) % players.length;
+            const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
             if (isOnline) {
               onlineService.sendGameAction('TURN_TIMEOUT', { playerIndex: activePlayerIndex, nextIndex: nextIdx });
             }
@@ -2266,12 +2463,6 @@ function BoardGameMode({
 
       // 3. Ejecutar movimiento paso a paso
       movePlayerSteps(activePlayerIndex, startPos, targetPos, () => {
-        // Verificar Victoria
-        if (targetPos >= 75 && (!isSolo || startPos >= 74)) {
-          handleGameVictory(currentP);
-          return;
-        }
-
         // Evaluar si se dispara pregunta (si el tiro fue inválido, no se dispara pregunta y pasa turno)
         const destTile = boardData.find(b => b.id === targetPos);
         let questionToTrigger: Question | null = null;
@@ -2283,7 +2474,31 @@ function BoardGameMode({
           }
         }
 
-        const nextIdx = (activePlayerIndex + 1) % players.length;
+        const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
+        const hasActiveQuestion = Boolean(questionToTrigger);
+        // Sincronización precisa: Solo permanece en el mismo jugador si realmente se disparó una pregunta o si tiró un 6 para volver a tirar
+        const onlineNextIndex = (hasActiveQuestion || rollAgain) ? activePlayerIndex : nextIdx;
+
+        if (isOnline) {
+          onlineService.sendGameAction('ROLL_DICE', {
+            roll,
+            newPos: targetPos,
+            playerIndex: activePlayerIndex,
+            skipNextTurn: isSkipTurn,
+            rollAgain,
+            question: questionToTrigger,
+            timeLimit: questionTimeLimit,
+            nextIndex: onlineNextIndex,
+            logMessage: msg,
+            seenIds: Array.from(matchSeenIdsRef.current)
+          });
+        }
+
+        // Verificar Victoria / Llegada a la meta
+        if (targetPos >= 75 && (!isSolo || startPos >= 74)) {
+          handlePlayerFinish(currentP, targetPos);
+          return;
+        }
 
         if (!isMoveInvalid && (isSolo || (destTile && destTile.effect === 'QUESTION')) && questionToTrigger) {
           setTimeout(() => {
@@ -2303,21 +2518,6 @@ function BoardGameMode({
             advanceTurn();
             setIsTurnProcessing(false);
           }, 300);
-        }
-
-        if (isOnline) {
-          onlineService.sendGameAction('ROLL_DICE', {
-            roll,
-            newPos: targetPos,
-            playerIndex: activePlayerIndex,
-            skipNextTurn: isSkipTurn,
-            rollAgain,
-            question: questionToTrigger,
-            timeLimit: questionTimeLimit,
-            nextIndex: (destTile?.effect === 'QUESTION' || rollAgain) ? activePlayerIndex : nextIdx,
-            logMessage: msg,
-            seenIds: Array.from(matchSeenIdsRef.current)
-          });
         }
       });
     }, 300);
@@ -2393,10 +2593,10 @@ function BoardGameMode({
     }
     setLogMessage(msg);
 
-    // Si con esta respuesta llega o supera la meta 75 -> ¡VICTORIA INMEDIATA!
+    // Si con esta respuesta llega o supera la meta 75 -> ¡Llegada a Meta!
     if (newFinalPos >= 75) {
       setTimeout(() => {
-        handleGameVictory(playerAtTurn);
+        handlePlayerFinish(playerAtTurn, newFinalPos);
       }, 700);
       return;
     }
@@ -2405,7 +2605,7 @@ function BoardGameMode({
     // La pregunta encadenada SOLO ocurre si ACERTÓ (isCorrect === true), avanzó hacia adelante a una NUEVA casilla y esa nueva casilla tiene efecto de QUESTION
     const isChainedQuestion = !isSolo && isCorrect && Boolean(destTile && destTile.effect === 'QUESTION' && newFinalPos > basePos && newFinalPos < 75);
     const shouldAdvanceTurn = !isSolo && !isChainedQuestion && destTile?.effect !== 'ROLL_AGAIN' && newFinalPos < 75;
-    const nextIdx = (activePlayerIndex + 1) % players.length;
+    const nextIdx = getNextActivePlayerIndex(activePlayerIndex);
 
     if (isOnline) {
       onlineService.sendGameAction('ANSWER_QUESTION', {
@@ -2487,8 +2687,15 @@ function BoardGameMode({
 
   return (
     <div className="fixed inset-0 z-50 bg-[#1B1A17] flex flex-col items-center overflow-y-auto pb-8">
-      {/* Encabezado Superior Limpio y Ultra-Optimizado para Móviles */}
-      <header className="w-full relative bg-[#2A2621]/95 backdrop-blur-md border-b border-[#3A342C] px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between sticky top-0 z-[90] shadow-lg">
+      {/* Encabezado Superior Limpio y Ultra-Optimizado para Móviles (Compatible con iPhone Notch y Dynamic Island) */}
+      <header 
+        className="w-full relative bg-[#2A2621]/95 backdrop-blur-md border-b border-[#3A342C] px-3 sm:px-6 pb-2 sm:pb-2.5 flex items-center justify-between sticky top-0 z-[90] shadow-lg"
+        style={{
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.625rem)',
+          paddingLeft: 'max(env(safe-area-inset-left, 0px), 0.75rem)',
+          paddingRight: 'max(env(safe-area-inset-right, 0px), 0.75rem)'
+        }}
+      >
         {/* Left: Botón Inicio + Logo Oficial */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
@@ -3326,6 +3533,30 @@ function BoardGameMode({
                 </div>
               </div>
 
+              {/* BANNER DE MODO ESPECTADOR SI EL JUGADOR YA CONQUISTÓ UN PUESTO DEL PODIO */}
+              {myPlayer.hasFinished && (
+                <div className="w-full mb-2 p-2 sm:p-2.5 bg-gradient-to-r from-amber-950/90 via-stone-900 to-amber-950/90 border-2 border-amber-400 rounded-2xl flex items-center justify-between shadow-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{myPlayer.finishRank === 1 ? '🥇' : myPlayer.finishRank === 2 ? '🥈' : '🥉'}</span>
+                    <div className="text-left">
+                      <p className="text-xs font-black text-amber-300 uppercase tracking-wide">
+                        ¡Has terminado en {myPlayer.finishRank}º Lugar!
+                      </p>
+                      <p className="text-[10px] text-stone-300">
+                        Modo Espectador: Viendo el desenlace por los siguientes puestos...
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={concludeGroupMatchAndShowPodium}
+                    className="px-2.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-amber-200 text-[10px] font-bold rounded-xl border border-amber-500/50 transition cursor-pointer shrink-0"
+                  >
+                    🏁 Ver Podio
+                  </button>
+                </div>
+              )}
+
               {/* TABLERO INTERACTIVO */}
               <div className="relative w-full aspect-square max-h-[46vh] sm:max-h-[52vh] lg:max-h-none bg-black rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-900/60">
                 
@@ -3387,6 +3618,8 @@ function BoardGameMode({
                       <img
                         src="/Tablero.jpg"
                         alt="Tablero Bíblico"
+                        loading="eager"
+                        decoding="async"
                         className="w-full h-full object-fill select-none"
                       />
 
@@ -3408,6 +3641,13 @@ function BoardGameMode({
                         }}
                       >
                         <div className="relative flex flex-col items-center">
+                          {/* Medalla si ya terminó en el podio */}
+                          {p.hasFinished && (
+                            <span className="text-[10px] font-black px-1.5 py-0.5 bg-amber-400 text-amber-950 rounded-full border border-amber-200 shadow-lg mb-0.5 animate-bounce">
+                              {p.finishRank === 1 ? '🥇 1º' : p.finishRank === 2 ? '🥈 2º' : '🥉 3º'}
+                            </span>
+                          )}
+
                           {/* Etiqueta de Nombre Flotante */}
                           <span className="text-[9px] font-black px-1.5 py-0.2 bg-black/80 text-amber-200 rounded-md border border-white/30 whitespace-nowrap mb-0.5 shadow">
                             {p.name.slice(0, 10)}
@@ -3878,155 +4118,216 @@ function BoardGameMode({
 
       {/* MODAL DE PREGUNTA BÍBLICA SI CAE EN CASILLA QUESTION */}
       {activeQuestion && (
-        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center animate-fade-in">
-          <div className="bg-[#241E18] border-2 border-amber-500/90 rounded-3xl p-5 sm:p-7 max-w-xl w-full shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-amber-100 space-y-4 relative overflow-hidden">
-            {/* BARRA DE CRONÓMETRO REGRESIVO */}
-            <div className="w-full bg-stone-900 h-3.5 rounded-full overflow-hidden mb-1 border border-stone-700 shadow-inner">
-              <div
-                className={`h-full transition-all duration-1000 ${
-                  questionTimeLimit >= 99999
-                    ? 'bg-emerald-500 w-full'
-                    : boardTimeLeft > getDynamicQuestionTimeLimit(activeQuestion, questionTimeLimit) * 0.5
-                    ? 'bg-emerald-500'
-                    : boardTimeLeft > 5
-                    ? 'bg-amber-500'
-                    : 'bg-red-600'
-                }`}
-                style={{
-                  width: questionTimeLimit >= 99999 ? '100%' : `${Math.max(0, Math.min(100, (boardTimeLeft / getDynamicQuestionTimeLimit(activeQuestion, questionTimeLimit)) * 100))}%`
-                }}
-              />
-            </div>
-
-            {/* Encabezado de Pregunta */}
-            <div className="flex justify-between items-center border-b border-amber-900/60 pb-3">
-              <div>
-                <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-400 block">
-                  {activeQuestion.period || 'Trivia Bíblica'}
-                </span>
-                <p className="text-xs sm:text-sm font-medium text-stone-300 leading-tight mt-0.5">
-                  Cita: <strong className="text-amber-200">{activeQuestion.reference || 'Biblia'}</strong>
-                </p>
+        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center animate-fade-in">
+          <div className="bg-[#241E18] border-2 border-amber-500/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 max-w-lg w-full shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-amber-100 relative max-h-[92dvh] flex flex-col my-auto overflow-hidden">
+            {/* CABECERA FIJA: CRONÓMETRO, CITA Y PUNTUACIÓN */}
+            <div className="shrink-0 space-y-2 pb-1.5 border-b border-amber-900/40">
+              {/* BARRA DE CRONÓMETRO REGRESIVO */}
+              <div className="w-full bg-stone-900 h-2.5 rounded-full overflow-hidden border border-stone-700 shadow-inner">
+                <div
+                  className={`h-full transition-all duration-1000 ${
+                    questionTimeLimit >= 99999
+                      ? 'bg-emerald-500 w-full'
+                      : boardTimeLeft > getDynamicQuestionTimeLimit(activeQuestion, questionTimeLimit) * 0.5
+                      ? 'bg-emerald-500'
+                      : boardTimeLeft > 5
+                      ? 'bg-amber-500'
+                      : 'bg-red-600'
+                  }`}
+                  style={{
+                    width: questionTimeLimit >= 99999 ? '100%' : `${Math.max(0, Math.min(100, (boardTimeLeft / getDynamicQuestionTimeLimit(activeQuestion, questionTimeLimit)) * 100))}%`
+                  }}
+                />
               </div>
 
-              <div
-                className={`px-3.5 sm:px-4 py-1.5 rounded-2xl font-mono font-black text-lg sm:text-xl shadow-xl flex items-center gap-1.5 ${
-                  questionTimeLimit >= 99999
-                    ? 'bg-emerald-900/80 text-emerald-200 border border-emerald-500'
-                    : boardTimeLeft <= 5
-                    ? 'bg-red-600 text-white animate-bounce ring-4 ring-red-400/50'
-                    : 'bg-gradient-to-r from-amber-500 to-amber-600 text-amber-950 ring-2 ring-amber-300'
-                }`}
-              >
-                {questionTimeLimit >= 99999 ? (
-                  <span>⏱️ ♾️ Sin límite</span>
-                ) : (
-                  <span>⏱️ 00:{boardTimeLeft < 10 ? `0${boardTimeLeft}` : boardTimeLeft}</span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-2 p-2.5 bg-stone-900/95 rounded-xl border border-stone-800 text-xs font-bold shadow">
-              <div className="flex items-center gap-1.5 text-emerald-400">
-                <span>🎯 Acierto:</span>
-                <span className="bg-emerald-950/90 px-2.5 py-0.5 rounded-lg border border-emerald-700/60 font-black text-xs sm:text-sm">
-                  {activeConsequence.bien === 0 ? 'No se devuelve (+0)' : `+${activeConsequence.bien} ${activeConsequence.bien === 1 ? 'casilla' : 'casillas'}`}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-rose-400">
-                <span>⚠️ Fallo:</span>
-                <span className="bg-rose-950/90 px-2.5 py-0.5 rounded-lg border border-rose-700/60 font-black text-xs sm:text-sm">
-                  -{Math.abs(activeConsequence.mal)} {Math.abs(activeConsequence.mal) === 1 ? 'casilla' : 'casillas'}
-                </span>
-              </div>
-            </div>
-
-            {showAnswer ? (
-              <div className={`p-3.5 rounded-2xl border-2 text-center animate-bounce shadow-2xl ${
-                selectedOption === activeQuestion.correctAnswer
-                  ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/50'
-                  : 'bg-rose-950/95 border-rose-500 text-rose-200 ring-2 ring-rose-400/50'
-              }`}>
-                <p className="text-base sm:text-lg font-black flex items-center justify-center gap-2">
-                  {selectedOption === activeQuestion.correctAnswer ? (
-                    <>
-                      <span className="text-xl">🎉</span>
-                      <span className="tracking-wide">¡¡RESPUESTA CORRECTA!! ✨ ¡Excelente!</span>
-                      <span className="text-xl">🎊</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xl">❌</span>
-                      <span className="tracking-wide">¡Respuesta Incorrecta!</span>
-                    </>
-                  )}
-                </p>
-              </div>
-            ) : (
-              <div className={`p-2.5 rounded-xl border text-center ${
-                isMyTurn ? 'bg-amber-950/70 border-amber-400/80 shadow-md' : 'bg-black/50 border-stone-700'
-              }`}>
-                <p className="text-xs sm:text-sm font-black text-amber-200">
-                  {isMyTurn ? "👉 ¡TU TURNO! Selecciona la respuesta correcta:" : `⏳ Responde: ${currentPlayer.name} (Observando partida)`}
-                </p>
-              </div>
-            )}
-
-            {/* CONTENEDOR DESTACADO DE PREGUNTA BÍBLICA (LETRAS GRANDES Y MÁXIMO CONTRASTE) */}
-            <div className="p-4 sm:p-5 bg-gradient-to-b from-[#181410] to-[#241D16] rounded-2xl border-2 border-amber-500/70 shadow-lg text-left space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 text-stone-950">
-                  📖 Pregunta Bíblica
-                </span>
-                {activeQuestion.difficulty && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase bg-stone-800 text-amber-200 border border-stone-700">
-                    Nivel: {activeQuestion.difficulty}
+              {/* Encabezado de Pregunta y Reloj */}
+              <div className="flex justify-between items-center gap-2">
+                <div className="min-w-0">
+                  <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-400 truncate block">
+                    {activeQuestion.period || 'Trivia Bíblica'}
                   </span>
-                )}
+                  <p className="text-[11px] sm:text-xs font-medium text-stone-300 leading-tight truncate">
+                    Cita: <strong className="text-amber-200">{activeQuestion.reference || 'Biblia'}</strong>
+                  </p>
+                </div>
+
+                <div
+                  className={`px-2.5 sm:px-3 py-1 rounded-xl font-mono font-black text-sm sm:text-base shadow-md shrink-0 flex items-center gap-1 ${
+                    questionTimeLimit >= 99999
+                      ? 'bg-emerald-900/80 text-emerald-200 border border-emerald-500'
+                      : boardTimeLeft <= 5
+                      ? 'bg-red-600 text-white animate-bounce ring-2 ring-red-400/50'
+                      : 'bg-gradient-to-r from-amber-500 to-amber-600 text-amber-950 ring-1 ring-amber-300'
+                  }`}
+                >
+                  {questionTimeLimit >= 99999 ? (
+                    <span>⏱️ ♾️</span>
+                  ) : (
+                    <span>⏱️ 00:{boardTimeLeft < 10 ? `0${boardTimeLeft}` : boardTimeLeft}</span>
+                  )}
+                </div>
               </div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-snug tracking-tight">
-                {activeQuestion.question}
-              </h3>
+
+              {/* Recompensa y Penalización */}
+              <div className="flex items-center justify-between gap-1.5 p-1.5 sm:p-2 bg-stone-900/95 rounded-xl border border-stone-800 text-[11px] sm:text-xs font-bold shadow">
+                <div className="flex items-center gap-1 text-emerald-400">
+                  <span>🎯 Acierto:</span>
+                  <span className="bg-emerald-950/90 px-2 py-0.5 rounded-md border border-emerald-700/60 font-black text-[10px] sm:text-xs">
+                    {activeConsequence.bien === 0 ? '+0' : `+${activeConsequence.bien} ${activeConsequence.bien === 1 ? 'casilla' : 'casillas'}`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-rose-400">
+                  <span>⚠️ Fallo:</span>
+                  <span className="bg-rose-950/90 px-2 py-0.5 rounded-md border border-rose-700/60 font-black text-[10px] sm:text-xs">
+                    -{Math.abs(activeConsequence.mal)} {Math.abs(activeConsequence.mal) === 1 ? 'casilla' : 'casillas'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Banner de Estado / Turno */}
+              {showAnswer ? (
+                <div className={`p-2 rounded-xl border text-center shadow-lg ${
+                  selectedOption === activeQuestion.correctAnswer
+                    ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200 ring-1 ring-emerald-400/50'
+                    : 'bg-rose-950/95 border-rose-500 text-rose-200 ring-1 ring-rose-400/50'
+                }`}>
+                  <p className="text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5">
+                    {selectedOption === activeQuestion.correctAnswer ? (
+                      <>
+                        <span>🎉</span>
+                        <span className="tracking-wide">¡¡RESPUESTA CORRECTA!! ✨</span>
+                        <span>🎊</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>❌</span>
+                        <span className="tracking-wide">¡Respuesta Incorrecta!</span>
+                      </>
+                    )}
+                  </p>
+                </div>
+              ) : (
+                <div className={`py-1 px-2.5 rounded-lg border text-center ${
+                  isMyTurn ? 'bg-amber-950/70 border-amber-400/80 shadow-sm' : 'bg-black/50 border-stone-700'
+                }`}>
+                  <p className="text-[11px] sm:text-xs font-bold text-amber-200">
+                    {isMyTurn ? "👉 ¡TU TURNO! Selecciona la respuesta:" : `⏳ Responde: ${currentPlayer.name}`}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* OPCIONES DE RESPUESTA EN TAMAÑO DESTACADO */}
-            <div className="space-y-2.5 pt-1">
-              {Array.isArray(activeQuestion.options) && activeQuestion.options.map((option, idx) => {
-                let btnColor = "bg-stone-800 text-stone-100 border-stone-700";
-                if (showAnswer) {
-                  if (idx === activeQuestion.correctAnswer) {
-                    btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-xl font-bold ring-2 ring-emerald-300";
-                  } else if (idx === selectedOption) {
-                    btnColor = "bg-red-800 text-white border-red-500 font-bold ring-2 ring-red-400";
-                  } else {
-                    btnColor = "bg-stone-900/60 text-stone-500 border-stone-800 opacity-40";
-                  }
-                } else if (isMyTurn) {
-                  btnColor = "bg-stone-850 hover:bg-amber-950/80 text-stone-100 hover:text-amber-100 border-stone-600 hover:border-amber-400 active:scale-[0.98] cursor-pointer shadow-md";
-                } else {
-                  btnColor = "bg-stone-900/90 text-stone-300 border-stone-800 cursor-default opacity-80";
-                }
-
-                return (
-                  <button
-                    key={idx}
-                    disabled={showAnswer || !isMyTurn}
-                    onClick={() => handleQuestionAnswer(idx)}
-                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border-2 text-base sm:text-lg font-bold transition flex items-center gap-3 ${btnColor}`}
-                  >
-                    <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-black text-sm sm:text-base shrink-0 bg-stone-900/90 border border-amber-500/40 text-amber-300 shadow">
-                      {String.fromCharCode(65 + idx)}
+            {/* CONTENIDO DESPLAZABLE: TARJETA DE PREGUNTA Y OPCIONES */}
+            <div className="overflow-y-auto custom-scrollbar space-y-2.5 pt-2 pr-0.5 flex-1 min-h-0">
+              {/* CONTENEDOR DESTACADO DE PREGUNTA BÍBLICA */}
+              <div className="p-3 sm:p-4 bg-gradient-to-b from-[#181410] to-[#241D16] rounded-xl sm:rounded-2xl border border-amber-500/70 shadow-md text-left space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-amber-500 text-stone-950">
+                    📖 Pregunta Bíblica
+                  </span>
+                  {activeQuestion.difficulty && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium uppercase bg-stone-800 text-amber-200 border border-stone-700">
+                      Nivel: {activeQuestion.difficulty}
                     </span>
-                    <span className="flex-1 leading-snug">{option}</span>
-                  </button>
-                );
-              })}
+                  )}
+                </div>
+                <h3 className="text-sm sm:text-base md:text-lg font-normal text-white leading-snug tracking-normal">
+                  {activeQuestion.question}
+                </h3>
+              </div>
+
+              {/* OPCIONES DE RESPUESTA */}
+              <div className="space-y-2">
+                {Array.isArray(activeQuestion.options) && activeQuestion.options.map((option, idx) => {
+                  let btnColor = "bg-stone-850 hover:bg-stone-800 text-stone-100 border-stone-700";
+                  if (showAnswer) {
+                    if (idx === activeQuestion.correctAnswer) {
+                      btnColor = "bg-emerald-700 text-white border-emerald-400 shadow-lg font-normal ring-2 ring-emerald-300";
+                    } else if (idx === selectedOption) {
+                      btnColor = "bg-red-800 text-white border-red-500 font-normal ring-2 ring-red-400";
+                    } else {
+                      btnColor = "bg-stone-900/60 text-stone-500 border-stone-800 opacity-40";
+                    }
+                  } else if (isMyTurn) {
+                    btnColor = "bg-stone-850 hover:bg-amber-950/80 text-stone-100 hover:text-amber-100 border-stone-600 hover:border-amber-400 active:scale-[0.98] cursor-pointer shadow-sm";
+                  } else {
+                    btnColor = "bg-stone-900/90 text-stone-300 border-stone-800 cursor-default opacity-80";
+                  }
+
+                  return (
+                    <button
+                      key={idx}
+                      disabled={showAnswer || !isMyTurn}
+                      onClick={() => handleQuestionAnswer(idx)}
+                      className={`w-full text-left p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border-2 text-xs sm:text-sm md:text-base font-normal transition flex items-center gap-2.5 sm:gap-3 ${btnColor}`}
+                    >
+                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 bg-stone-900/90 border border-amber-500/40 text-amber-300 shadow">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span className="flex-1 leading-snug font-normal">{option}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
       )}
 
 
+
+      {/* 🏆 MODAL DE CELEBRACIÓN DE PUESTO Y CONTINUACIÓN DE PARTIDA GRUPAL */}
+      {podiumCelebration && (
+        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center animate-fade-in">
+          <div className="bg-[#241E18] border-2 border-amber-500/90 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-center text-amber-100 relative space-y-4">
+            {/* MEDALLA RADIANTE */}
+            <div className="inline-block p-4 sm:p-5 rounded-full border-4 border-amber-400 bg-gradient-to-tr from-yellow-500 via-amber-400 to-yellow-300 text-amber-950 shadow-[0_0_50px_rgba(245,158,11,0.6)] animate-bounce">
+              <span className="text-4xl sm:text-5xl">
+                {podiumCelebration.rank === 1 ? '🥇' : '🥈'}
+              </span>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-400/50 rounded-full text-[11px] font-black uppercase tracking-widest inline-block">
+                {podiumCelebration.rank === 1 ? '¡¡1º LUGAR DEFINIDO!!' : '¡¡2º LUGAR DEFINIDO!!'}
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-white font-serif">
+                {podiumCelebration.player.name}
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-300 leading-snug">
+                {isThisPlayerMe(podiumCelebration.player) ? (
+                  <span>
+                    🎉 ¡Gloria a Dios! Has conquistado el <strong className="text-amber-300">{podiumCelebration.rank}º Lugar</strong>. Puedes continuar la partida como espectador para disfrutar la batalla por los puestos restantes.
+                  </span>
+                ) : (
+                  <span>
+                    ¡Cruzó la Meta Bíblica (Casilla 75) y asegura el <strong className="text-amber-300">{podiumCelebration.rank}º puesto</strong>! Quedan <strong className="text-amber-200">{podiumCelebration.remainingCount} jugadores</strong> compitiendo.
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* BOTONES DE CONTINUACIÓN O PODIO FINAL */}
+            <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={continueGroupMatchAfterCelebration}
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-teal-950 font-black rounded-2xl text-xs sm:text-sm uppercase tracking-wider transition shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <span>🚀 Continuar Partida (Definir siguientes lugares)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={concludeGroupMatchAndShowPodium}
+                className="w-full py-2.5 px-4 bg-stone-900/90 hover:bg-stone-850 text-stone-300 hover:text-amber-200 font-bold rounded-xl text-xs transition border border-stone-700 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>🏁 Finalizar partida ahora y ver Podio</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PANTALLA COMPLETA TOTAL DE CIERRE DE PARTIDA: CEREMONIA DE RANKING Y PUNTOS */}
       <GameOverCeremonyModal
@@ -4458,6 +4759,7 @@ export default function App() {
   const [userProfileState, setUserProfileState] = useState<UserProfile>(() => getUserProfile());
   const [showCopaBiblosMode, setShowCopaBiblosMode] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileSection, setProfileSection] = useState<'MENU' | 'MEMBERSHIP' | 'RANKS' | 'BANK' | 'STATS' | 'COPA' | 'FRIENDS' | 'SETTINGS'>('MENU');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [leaderboardTab, setLeaderboardTab] = useState<string>('RATING');
@@ -4667,6 +4969,7 @@ export default function App() {
   const [reportDetails, setReportDetails] = useState('');
   const [newFriendName, setNewFriendName] = useState('');
   const [newFriendCode, setNewFriendCode] = useState('');
+  const [friendSearchQuery, setFriendSearchQuery] = useState('');
   const [copiedFriendLink, setCopiedFriendLink] = useState(false);
   const [friendInviteNotification, setFriendInviteNotification] = useState<string | null>(null);
   const [welcomeInviteData, setWelcomeInviteData] = useState<{ name: string; code: string; avatar: string; country: string; countryFlag: string } | null>(null);
@@ -4932,7 +5235,7 @@ export default function App() {
 
     // 1. Escuchar emparejamiento con otro jugador humano conectado
     onlineService.startMatchmaking(
-      { name: pName, avatar: pAvatar, rating: pRating },
+      { userId: userProfileState?.id || 'usr_me', name: pName, avatar: pAvatar, rating: pRating },
       (matchData) => {
         if (duelTimeoutRef.current) clearTimeout(duelTimeoutRef.current);
         isMatched = true;
@@ -5012,7 +5315,7 @@ export default function App() {
     const pRating = userProfileState?.rating || 1000;
 
     onlineService.startGroupMatchmaking(
-      { name: pName, avatar: pAvatar, country: pCountry, countryFlag: pCountryFlag, rating: pRating },
+      { userId: userProfileState?.id || 'usr_me', name: pName, avatar: pAvatar, country: pCountry, countryFlag: pCountryFlag, rating: pRating },
       (data) => {
         setGroupLobbyCode(data.code);
         setGroupTimeRemaining(data.timeRemaining);
@@ -5517,72 +5820,69 @@ const getColor = (accuracy: number) => {
 };
   const getRandomQuestion = (period: Period | 'SURPRISE', levelOverride?: typeof gameLevel) => {
     const activeLevel = levelOverride || gameLevel;
+    const persistentSeen = getBoardSeenQuestionIds();
     
-    let available = ALL_QUESTIONS.filter(q => !usedQuestionIds.has(q.id));
+    // 1. Catálogo base total
+    let basePool = ALL_QUESTIONS;
 
     // CASO ESPECIAL: ESTUDIO BÍBLICO PERSONALIZADO (Filtro por libro/testamento/tema)
     if (activeCustomStudyFilter) {
-      const customPool = filterQuestionsForCustomStudy(available, activeCustomStudyFilter);
+      const customPool = filterQuestionsForCustomStudy(basePool, activeCustomStudyFilter);
       if (customPool.length > 0) {
-        available = customPool;
+        basePool = customPool;
       }
     } else {
-      // 1. FILTRADO POR MODO DE JUEGO (Si es MIXTO o PERIODOS, pasan todas las categorías)
+      // Filtrado por temática / modo de juego
       if (gameMode && gameMode !== 'PERIODOS' && gameMode !== 'MIXTO') {
         if (gameMode === 'PRINCIPIANTE' || gameMode === 'KIDS') {
-          available = available.filter(q => q.difficulty === Difficulty.BASIC);
+          basePool = basePool.filter(q => q.difficulty === Difficulty.BASIC);
         } else {
-          available = available.filter(q => Array.isArray(q.mode) ? q.mode.includes(gameMode) : q.mode === gameMode);
+          basePool = basePool.filter(q => Array.isArray(q.mode) ? q.mode.includes(gameMode) : q.mode === gameMode);
         }
       }
     }
 
-    // 2. FILTRADO POR NIVEL (DIFICULTAD) - MODIFICADO PARA "MIXTO"
-    if (activeLevel === 'PRINCIPIANTE') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC);
-    } else if (activeLevel === 'INTERMEDIO') {
-      available = available.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
-    } else if (activeLevel === 'AVANZADO') {
-      available = available.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
-    } 
-    // Si activeLevel es 'MIXTO', no aplicamos filtro aquí, pasan todas.
-
-    // 3. FILTRADO POR PERIODO BÍBLICO
+    // 2. Filtrado por período bíblico
     if (period !== 'SURPRISE') {
-      available = available.filter(q => q.period === period);
-    }
-
-    // --- REINICIO DE PREGUNTAS SI SE ACABAN ---
-    if (available.length === 0) {
-      let resetSet = ALL_QUESTIONS.filter(q => {
-        const matchesPeriod = period === 'SURPRISE' ? true : q.period === period;
-        const matchesMode = (gameMode === 'PERIODOS' || !gameMode) ? true : 
-                            (gameMode === 'PRINCIPIANTE' || gameMode === 'KIDS' ? q.difficulty === Difficulty.BASIC : q.mode.includes(gameMode));
-        return matchesPeriod && matchesMode;
-      });
-      
-      // FILTRADO DE REINICIO - MODIFICADO PARA "MIXTO"
-      if (activeLevel === 'PRINCIPIANTE') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC);
-      } else if (activeLevel === 'INTERMEDIO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE);
-      } else if (activeLevel === 'AVANZADO') {
-        resetSet = resetSet.filter(q => q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED);
+      const periodMatches = basePool.filter(q => matchPeriodName(q.period, period));
+      if (periodMatches.length > 0) {
+        basePool = periodMatches;
       }
-      // Si es 'MIXTO', el resetSet se queda con todas las dificultades.
-
-      const newUsed = new Set(usedQuestionIds);
-      resetSet.forEach(q => newUsed.delete(q.id));
-      setUsedQuestionIds(newUsed);
-      available = resetSet;
     }
-    // ... (El resto de la selección aleatoria con mezcla se queda igual)
-    if (available.length === 0) return;
 
-    // 4. SELECCIÓN ALEATORIA CON MEZCLA
-    if (available.length === 0) return;
+    // 3. Helper de dificultad
+    const matchExactDiff = (q: Question) => {
+      if (activeLevel === 'MIXTO' || !activeLevel) return true;
+      if (activeLevel === 'PRINCIPIANTE') return q.difficulty === Difficulty.BASIC;
+      if (activeLevel === 'INTERMEDIO') return q.difficulty === Difficulty.BASIC || q.difficulty === Difficulty.INTERMEDIATE;
+      if (activeLevel === 'AVANZADO') return q.difficulty === Difficulty.INTERMEDIATE || q.difficulty === Difficulty.ADVANCED;
+      return true;
+    };
 
-    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    // --- JERARQUÍA ESTRICTA ANTI-REPETICIÓN: AGOTAR EL 100% ANTES DE REPETIR ---
+    // Nivel 1: Preguntas no vistas históricamente que coinciden con la dificultad solicitada
+    let candidates = basePool.filter(q => !persistentSeen.has(String(q.id)) && !usedQuestionIds.has(String(q.id)) && matchExactDiff(q));
+
+    // Nivel 2: Si ya vio todas de esa dificultad, buscar preguntas no vistas en el mismo grupo en dificultades adyacentes
+    // (Permite explorar las más de 100 preguntas del período sin repetir prematuramente)
+    if (candidates.length === 0) {
+      candidates = basePool.filter(q => !persistentSeen.has(String(q.id)) && !usedQuestionIds.has(String(q.id)));
+    }
+
+    // Nivel 3: Si el usuario ya vio el 100% de las preguntas de este grupo, reiniciar ciclo para este grupo
+    if (candidates.length === 0) {
+      resetSeenQuestionsForPool(basePool.map(q => String(q.id)));
+      setUsedQuestionIds(prev => {
+        const next = new Set(prev);
+        basePool.forEach(q => next.delete(String(q.id)));
+        return next;
+      });
+      candidates = basePool;
+    }
+
+    if (candidates.length === 0) return;
+
+    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
     const selected = shuffleQuestionOptions(shuffled[0]);
     
     setCurrentQuestion(selected);
@@ -5593,10 +5893,11 @@ const getColor = (accuracy: number) => {
       setStartTime(Date.now());
     }
 
+    // Registrar en el histórico persistente y en la sesión activa
+    recordBoardSeenQuestion(String(selected.id));
     setUsedQuestionIds(prev => {
       const next = new Set(prev);
-      if (next.size > 1000) next.clear(); 
-      next.add(selected.id);
+      next.add(String(selected.id));
       return next;
     });
 
@@ -5836,8 +6137,8 @@ const handleAnswerClick = (index: number) => {
                       {sessionIncorrectQuestions.map((q, idx) => (
                         <div key={q.id || idx} className="bg-[#1B1A17] p-2.5 rounded-xl border border-stone-800 text-left space-y-1.5">
                           <div className="flex items-start justify-between gap-2">
-                            <p className="text-xs font-bold text-stone-200 leading-snug">
-                              <span className="text-amber-400 mr-1">#{idx + 1}</span>
+                            <p className="text-xs font-normal text-stone-200 leading-snug">
+                              <span className="text-amber-400 font-bold mr-1">#{idx + 1}</span>
                               {q.question}
                             </p>
                           </div>
@@ -5845,7 +6146,7 @@ const handleAnswerClick = (index: number) => {
                           <div className="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-lg flex items-center justify-between gap-2">
                             <div className="text-[11px] text-emerald-300 leading-tight">
                               <span className="text-[9px] uppercase font-bold text-emerald-400 block">Respuesta Correcta:</span>
-                              <span className="font-semibold">{q.options[q.correctAnswer]}</span>
+                              <span className="font-normal">{q.options[q.correctAnswer]}</span>
                             </div>
                             <div className="text-right shrink-0">
                               <span className="text-[9px] uppercase font-bold text-amber-400 block">Cita Bíblica:</span>
@@ -5912,7 +6213,10 @@ const handleAnswerClick = (index: number) => {
       })()}
       {/* Toast Notificación de Vinculación de Amigo con Logo de Biblos */}
       {friendInviteNotification && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[92%] bg-gradient-to-r from-emerald-700 via-teal-800 to-stone-900 text-white p-3.5 rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center justify-between gap-3 animate-bounce">
+        <div 
+          className="fixed left-1/2 -translate-x-1/2 z-[100] max-w-md w-[92%] bg-gradient-to-r from-emerald-700 via-teal-800 to-stone-900 text-white p-3.5 rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center justify-between gap-3 animate-bounce"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1rem)' }}
+        >
           <img
             src="/logo-biblos.png"
             alt="Biblos Games"
@@ -5937,7 +6241,10 @@ const handleAnswerClick = (index: number) => {
 
       {/* 🔔 MODAL FLOTANTE INTERACTIVO DE INVITACIÓN DE AMIGO EN LA RED */}
       {incomingFriendInvitation && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[92%] p-3.5 bg-gradient-to-r from-emerald-950 via-stone-900 to-amber-950 border-2 border-emerald-400 rounded-3xl shadow-2xl animate-fade-in flex flex-col gap-2.5 text-stone-100 ring-4 ring-emerald-400/20">
+        <div 
+          className="fixed left-1/2 -translate-x-1/2 z-[100] max-w-md w-[92%] p-3.5 bg-gradient-to-r from-emerald-950 via-stone-900 to-amber-950 border-2 border-emerald-400 rounded-3xl shadow-2xl animate-fade-in flex flex-col gap-2.5 text-stone-100 ring-4 ring-emerald-400/20"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.25rem)' }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="relative">
@@ -6250,7 +6557,7 @@ const handleAnswerClick = (index: number) => {
                     <Share2 size={13} /> Compartir Tarjeta (+2 <GoldCoinIcon className="w-3 h-3 inline" />)
                   </span>
                   <p className="text-[10px] text-stone-400 leading-tight">
-                    Publica tu tarjeta en WhatsApp o Facebook 1 vez al día.
+                    Publica tu tarjeta en Instagram, WhatsApp o Facebook 1 vez al día.
                   </p>
                 </button>
 
@@ -6589,7 +6896,7 @@ const handleAnswerClick = (index: number) => {
               <span className="text-bible-gold font-serif italic text-2xl tracking-widest uppercase">
                 {currentQuestion.period}
               </span>
-              <h1 className="text-6xl md:text-8xl font-serif font-bold leading-tight">
+              <h1 className="text-6xl md:text-8xl font-serif font-normal leading-tight">
                 {currentQuestion.question}
               </h1>
             </div>
@@ -6603,7 +6910,7 @@ const handleAnswerClick = (index: number) => {
                     disabled={showAnswer}
                     onClick={() => handleAnswerClick(idx)}
                     className={`
-                      p-8 rounded-2xl border-2 text-3xl font-medium transition-all duration-500 text-left
+                      p-8 rounded-2xl border-2 text-3xl font-normal transition-all duration-500 text-left
                       ${showAnswer 
                         ? isCorrect 
                           ? 'bg-emerald-600 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-105' 
@@ -6650,6 +6957,7 @@ const handleAnswerClick = (index: number) => {
         </div>
       ) : screen === 'TABLERO' ? (
         <BoardGameMode
+          key={onlineRoom?.code ? `online_${onlineRoom.code}` : `local_${boardSubMode}`}
           initialSubMode={boardSubMode}
           initialCustomStudyFilter={activeCustomStudyFilter}
           onExit={() => {
@@ -6692,7 +7000,9 @@ const handleAnswerClick = (index: number) => {
         <div 
           className="min-h-screen w-full bg-[#1B1A17] flex flex-col items-center justify-center p-4 sm:p-6 relative bg-cover bg-center"
           style={{
-            backgroundImage: 'linear-gradient(rgba(27,26,23,0.85), rgba(27,26,23,0.85)), url(/fondo-biblos.jpg)'
+            backgroundImage: 'linear-gradient(rgba(27,26,23,0.85), rgba(27,26,23,0.85)), url(/fondo-biblos.jpg)',
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.25rem)',
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)'
           }}
         >
           <div className="w-full max-w-lg flex flex-col items-center justify-center text-center space-y-4 py-4">
@@ -6829,85 +7139,73 @@ const handleAnswerClick = (index: number) => {
                 </button>
               </div>
 
-              {/* 🌟 TARJETA COMPACTA: DESAFÍO BÍBLICO DE HOY (ABAJO DE LOS 3 MODOS, ARRIBA DEL RANKING) */}
-              {(() => {
-                const dailyData = getDailyChallenge();
-                const streakData = getDailyStreakState();
-                return (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDailyChallengeModal(true);
-                      playSound("select");
-                    }}
-                    className="w-full py-2.5 px-3.5 bg-gradient-to-r from-[#331C08] via-[#241506] to-[#1A1005] hover:from-[#42240B] hover:to-[#2B1B0E] text-white rounded-2xl border border-amber-400/80 shadow-lg transition-all active:scale-[0.98] flex items-center justify-between gap-2.5 cursor-pointer group relative overflow-hidden"
-                  >
-                    <div className="flex items-center gap-2.5 text-left min-w-0 flex-1">
-                      <div className="w-8 h-8 rounded-xl bg-amber-500/25 border border-amber-400/50 text-stone-950 font-black flex items-center justify-center text-base shadow group-hover:scale-105 transition-transform shrink-0">
-                        <span>{dailyData.icon}</span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[11px] font-black text-amber-300 uppercase tracking-wide">
-                            Desafío Bíblico de Hoy
+              {/* 🌟 BOTONES LADO A LADO: DESAFÍO BÍBLICO DIARIO Y RANKING MUNDIAL */}
+              <div className="grid grid-cols-2 gap-2.5 w-full">
+                {/* 1. DESAFÍO BÍBLICO DIARIO */}
+                {(() => {
+                  const dailyData = getDailyChallenge();
+                  const streakData = getDailyStreakState();
+                  const progressText = dailyData.completed
+                    ? `${dailyData.correctAnswersCount}/10`
+                    : `${dailyData.currentQuestionIndex}/10`;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDailyChallengeModal(true);
+                        playSound("select");
+                      }}
+                      className="p-3 bg-gradient-to-br from-[#2E1906] to-[#1A0E04] hover:from-[#3D220A] hover:to-[#241306] text-white rounded-2xl border border-amber-500/50 hover:border-amber-400 shadow-lg transition-all active:scale-95 flex flex-col justify-between gap-2.5 text-left cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between w-full pointer-events-none">
+                        <span className="text-xl">📖</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] bg-orange-950/90 text-orange-300 border border-orange-500/50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+                            <span>🔥</span> {streakData.currentStreak}d
                           </span>
-                          {streakData.currentStreak > 0 && (
-                            <span className="text-[8px] bg-orange-950 text-orange-300 border border-orange-500/50 px-1.5 py-0.2 rounded-full font-bold flex items-center gap-0.5">
-                              <span>🔥</span> {streakData.currentStreak}d
-                            </span>
-                          )}
-                          {dailyData.completed ? (
-                            <span className="text-[8px] bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.2 rounded-full font-bold">
-                              ✓ Hecho
-                            </span>
-                          ) : (
-                            <span className="text-[8px] bg-amber-500 text-stone-950 px-1.5 py-0.2 rounded-full font-black animate-pulse">
-                              ¡Jugar!
-                            </span>
-                          )}
+                          <span className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded-full font-black flex items-center gap-0.5">
+                            <GoldCoinIcon className="w-3 h-3" /> +1
+                          </span>
                         </div>
-                        <p className="text-[11px] text-stone-200 font-bold truncate leading-tight">
-                          {dailyData.title}
-                        </p>
                       </div>
-                    </div>
+                      <div className="pointer-events-none w-full">
+                        <div className="flex items-center justify-between gap-1 w-full">
+                          <span className="text-xs sm:text-sm font-black text-amber-200 block leading-tight group-hover:text-amber-100">
+                            Desafío Bíblico Diario
+                          </span>
+                          <span className="text-[10px] sm:text-[11px] text-amber-300 font-mono font-black bg-black/50 px-1.5 py-0.5 rounded-md border border-amber-500/30 shrink-0">
+                            {progressText}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })()}
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[9px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-md font-black flex items-center gap-0.5 shadow">
-                        <GoldCoinIcon className="w-2.5 h-2.5" /> +1
-                      </span>
-                      <span className="text-[10px] text-amber-300 font-mono font-bold bg-black/40 px-2 py-0.5 rounded-md border border-stone-800">
-                        {dailyData.completed ? `${dailyData.correctAnswersCount}/10` : `${dailyData.currentQuestionIndex}/10`}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })()}
+                {/* 2. RANKING MUNDIAL */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowLeaderboardModal(true);
+                    playSound("select");
+                  }}
+                  className="p-3 bg-gradient-to-br from-amber-950/80 to-stone-950 hover:from-amber-900/80 hover:to-stone-900 text-amber-200 font-black rounded-2xl border border-amber-500/50 hover:border-amber-400 shadow-lg transition-all active:scale-95 flex flex-col justify-between gap-2.5 text-left cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between w-full pointer-events-none">
+                    <Trophy className="w-5 h-5 text-amber-400" />
+                    <span className="text-[10px] text-amber-300 font-mono font-bold bg-black/40 px-2 py-0.5 rounded-full border border-stone-800">
+                      {userProfileState.rating || 1000} pts
+                    </span>
+                  </div>
+                  <div className="pointer-events-none">
+                    <span className="text-xs sm:text-sm font-black text-amber-200 block leading-tight group-hover:text-amber-100">
+                      Ranking Mundial
+                    </span>
+                  </div>
+                </button>
+              </div>
 
-              {/* BOTÓN SALÓN DE LA FAMA & RANKING */}
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLeaderboardModal(true);
-                  playSound("select");
-                }}
-                className="w-full py-2.5 px-3.5 bg-gradient-to-r from-amber-950/90 via-stone-900 to-amber-950/90 hover:from-amber-900 hover:to-stone-800 text-amber-200 font-black rounded-2xl border border-amber-500/50 shadow-xl transition-all active:scale-95 flex items-center justify-between text-xs sm:text-sm cursor-pointer"
-              >
-                <div className="flex items-center gap-2 pointer-events-none">
-                  <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
-                  <span>🏆 Ranking & Salón de la Fama</span>
-                </div>
-                <div className="flex items-center gap-1 pointer-events-none">
-                  <span className="text-[9px] bg-amber-500/40 text-amber-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                    Niv. {getRankTier(userProfileState.rating || 1000).level}
-                  </span>
-                  <span className="text-[10px] text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30 font-mono">
-                    {userProfileState.rating || 1000} pts
-                  </span>
-                </div>
-              </button>
-
-              {/* FICHA INTEGRADA DEL USUARIO EN EL HOME */}
+              {/* FICHA SIMPLIFICADA DEL PERFIL EN EL HOME */}
               <button
                 type="button"
                 onClick={() => {
@@ -6915,76 +7213,31 @@ const handleAnswerClick = (index: number) => {
                   setShowProfileModal(true);
                   playSound("select");
                 }}
-                className="w-full bg-black/80 hover:bg-stone-900/90 backdrop-blur-md border border-amber-500/40 hover:border-amber-400 rounded-2xl p-3.5 shadow-2xl text-left transition-all group active:scale-[0.98] ring-1 ring-amber-500/20 hover:ring-amber-400/50 cursor-pointer block"
+                className="w-full bg-black/80 hover:bg-stone-900/90 backdrop-blur-md border border-amber-500/40 hover:border-amber-400 rounded-2xl p-3 shadow-2xl text-left transition-all group active:scale-[0.98] ring-1 ring-amber-500/20 hover:ring-amber-400/50 cursor-pointer block"
                 title="Toca para ver tu perfil y Banco de Fe"
               >
                 <div className="flex items-center justify-between gap-3 pointer-events-none">
                   <div className="flex items-center gap-3 overflow-hidden flex-1">
-                    <div className="relative shrink-0">
-                      <img
-                        src={userProfileState.avatar || '/avatars/david.jpg'}
-                        alt="avatar"
-                        className="w-12 h-12 rounded-full object-cover border-2 border-amber-400 shadow-md group-hover:scale-105 transition-transform"
-                      />
-                      <span className="absolute -bottom-1 -right-1 text-sm bg-stone-900 rounded-full p-0.5 border border-amber-400/50">
-                        {getRankTier(userProfileState.rating || 1000).icon}
-                      </span>
-                    </div>
-
+                    <img
+                      src={userProfileState.avatar || '/avatars/david.jpg'}
+                      alt="avatar"
+                      className="w-11 h-11 rounded-full object-cover border-2 border-amber-400 shadow-md group-hover:scale-105 transition-transform shrink-0"
+                    />
                     <div className="truncate flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-black text-amber-200 truncate group-hover:text-amber-300 transition-colors">
-                          <span className="mr-1">{userProfileState.countryFlag || '🇩🇴'}</span>
-                          {userProfileState.name}
-                        </span>
-                        {userProfileState.authProvider ? (
-                          <span className={`px-1.5 py-0.2 text-[8px] font-bold rounded-full border ${
-                            userProfileState.authProvider === 'google'
-                              ? 'bg-red-950/90 text-red-300 border-red-500/60'
-                              : userProfileState.authProvider === 'facebook'
-                              ? 'bg-blue-950/90 text-blue-300 border-blue-500/60'
-                              : 'bg-stone-800 text-stone-300 border-stone-600'
-                          }`}>
-                            {userProfileState.authProvider === 'google' ? 'Google' : 'Facebook'}
-                          </span>
-                        ) : (
-                          <span className="px-1.5 py-0.2 text-[8px] font-bold rounded-full border bg-stone-800 text-stone-300 border-stone-600">
-                            Invitado
-                          </span>
-                        )}
-                      </div>
-                      {(() => {
-                        const rankInfo = getNextRankTierInfo(userProfileState.rating || 1000);
-                        return (
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-[11px] font-black text-amber-300">
-                                Nivel {rankInfo.currentTier.level}: {rankInfo.currentTier.title}
-                              </p>
-                              {rankInfo.nextTier && (
-                                <span className="text-[9px] text-amber-400/80 font-mono font-medium">
-                                  (Faltan {rankInfo.pointsNeeded} pts para Nivel {rankInfo.nextTier.level})
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-3 text-[10px] text-stone-300 mt-0.5">
-                              <span className="text-emerald-400 font-black">
-                                🎯 {userProfileState.accuracy}% Prec.
-                              </span>
-                              <span className="text-yellow-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded-md border border-amber-500/40 flex items-center gap-1">
-                                <GoldCoinIcon className="w-3.5 h-3.5" /> {userTalents}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })()}
+                      <span className="text-sm sm:text-base font-black text-amber-200 truncate group-hover:text-amber-300 transition-colors block leading-tight">
+                        {userProfileState.name}
+                      </span>
+                      <span className="text-[11px] font-bold text-amber-400/80 truncate block leading-tight mt-0.5">
+                        Nivel {getRankTier(userProfileState.rating || 1000).level}: {getRankTier(userProfileState.rating || 1000).title}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="p-2 rounded-xl bg-amber-500/15 group-hover:bg-amber-500 text-amber-300 group-hover:text-amber-950 border border-amber-500/30 group-hover:border-amber-300 transition-all shrink-0">
-                    <span className="text-xs font-bold flex items-center gap-1">
-                      <span>✏️</span>
-                      <span className="hidden sm:inline">Ver / Editar</span>
+                  {/* Total de talentos */}
+                  <div className="flex items-center gap-1.5 bg-amber-500/20 px-3 py-1.5 rounded-xl border border-amber-500/40 shrink-0">
+                    <GoldCoinIcon className="w-4 h-4 shrink-0" />
+                    <span className="text-sm sm:text-base font-black text-amber-300 font-mono">
+                      {userTalents}
                     </span>
                   </div>
                 </div>
@@ -7001,8 +7254,15 @@ const handleAnswerClick = (index: number) => {
           }`}
         >
 
-      {/* Header Limpio y Ultra-Optimizado para Móviles */}
-      <header className="relative bg-[#2A2621]/95 backdrop-blur-md border-b border-[#3A342C] px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between sticky top-0 z-40 shadow-lg">
+      {/* Header Limpio y Ultra-Optimizado para Móviles (Compatible con iPhone Notch y Dynamic Island) */}
+      <header 
+        className="relative bg-[#2A2621]/95 backdrop-blur-md border-b border-[#3A342C] px-3 sm:px-6 pb-2 sm:pb-2.5 flex items-center justify-between sticky top-0 z-40 shadow-lg"
+        style={{
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.625rem)',
+          paddingLeft: 'max(env(safe-area-inset-left, 0px), 0.75rem)',
+          paddingRight: 'max(env(safe-area-inset-right, 0px), 0.75rem)'
+        }}
+      >
         {/* Left: Botón Inicio / Salir al Home + Logo */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
@@ -7186,7 +7446,12 @@ const handleAnswerClick = (index: number) => {
       </header>
 
       {/* BARRA SUPERIOR DE ACCESO A LOS 3 MODOS PRINCIPALES */}
-      <div className="w-full bg-[#24201A] border-b border-[#3A342C] px-3 sm:px-4 py-2 flex justify-center sticky top-[65px] z-20 shadow-md">
+      <div 
+        className="w-full bg-[#24201A] border-b border-[#3A342C] px-3 sm:px-4 py-2 flex justify-center sticky z-20 shadow-md"
+        style={{
+          top: 'calc(env(safe-area-inset-top, 0px) + 54px)'
+        }}
+      >
         <div className="grid grid-cols-3 gap-2 max-w-md w-full">
           <button
             onClick={() => {
@@ -7814,7 +8079,7 @@ const handleAnswerClick = (index: number) => {
               
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="bg-stone-900 text-white p-4 sm:p-5 rounded-2xl border-2 border-amber-500/50 shadow-md">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-black leading-snug text-balance">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-normal leading-snug text-balance">
                     {currentQuestion.question}
                   </h2>
                 </div>
@@ -7828,10 +8093,10 @@ const handleAnswerClick = (index: number) => {
                         disabled={showAnswer}
                         onClick={() => handleAnswerClick(idx)}
                         className={`
-                          w-full py-3 px-3.5 sm:py-3.5 sm:px-4 rounded-xl border-2 text-left transition-all flex items-center justify-between group cursor-pointer
+                          w-full py-3 px-3.5 sm:py-3.5 sm:px-4 rounded-xl border-2 text-left transition-all flex items-center justify-between group cursor-pointer font-normal
                           ${showAnswer 
                             ? isCorrect 
-                              ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-2 ring-emerald-400' 
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-normal ring-2 ring-emerald-400' 
                               : 'bg-stone-50 border-stone-200 text-stone-400 opacity-60'
                             : 'bg-white border-stone-200 hover:border-amber-500 hover:bg-amber-50/50 active:scale-[0.99] text-stone-800'
                           }
@@ -7839,7 +8104,7 @@ const handleAnswerClick = (index: number) => {
                       >
                         <div className="flex items-center gap-3">
                           <span className={`
-                            w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm font-black border shrink-0
+                            w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm font-bold border shrink-0
                             ${showAnswer 
                               ? isCorrect ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-stone-100 border-stone-200 text-stone-400'
                               : 'bg-stone-100 border-stone-300 text-stone-700 group-hover:border-amber-500 group-hover:bg-amber-500 group-hover:text-black'
@@ -7847,7 +8112,7 @@ const handleAnswerClick = (index: number) => {
                           `}>
                             {String.fromCharCode(65 + idx)}
                           </span>
-                          <span className="text-sm sm:text-base font-bold leading-snug">{option}</span>
+                          <span className="text-sm sm:text-base font-normal leading-snug">{option}</span>
                         </div>
                         {showAnswer && isCorrect && <CheckCircle2 className="text-emerald-600 shrink-0" size={22} />}
                         {showAnswer && !isCorrect && <XCircle className="text-stone-300 shrink-0" size={20} />}
@@ -8187,493 +8452,1312 @@ const handleAnswerClick = (index: number) => {
             className="bg-[#2A2621] border-2 border-amber-600/50 rounded-3xl max-w-md w-full max-h-[88vh] flex flex-col overflow-hidden shadow-2xl text-stone-200"
             onClick={(e) => e.stopPropagation()}
           >
-              {/* Header con Avatar y Edición de Nombre */}
-              <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 p-4 sm:p-5 text-center relative border-b border-amber-900/40 shrink-0">
-                <button 
-                  onClick={() => setShowProfileModal(false)}
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/10 rounded-full transition-colors text-stone-400 hover:text-white cursor-pointer z-10"
-                  title="Cerrar"
-                >
-                  <XCircle size={24} />
-                </button>
-                
-                {/* Avatar con botón de cambio */}
-                <div className="flex flex-col items-center mb-2">
-                  <div className="relative group cursor-pointer" onClick={() => setShowAvatarSelector(!showAvatarSelector)}>
-                    {userProfileState.avatar.startsWith('/') ? (
-                      <img src={userProfileState.avatar} alt="Avatar" className="w-16 h-16 sm:w-18 sm:h-18 rounded-full object-cover border-2 border-amber-400 shadow-xl group-hover:brightness-110 transition" />
-                    ) : (
-                      <div className="text-4xl sm:text-5xl">{userProfileState.avatar}</div>
-                    )}
-                    <span className="absolute bottom-0 right-0 bg-amber-500 text-amber-950 p-1 rounded-full text-[9px] shadow border border-amber-300 font-bold">✏️</span>
-                  </div>
-                  <button
-                    onClick={() => setShowAvatarSelector(!showAvatarSelector)}
-                    className="mt-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 transition flex items-center gap-1 underline underline-offset-2 cursor-pointer"
+              {/* HEADER DINÁMICO */}
+              {profileSection === 'MENU' ? (
+                /* Header Principal: Avatar, Nombre y País */
+                <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 p-4 sm:p-5 text-center relative border-b border-amber-900/40 shrink-0">
+                  <button 
+                    onClick={() => setShowProfileModal(false)}
+                    className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/10 rounded-full transition-colors text-stone-400 hover:text-white cursor-pointer z-10"
+                    title="Cerrar"
                   >
-                    {showAvatarSelector ? "Ocultar Galería ▲" : "Cambiar Personaje Bíblico ▼"}
+                    <XCircle size={24} />
                   </button>
-                </div>
-
-                <div className="flex flex-col items-center gap-1.5 w-full">
-                  <div className="flex items-center justify-center gap-2 w-full max-w-xs">
-                    <span className="text-2xl shrink-0 select-none">{userProfileState.countryFlag || '🇩🇴'}</span>
-                    <input
-                      type="text"
-                      value={userProfileState.name}
-                      onChange={(e) => {
-                        const updated = { ...userProfileState, name: e.target.value };
-                        setUserProfileState(updated);
-                        saveUserProfile(updated);
-                      }}
-                      className="bg-black/40 border border-amber-700/50 rounded-xl px-3 py-1 text-center font-bold text-base sm:text-lg text-amber-200 focus:outline-none focus:border-amber-400 flex-1 shadow-inner"
-                      placeholder="Tu Nombre"
-                    />
+                  
+                  {/* Avatar con botón de cambio */}
+                  <div className="flex flex-col items-center mb-2">
+                    <div className="relative group cursor-pointer" onClick={() => setShowAvatarSelector(!showAvatarSelector)}>
+                      {userProfileState.avatar.startsWith('/') ? (
+                        <img src={userProfileState.avatar} alt="Avatar" className="w-16 h-16 sm:w-18 sm:h-18 rounded-full object-cover border-2 border-amber-400 shadow-xl group-hover:brightness-110 transition" />
+                      ) : (
+                        <div className="text-4xl sm:text-5xl">{userProfileState.avatar}</div>
+                      )}
+                      <span className="absolute bottom-0 right-0 bg-amber-500 text-amber-950 p-1 rounded-full text-[9px] shadow border border-amber-300 font-bold">✏️</span>
+                    </div>
+                    <button
+                      onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+                      className="mt-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 transition flex items-center gap-1 underline underline-offset-2 cursor-pointer"
+                    >
+                      {showAvatarSelector ? "Ocultar Galería ▲" : "Cambiar Personaje Bíblico ▼"}
+                    </button>
                   </div>
 
-                  {/* Selector de País de Origen */}
-                  <div className="flex items-center justify-center gap-1.5 pt-0.5">
-                    <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">País:</span>
-                    <select
-                      value={userProfileState.country || 'DO'}
-                      onChange={(e) => {
-                        const selected = COUNTRIES.find(c => c.code === e.target.value);
-                        if (selected) {
-                          const updated = {
-                            ...userProfileState,
-                            country: selected.code,
-                            countryFlag: selected.flag
-                          };
+                  <div className="flex flex-col items-center gap-1.5 w-full">
+                    <div className="flex items-center justify-center gap-2 w-full max-w-xs">
+                      <span className="text-2xl shrink-0 select-none">{userProfileState.countryFlag || '🇩🇴'}</span>
+                      <input
+                        type="text"
+                        value={userProfileState.name}
+                        onChange={(e) => {
+                          const updated = { ...userProfileState, name: e.target.value };
                           setUserProfileState(updated);
                           saveUserProfile(updated);
-                        }
-                      }}
-                      className="bg-black/60 border border-amber-600/50 rounded-lg px-2 py-0.5 text-xs font-bold text-amber-200 focus:outline-none focus:border-amber-400 cursor-pointer shadow-inner"
-                    >
-                      {COUNTRIES.map(country => (
-                        <option key={country.code} value={country.code} className="bg-[#2A2621] text-amber-100">
-                          {country.flag} {country.name}
-                        </option>
-                      ))}
-                    </select>
+                        }}
+                        className="bg-black/40 border border-amber-700/50 rounded-xl px-3 py-1 text-center font-bold text-base sm:text-lg text-amber-200 focus:outline-none focus:border-amber-400 flex-1 shadow-inner"
+                        placeholder="Tu Nombre"
+                      />
+                    </div>
+
+                    {/* Selector de País de Origen */}
+                    <div className="flex items-center justify-center gap-1.5 pt-0.5">
+                      <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">País:</span>
+                      <select
+                        value={userProfileState.country || 'DO'}
+                        onChange={(e) => {
+                          const selected = COUNTRIES.find(c => c.code === e.target.value);
+                          if (selected) {
+                            const updated = {
+                              ...userProfileState,
+                              country: selected.code,
+                              countryFlag: selected.flag
+                            };
+                            setUserProfileState(updated);
+                            saveUserProfile(updated);
+                          }
+                        }}
+                        className="bg-black/60 border border-amber-600/50 rounded-lg px-2 py-0.5 text-xs font-bold text-amber-200 focus:outline-none focus:border-amber-400 cursor-pointer shadow-inner"
+                      >
+                        {COUNTRIES.map(country => (
+                          <option key={country.code} value={country.code} className="bg-[#2A2621] text-amber-100">
+                            {country.flag} {country.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Insignia rápida de Nivel y Talentos */}
+                    <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
+                        <span>{getRankTier(userProfileState.rating || 1000).icon}</span>
+                        <span>Niv. {getRankTier(userProfileState.rating || 1000).level}: {getRankTier(userProfileState.rating || 1000).title}</span>
+                      </span>
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1 font-mono">
+                        <GoldCoinIcon className="w-3 h-3" />
+                        <span>{userTalents}</span>
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Selección de Avatar (Colapsable) */}
+                  <AnimatePresence>
+                    {showAvatarSelector && (
+                      <motion.div
+                        key="avatar-selector"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="mt-3 overflow-hidden border-t border-amber-900/40 pt-2.5 max-h-48 overflow-y-auto custom-scrollbar"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Elige tu Personaje Bíblico</p>
+                          <span className="text-[8px] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded border border-stone-700">
+                            {isUserPremium() ? '👑 14 Disponibles' : '🆓 6 Free · 8 VIP 🔒'}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                          {BIBLE_AVATARS.map(avatar => {
+                            const isVipUser = isUserPremium();
+                            const isLocked = avatar.isPremium && !isVipUser;
+                            const isSelected = userProfileState.avatar === avatar.imagePath;
+
+                            return (
+                              <button
+                                key={avatar.id}
+                                type="button"
+                                onClick={() => {
+                                  if (isLocked) {
+                                    playSound('loss');
+                                    triggerHaptic('warning');
+                                    setFriendInviteNotification('👑 Este personaje es exclusivo del Plan Premium VIP.');
+                                    return;
+                                  }
+                                  playSound('select');
+                                  triggerHaptic('light');
+                                  const updated = { 
+                                    ...userProfileState, 
+                                    avatar: avatar.imagePath, 
+                                    name: userProfileState.name === 'Jugador Bíblico' ? avatar.name : userProfileState.name 
+                                  };
+                                  setUserProfileState(updated);
+                                  saveUserProfile(updated);
+                                  setShowAvatarSelector(false);
+                                }}
+                                className={`p-1.5 rounded-xl border text-center transition flex flex-col items-center justify-center relative ${
+                                  isLocked
+                                    ? 'bg-black/40 border-stone-800 opacity-60 hover:opacity-80 cursor-pointer'
+                                    : isSelected
+                                    ? 'bg-amber-500/30 border-amber-400 scale-105 shadow-md shadow-amber-500/20 ring-2 ring-amber-400 cursor-pointer'
+                                    : 'bg-black/20 border-stone-800 hover:bg-white/5 hover:border-stone-700 cursor-pointer'
+                                }`}
+                              >
+                                <div className="relative">
+                                  <img src={avatar.imagePath} alt={avatar.name} className={`w-9 h-9 rounded-full object-cover shadow ${isLocked ? 'grayscale-[40%]' : ''}`} />
+                                  {avatar.isPremium && (
+                                    <span className={`absolute -top-1 -right-1 text-[8px] font-black px-1 py-0.2 rounded-full border shadow-sm ${
+                                      isLocked
+                                        ? 'bg-stone-900 text-amber-400 border-amber-500/50'
+                                        : 'bg-amber-500 text-amber-950 border-amber-300'
+                                    }`}>
+                                      {isLocked ? '🔒' : '👑'}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[9px] font-bold text-amber-200 mt-1 leading-tight">{avatar.name}</span>
+                                <span className="text-[7px] text-stone-400 leading-none">
+                                  {isLocked ? 'VIP' : avatar.title}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <p className="text-[9px] text-stone-400 uppercase tracking-widest mt-1">Toca para editar tu nombre y país</p>
+              ) : (
+                /* Header de Sub-Ventana con botón Volver */
+                <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 p-3.5 sm:p-4 flex items-center justify-between border-b border-amber-900/40 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => { playSound("select"); setProfileSection('MENU'); }}
+                    className="py-1.5 px-3 bg-stone-900/80 hover:bg-stone-800 text-amber-300 hover:text-amber-200 border border-amber-500/40 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <ChevronLeft size={16} />
+                    <span>Volver</span>
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">
+                      {profileSection === 'MEMBERSHIP' && '👑'}
+                      {profileSection === 'RANKS' && '🏆'}
+                      {profileSection === 'BANK' && '🪙'}
+                      {profileSection === 'STATS' && '📊'}
+                      {profileSection === 'COPA' && '🥇'}
+                      {profileSection === 'FRIENDS' && '👥'}
+                      {profileSection === 'SETTINGS' && '⚙️'}
+                    </span>
+                    <h3 className="text-sm sm:text-base font-black text-amber-200 uppercase tracking-wide">
+                      {profileSection === 'MEMBERSHIP' && 'Membresía & Plan'}
+                      {profileSection === 'RANKS' && 'Nivel & Rango ELO'}
+                      {profileSection === 'BANK' && 'Banco de Fe'}
+                      {profileSection === 'STATS' && 'Estadísticas'}
+                      {profileSection === 'COPA' && 'Copa Biblos'}
+                      {profileSection === 'FRIENDS' && 'Mis Amigos'}
+                      {profileSection === 'SETTINGS' && 'Ajustes y Cuenta'}
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowProfileModal(false)}
+                    className="p-1.5 hover:bg-white/10 rounded-full transition text-stone-400 hover:text-white cursor-pointer"
+                    title="Cerrar"
+                  >
+                    <XCircle size={22} />
+                  </button>
+                </div>
+              )}
 
-                {/* Selección de Avatar de Personajes Bíblicos Ilustrados (Colapsable) */}
-                <AnimatePresence>
-                  {showAvatarSelector && (
-                    <motion.div
-                      key="avatar-selector"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="mt-3 overflow-hidden border-t border-amber-900/40 pt-2.5 max-h-48 overflow-y-auto custom-scrollbar"
+              {/* CUERPO DEL MODAL */}
+              <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
+                {/* 📌 VISTA PRINCIPAL: MENÚ DE RENGLONES ("CADA RENGLÓN TIENE SU VENTANA") */}
+                {profileSection === 'MENU' && (
+                  <div className="space-y-2">
+                    {/* 1. Renglón Membresía */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('MEMBERSHIP'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Elige tu Personaje Bíblico</p>
-                        <span className="text-[8px] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded border border-stone-700">
-                          {isUserPremium() ? '👑 14 Disponibles' : '🆓 6 Free · 8 VIP 🔒'}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-xl shrink-0">
+                          {isUserPremium() ? '👑' : '📜'}
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Membresía
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            {isUserPremium() ? 'Plan Premium VIP · 100% Catálogo' : 'Plan Free · 60% Catálogo'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                          isUserPremium() ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-stone-800 text-stone-300 border-stone-700'
+                        }`}>
+                          {isUserPremium() ? 'VIP' : 'Free'}
                         </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
                       </div>
-                      <div className="grid grid-cols-4 gap-2">
-                        {BIBLE_AVATARS.map(avatar => {
-                          const isVipUser = isUserPremium();
-                          const isLocked = avatar.isPremium && !isVipUser;
-                          const isSelected = userProfileState.avatar === avatar.imagePath;
+                    </button>
 
-                          return (
-                            <button
-                              key={avatar.id}
-                              type="button"
-                              onClick={() => {
-                                if (isLocked) {
-                                  playSound('loss');
-                                  triggerHaptic('warning');
-                                  setFriendInviteNotification('👑 Este personaje es exclusivo del Plan Premium VIP. ¡Activa VIP para desbloquear todos los avatares bíblicos!');
-                                  return;
-                                }
-                                playSound('select');
-                                triggerHaptic('light');
-                                const updated = { 
-                                  ...userProfileState, 
-                                  avatar: avatar.imagePath, 
-                                  name: userProfileState.name === 'Jugador Bíblico' ? avatar.name : userProfileState.name 
-                                };
-                                setUserProfileState(updated);
-                                saveUserProfile(updated);
-                                setShowAvatarSelector(false);
-                              }}
-                              className={`p-1.5 rounded-xl border text-center transition flex flex-col items-center justify-center relative ${
-                                isLocked
-                                  ? 'bg-black/40 border-stone-800 opacity-60 hover:opacity-80 cursor-pointer'
-                                  : isSelected
-                                  ? 'bg-amber-500/30 border-amber-400 scale-105 shadow-md shadow-amber-500/20 ring-2 ring-amber-400 cursor-pointer'
-                                  : 'bg-black/20 border-stone-800 hover:bg-white/5 hover:border-stone-700 cursor-pointer'
-                              }`}
-                            >
-                              <div className="relative">
-                                <img src={avatar.imagePath} alt={avatar.name} className={`w-9 h-9 rounded-full object-cover shadow ${isLocked ? 'grayscale-[40%]' : ''}`} />
-                                {avatar.isPremium && (
-                                  <span className={`absolute -top-1 -right-1 text-[8px] font-black px-1 py-0.2 rounded-full border shadow-sm ${
-                                    isLocked
-                                      ? 'bg-stone-900 text-amber-400 border-amber-500/50'
-                                      : 'bg-amber-500 text-amber-950 border-amber-300'
-                                  }`}>
-                                    {isLocked ? '🔒' : '👑'}
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-[9px] font-bold text-amber-200 mt-1 leading-tight">{avatar.name}</span>
-                              <span className="text-[7px] text-stone-400 leading-none">
-                                {isLocked ? 'Plan VIP' : avatar.title}
-                              </span>
-                            </button>
-                          );
-                        })}
+                    {/* 2. Renglón Nivel & Rango ELO */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('RANKS'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-400/30 flex items-center justify-center text-xl shrink-0">
+                          🏆
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Nivel y Rango ELO
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            Nivel {getRankTier(userProfileState.rating || 1000).level}: {getRankTier(userProfileState.rating || 1000).title}
+                          </span>
+                        </div>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                          {userProfileState.rating || 1000} pts
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
 
-              </div>
+                    {/* 3. Renglón Banco de Fe */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('BANK'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-yellow-500/15 border border-yellow-400/30 flex items-center justify-center text-xl shrink-0">
+                          🪙
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Banco de Fe
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            Talentos disponibles y recarga diaria
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono font-black text-amber-300 bg-black/50 px-2.5 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
+                          <GoldCoinIcon className="w-3.5 h-3.5" /> {userTalents}
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
 
-              {/* Cuerpo Desplazable: Estadísticas, Rango y Login */}
-              <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto flex-1 custom-scrollbar">
-                {/* 🛡️ ESTADO DEL PLAN: NIVEL DE ACCESO Y DISPONIBILIDAD DE PREGUNTAS */}
-                {(() => {
+                    {/* 4. Renglón Estadísticas */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('STATS'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-xl shrink-0">
+                          📊
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Estadísticas
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            {userProfileState.correctAnswers} aciertos de {userProfileState.totalAnswered}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                          🎯 {userProfileState.accuracy}%
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
+
+                    {/* 5. Renglón Copa Biblos */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('COPA'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-600/15 border border-amber-500/30 flex items-center justify-center text-xl shrink-0">
+                          🥇
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Copa Biblos
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            Torneo dominical y vitrina de copas
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                          🏆 {(userProfileState.copaBiblosTrophies || []).length} Copas
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
+
+                    {/* 6. Renglón Mis Amigos */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('FRIENDS'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-emerald-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-400/30 flex items-center justify-center text-xl shrink-0">
+                          👥
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-emerald-200 block leading-tight">
+                            Mis Amigos
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            {friendsList.length === 0 ? 'Invitar amigos y jugar en vivo' : `${friendsList.length} ${friendsList.length === 1 ? 'amigo guardado' : 'amigos guardados'} · Invitar a jugar`}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-teal-300 bg-teal-500/20 px-2.5 py-0.5 rounded-full border border-teal-500/40">
+                          {friendsList.length} 👥
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-teal-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
+
+                    {/* 7. Renglón Ajustes y Cuenta */}
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('SETTINGS'); }}
+                      className="w-full p-3 bg-stone-900/80 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/50 rounded-2xl flex items-center justify-between transition cursor-pointer group shadow-sm text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-stone-800 border border-stone-700 flex items-center justify-center text-xl shrink-0">
+                          ⚙️
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-stone-100 group-hover:text-amber-200 block leading-tight">
+                            Ajustes y Cuenta
+                          </span>
+                          <span className="text-[11px] text-stone-400 font-medium">
+                            Sonido, notificaciones y login
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-stone-300 bg-stone-800 px-2.5 py-0.5 rounded-full border border-stone-700">
+                          {userProfileState.authProvider ? 'Nube ☁️' : 'Local'}
+                        </span>
+                        <ChevronRight size={18} className="text-stone-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </button>
+                  </div>
+                )}
+
+                {/* 📌 VENTANA 1: MEMBRESÍA & PLAN */}
+                {profileSection === 'MEMBERSHIP' && (() => {
                   const isPrem = isUserPremium();
                   const totalQuestions = BASE_QUESTIONS_COUNT + customQuestionsCount;
                   const availableCount = isPrem ? totalQuestions : Math.round(totalQuestions * 0.60);
                   const percentage = isPrem ? 100 : 60;
 
                   return (
-                    <div className={`p-3.5 rounded-2xl border-2 transition shadow-xl relative overflow-hidden text-left ${
-                      isPrem
-                        ? 'bg-gradient-to-r from-amber-950/80 via-yellow-950/60 to-amber-900/80 border-amber-400/80'
-                        : 'bg-gradient-to-r from-stone-900 via-stone-850 to-stone-900 border-stone-700/80'
-                    }`}>
-                      <div className="flex items-center justify-between border-b pb-2 mb-2.5 border-white/10">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{isPrem ? '👑' : '📜'}</span>
-                          <div>
-                            <span className="text-[9px] uppercase font-black tracking-widest block text-stone-400">
-                              Membresía del Jugador
-                            </span>
-                            <h4 className={`text-sm font-black uppercase tracking-wide flex items-center gap-1.5 ${
-                              isPrem ? 'text-amber-300' : 'text-stone-200'
-                            }`}>
-                              <span>{isPrem ? 'Plan Premium VIP' : 'Plan Free (Gratis)'}</span>
-                            </h4>
+                    <div className="space-y-3">
+                      <div className={`p-4 rounded-2xl border-2 text-left shadow-lg ${
+                        isPrem
+                          ? 'bg-gradient-to-r from-amber-950/80 via-yellow-950/60 to-amber-900/80 border-amber-400/80'
+                          : 'bg-stone-900 border-stone-700'
+                      }`}>
+                        <div className="flex items-center justify-between border-b pb-2 mb-2.5 border-white/10">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">{isPrem ? '👑' : '📜'}</span>
+                            <div>
+                              <span className="text-[9px] uppercase font-black tracking-widest text-stone-400 block">
+                                Estado Actual
+                              </span>
+                              <h4 className="text-sm font-black uppercase tracking-wide text-amber-300">
+                                {isPrem ? 'Plan Premium VIP' : 'Plan Free (Gratis)'}
+                              </h4>
+                            </div>
                           </div>
-                        </div>
-
-                        <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border shadow-sm ${
-                          isPrem
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-400/50 ring-1 ring-amber-400/30'
-                            : 'bg-stone-800 text-stone-300 border-stone-600'
-                        }`}>
-                          {isPrem ? 'Acceso Total' : 'Acceso Limitado'}
-                        </span>
-                      </div>
-
-                      {/* Métricas del Plan */}
-                      <div className="grid grid-cols-2 gap-2 bg-black/40 p-2.5 rounded-xl border border-white/5">
-                        <div>
-                          <span className="text-[9px] text-stone-400 uppercase font-bold block">Disponibilidad</span>
-                          <span className={`text-sm font-black font-mono flex items-center gap-1 ${
-                            isPrem ? 'text-emerald-400' : 'text-amber-400'
+                          <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                            isPrem ? 'bg-amber-500/20 text-amber-300 border-amber-400/50' : 'bg-stone-800 text-stone-300 border-stone-600'
                           }`}>
-                            <span>{percentage}% del Catálogo</span>
-                          </span>
-                          <span className="text-[9px] text-stone-400 block font-mono">
-                            {availableCount} de {totalQuestions} preguntas
+                            {isPrem ? 'Acceso Total' : 'Acceso Limitado'}
                           </span>
                         </div>
 
-                        <div className="text-right">
-                          <span className="text-[9px] text-stone-400 uppercase font-bold block">Temáticas</span>
-                          <span className={`text-xs font-black block mt-0.5 ${
-                            isPrem ? 'text-emerald-300' : 'text-stone-300'
-                          }`}>
-                            {isPrem ? 'Todas Desbloqueadas' : 'Periodos Bíblicos'}
-                          </span>
-                          <span className="text-[8px] text-stone-400 block">
-                            {isPrem ? '100% Modos Libres' : 'Demás temas con candado 🔒'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Barra de Progreso de Preguntas */}
-                      <div className="mt-2.5 space-y-1">
-                        <div className="flex justify-between text-[9px] font-mono text-stone-400">
-                          <span>Banco de Preguntas Activo:</span>
-                          <span className="font-bold text-amber-300">{percentage}%</span>
-                        </div>
-                        <div className="w-full h-2 bg-stone-800 rounded-full overflow-hidden border border-stone-700/80">
-                          <div
-                            className={`h-full transition-all duration-700 rounded-full ${
-                              isPrem
-                                ? 'bg-gradient-to-r from-amber-400 to-yellow-300'
-                                : 'bg-gradient-to-r from-blue-500 to-indigo-500'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Botón Alternar Plan Free / Premium VIP para Pruebas */}
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            playSound('select');
-                            const current = getUserProfile();
-                            const updated = {
-                              ...current,
-                              isPremium: true,
-                              premiumUnlockedAt: new Date().toISOString()
-                            };
-                            saveUserProfile(updated);
-                            setUserProfileState(updated);
-                            ALL_QUESTIONS = getQuestionsForUser(true).questions;
-                            confetti({ particleCount: 80, spread: 80 });
-                            setFriendInviteNotification('👑 ¡Plan Premium VIP Activado! (100% Preguntas, Todas las Temáticas y Estudio Bíblico Desbloqueado).');
-                          }}
-                          className={`py-2 px-2 text-[11px] font-black uppercase tracking-wider rounded-xl shadow transition transform active:scale-95 flex items-center justify-center gap-1 border cursor-pointer ${
-                            isPrem
-                              ? 'bg-amber-500 text-amber-950 border-amber-300 ring-2 ring-amber-400'
-                              : 'bg-stone-900 hover:bg-stone-800 text-amber-300 border-amber-500/40 hover:border-amber-400'
-                          }`}
-                        >
-                          <Crown size={13} />
-                          <span>Activar VIP (100%)</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            playSound('select');
-                            const prof = getUserProfile();
-                            const updated = { ...prof, isPremium: false };
-                            saveUserProfile(updated);
-                            setUserProfileState(updated);
-                            ALL_QUESTIONS = getQuestionsForUser(false).questions;
-                            setFriendInviteNotification('🔒 Cambiado a Plan Free (60% Preguntas y Acceso Limitado).');
-                          }}
-                          className={`py-2 px-2 text-[11px] font-black uppercase tracking-wider rounded-xl shadow transition transform active:scale-95 flex items-center justify-center gap-1 border cursor-pointer ${
-                            !isPrem
-                              ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-blue-400'
-                              : 'bg-stone-900 hover:bg-stone-800 text-stone-400 border-stone-700 hover:border-stone-500'
-                          }`}
-                        >
-                          <Lock size={12} />
-                          <span>Probar Modo Free</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* RANGO BÍBLICO Y RATING ELO */}
-                {(() => {
-                  const rankInfo = getNextRankTierInfo(userProfileState.rating || 1000);
-                  return (
-                    <div className="bg-gradient-to-r from-amber-950/70 via-stone-900 to-amber-950/70 p-3.5 rounded-2xl border border-amber-500/40 text-center space-y-2 shadow-lg">
-                      <span className="text-[9px] uppercase tracking-widest text-amber-400 font-black block">
-                        Rango Bíblico Actual
-                      </span>
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="text-2xl">{rankInfo.currentTier.icon}</span>
-                        <h3 className="text-sm sm:text-base font-black text-amber-200 uppercase tracking-wide">
-                          Nivel {rankInfo.currentTier.level}: {rankInfo.currentTier.title}
-                        </h3>
-                      </div>
-
-                      {/* Barra y detalle sutil de puntos que faltan para el siguiente nivel */}
-                      {rankInfo.nextTier ? (
-                        <div className="bg-black/40 p-2 rounded-xl border border-amber-500/20 space-y-1 text-left">
-                          <div className="flex items-center justify-between text-[10px]">
-                            <span className="text-stone-300 font-bold flex items-center gap-1">
-                              <span>Próximo:</span>
-                              <strong className="text-amber-300">{rankInfo.nextTier.icon} {rankInfo.nextTier.title}</strong>
-                            </span>
-                            <span className="text-amber-400 font-mono font-bold">
-                              Faltan {rankInfo.pointsNeeded} pts
-                            </span>
+                        {/* Barra del Catálogo */}
+                        <div className="space-y-1.5 bg-black/40 p-3 rounded-xl border border-white/5">
+                          <div className="flex justify-between text-xs font-mono">
+                            <span className="text-stone-300">Catálogo Disponible:</span>
+                            <span className="font-bold text-amber-300">{percentage}% ({availableCount} de {totalQuestions})</span>
                           </div>
-                          <div className="w-full h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                          <div className="w-full h-2.5 bg-stone-800 rounded-full overflow-hidden border border-stone-700">
                             <div
-                              className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-500"
-                              style={{ width: `${rankInfo.progressPercent}%` }}
+                              className={`h-full transition-all duration-700 rounded-full ${
+                                isPrem ? 'bg-gradient-to-r from-amber-400 to-yellow-300' : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                              }`}
+                              style={{ width: `${percentage}%` }}
                             />
                           </div>
-                          <div className="flex items-center justify-between text-[9px] text-stone-400 font-mono">
-                            <span>{userProfileState.rating || 1000} pts</span>
-                            <span>Meta: {rankInfo.nextTier.minRating} pts</span>
-                          </div>
                         </div>
-                      ) : (
-                        <div className="py-1 px-2 bg-amber-500/10 rounded-lg border border-amber-500/30 text-[10px] text-amber-300 font-bold">
-                          👑 ¡Has alcanzado el rango máximo de Maestro de la Biblia!
-                        </div>
-                      )}
 
-                      <div className="flex items-center justify-center gap-4 text-xs pt-1 border-t border-stone-800">
-                        <span className="text-stone-300 font-bold">
-                          🏆 Rating ELO: <strong className="text-amber-400 font-mono">{userProfileState.rating || 1000} pts</strong>
-                        </span>
-                        <span className="text-stone-300 font-bold">
-                          ⚡ Récord Carrera: <strong className="text-emerald-400 font-mono">{userProfileState.bestSoloScore || 0} pts</strong>
-                        </span>
+                        {/* Botones de Cambio / Test */}
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              const current = getUserProfile();
+                              const updated = { ...current, isPremium: true, premiumUnlockedAt: new Date().toISOString() };
+                              saveUserProfile(updated);
+                              setUserProfileState(updated);
+                              ALL_QUESTIONS = getQuestionsForUser(true).questions;
+                              confetti({ particleCount: 70, spread: 70 });
+                              setFriendInviteNotification('👑 ¡Plan Premium VIP Activado!');
+                            }}
+                            className={`py-2 px-2 text-xs font-black uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 border cursor-pointer ${
+                              isPrem
+                                ? 'bg-amber-500 text-amber-950 border-amber-300 ring-2 ring-amber-400'
+                                : 'bg-stone-900 hover:bg-stone-800 text-amber-300 border-amber-500/40'
+                            }`}
+                          >
+                            <Crown size={14} /> Activar VIP
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              const prof = getUserProfile();
+                              const updated = { ...prof, isPremium: false };
+                              saveUserProfile(updated);
+                              setUserProfileState(updated);
+                              ALL_QUESTIONS = getQuestionsForUser(false).questions;
+                              setFriendInviteNotification('🔒 Cambiado a Plan Free.');
+                            }}
+                            className={`py-2 px-2 text-xs font-black uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 border cursor-pointer ${
+                              !isPrem
+                                ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-blue-400'
+                                : 'bg-stone-900 hover:bg-stone-800 text-stone-400 border-stone-700'
+                            }`}
+                          >
+                            <Lock size={13} /> Probar Free
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
                 })()}
 
-                {/* 🧠 WIDGET BIBLOS COACH INTEGRADO EN EL PERFIL ("Biblos te conoce") */}
-                <BiblosCoachWidget
-                  userName={userProfileState?.name || 'Jugador Bíblico'}
-                />
+                {/* 📌 VENTANA 2: NIVEL & RANGO ELO */}
+                {profileSection === 'RANKS' && (() => {
+                  const rankInfo = getNextRankTierInfo(userProfileState.rating || 1000);
+                  return (
+                    <div className="space-y-3">
+                      {/* Rango Actual */}
+                      <div className="bg-stone-900/90 p-4 rounded-2xl border border-amber-500/40 text-center space-y-2">
+                        <span className="text-3xl block">{rankInfo.currentTier.icon}</span>
+                        <h4 className="text-base font-black text-amber-200 uppercase">
+                          Nivel {rankInfo.currentTier.level}: {rankInfo.currentTier.title}
+                        </h4>
+                        <div className="flex items-center justify-center gap-4 text-xs font-mono">
+                          <span className="text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">
+                            🏆 {userProfileState.rating || 1000} pts ELO
+                          </span>
+                          <span className="text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-bold">
+                            ⚡ Récord: {userProfileState.bestSoloScore || 0} pts
+                          </span>
+                        </div>
 
-                {/* 🏆 ESCALA DE RANGOS BÍBLICOS & RECOMPENSAS POR NIVEL */}
-                <div className="bg-stone-900/90 p-3.5 rounded-2xl border border-stone-800 space-y-2.5 text-left shadow">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5 font-serif">
-                      🏆 Escala de Rangos Bíblicos & Recompensas
-                    </span>
-                    <span className="text-[9px] text-amber-300 font-bold flex items-center gap-1">
-                      <span>🎁</span> Recompensas de Nivel
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {RANK_TIERS.map(tier => {
-                      const userRating = userProfileState?.rating || 1000;
-                      const userTier = getRankTier(userRating);
-                      const isCurrent = userTier.level === tier.level;
-                      const isUnlocked = userTier.level >= tier.level;
-
-                      return (
-                        <div
-                          key={tier.level}
-                          className={`p-2 rounded-xl border flex items-center justify-between transition ${
-                            isCurrent
-                              ? 'bg-amber-500/20 border-amber-400 shadow-md ring-1 ring-amber-400/50'
-                              : isUnlocked
-                              ? 'bg-stone-950/60 border-amber-500/30 text-stone-300'
-                              : 'bg-stone-950/30 border-stone-800/80 text-stone-500 opacity-80'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="text-xl shrink-0">{tier.icon}</span>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className={`text-[11px] font-black truncate ${isCurrent ? 'text-amber-200' : isUnlocked ? 'text-stone-200' : 'text-stone-400'}`}>
-                                  Nivel {tier.level}: {tier.title}
-                                </span>
-                                {isCurrent && (
-                                  <span className="text-[8px] bg-amber-500 text-amber-950 px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider shrink-0">
-                                    Tu Rango
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-[9px] text-stone-400 font-mono block">
-                                {tier.minRating} {tier.maxRating < 99999 ? `- ${tier.maxRating} pts` : 'pts en adelante'}
+                        {/* Barra Próximo Nivel */}
+                        {rankInfo.nextTier ? (
+                          <div className="bg-black/40 p-2.5 rounded-xl border border-stone-800 text-left space-y-1 mt-2">
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="text-stone-300 font-bold flex items-center gap-1">
+                                <span>Próximo:</span>
+                                <strong className="text-amber-300">{rankInfo.nextTier.icon} {rankInfo.nextTier.title}</strong>
+                              </span>
+                              <span className="text-amber-400 font-mono font-bold">
+                                Faltan {rankInfo.pointsNeeded} pts
                               </span>
                             </div>
-                          </div>
-
-                          {/* 🎁 Icono de regalo con la cantidad de talentos que ganará al llegar a ese nivel */}
-                          <div className="flex items-center gap-1.5 shrink-0 pl-2">
-                            <div className={`px-2 py-1 rounded-lg border flex items-center gap-1 font-mono font-black text-[10px] ${
-                              isUnlocked
-                                ? 'bg-emerald-950/60 border-emerald-600/60 text-emerald-300'
-                                : 'bg-amber-950/40 border-amber-500/40 text-amber-300 shadow-sm'
-                            }`}>
-                              <span className="text-xs">🎁</span>
-                              <span>+{tier.rewardTalents}</span>
-                              <GoldCoinIcon className="w-3.5 h-3.5 inline" />
+                            <div className="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-500"
+                                style={{ width: `${rankInfo.progressPercent}%` }}
+                              />
                             </div>
-                            <span className="text-xs">
-                              {isUnlocked ? '✅' : '🔒'}
-                            </span>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 🪙 BANCO DE FE: SALDO DE TALENTOS & RECARGA DIARIA (DENTRO DEL PERFIL) */}
-                <div className="bg-gradient-to-b from-[#251B0F] via-[#1B140B] to-[#120E07] p-3.5 rounded-2xl border-2 border-amber-500/70 text-center space-y-2.5 shadow-xl relative overflow-hidden">
-                  <div className="flex items-center justify-between border-b border-amber-500/30 pb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5 font-serif">
-                      🪙 Banco de Fe
-                    </span>
-                    <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-400/40 font-mono">
-                      Mateo 25
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-2.5 bg-gradient-to-r from-stone-900 via-amber-950/40 to-stone-900 rounded-xl border border-amber-500/50 shadow-inner">
-                    <div className="text-left">
-                      <span className="text-[9px] text-amber-400 uppercase font-black tracking-wider block">Talentos Disponibles</span>
-                      <p className="text-2xl sm:text-3xl font-black text-amber-300 font-mono leading-none mt-0.5 flex items-center gap-1.5">
-                        <GoldCoinIcon className="w-7 h-7" /> <span className="text-amber-200">{userTalents}</span>
-                      </p>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-[9px] text-emerald-400 font-bold uppercase block">Recarga Diaria (+6 🪙)</span>
-                      <span className="text-xs font-mono font-bold text-stone-300 block mt-0.5">
-                        {talentRefillInfo.canClaim ? '¡Lista!' : talentRefillInfo.formatted}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Botón Reclamar Recarga Diaria si está lista y no ha llegado al tope */}
-                  {talentRefillInfo.canClaim && !talentRefillInfo.isCapped && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const res = checkAndApplyDailyRefill();
-                        if (res.applied) {
-                          playSound("correct");
-                          triggerHaptic("success");
-                          setUserTalents(res.newBalance);
-                          confetti({ particleCount: 50, spread: 60 });
-                        }
-                      }}
-                      className="w-full py-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-emerald-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg animate-pulse transition cursor-pointer"
-                    >
-                      🕊️ ¡Reclamar Bendición Diaria (+6 Talentos)!
-                    </button>
-                  )}
-                  {talentRefillInfo.isCapped && (
-                    <div className="p-2 bg-stone-900 rounded-xl border border-stone-800 text-center text-[10px] text-stone-400 font-bold">
-                      <span>🔒 Tope diario de 30 talentos alcanzado. ¡Juega y compite para seguir ganando más!</span>
-                    </div>
-                  )}
-
-                  {/* Acciones para ganar más talentos */}
-                  <div className="grid grid-cols-2 gap-2 pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowProfileModal(false);
-                        setShowOnlineModal(true);
-                        setOnlineSubTab('FRIENDS');
-                      }}
-                      className="p-2 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 text-left cursor-pointer transition flex items-center justify-between group"
-                    >
-                      <div>
-                        <span className="text-[10px] font-black text-amber-300 group-hover:text-amber-200 block">Invitar Amigos</span>
-                        <span className="text-[8px] text-stone-400 font-bold">+3 Talentos</span>
+                        ) : (
+                          <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/30 text-xs text-amber-300 font-bold">
+                            👑 ¡Rango Máximo Alcanzado!
+                          </div>
+                        )}
                       </div>
-                      <Users size={14} className="text-amber-400 shrink-0" />
-                    </button>
 
+                      {/* Escala de Rangos Bíblicos */}
+                      <div className="space-y-1.5 text-left">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block px-1">
+                          Escala de Rangos & Recompensas
+                        </span>
+                        {RANK_TIERS.map(tier => {
+                          const userRating = userProfileState?.rating || 1000;
+                          const userTier = getRankTier(userRating);
+                          const isCurrent = userTier.level === tier.level;
+                          const isUnlocked = userTier.level >= tier.level;
+
+                          return (
+                            <div
+                              key={tier.level}
+                              className={`p-2.5 rounded-xl border flex items-center justify-between transition ${
+                                isCurrent
+                                  ? 'bg-amber-500/20 border-amber-400 shadow-md ring-1 ring-amber-400/50'
+                                  : isUnlocked
+                                  ? 'bg-stone-900 border-amber-500/30 text-stone-300'
+                                  : 'bg-stone-900/40 border-stone-800 text-stone-500'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <span className="text-xl">{tier.icon}</span>
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={`text-xs font-black ${isCurrent ? 'text-amber-200' : isUnlocked ? 'text-stone-200' : 'text-stone-400'}`}>
+                                      Niv. {tier.level}: {tier.title}
+                                    </span>
+                                    {isCurrent && (
+                                      <span className="text-[8px] bg-amber-500 text-amber-950 px-1.5 py-0.2 rounded-full font-black uppercase">
+                                        Actual
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="text-[10px] text-stone-400 font-mono">
+                                    {tier.minRating} {tier.maxRating < 99999 ? `- ${tier.maxRating} pts` : 'pts en adelante'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
+                                <span className="text-amber-300">+{tier.rewardTalents}</span>
+                                <GoldCoinIcon className="w-3.5 h-3.5 inline" />
+                                <span>{isUnlocked ? '✅' : '🔒'}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 📌 VENTANA 3: BANCO DE FE */}
+                {profileSection === 'BANK' && (
+                  <div className="space-y-3 text-center">
+                    {/* Tarjeta de Saldo */}
+                    <div className="bg-gradient-to-b from-[#2E1906] to-[#1A0E04] p-4 rounded-2xl border-2 border-amber-500/70 shadow-xl space-y-2">
+                      <span className="text-[10px] text-amber-400 uppercase font-black tracking-widest block">
+                        Saldo de Talentos
+                      </span>
+                      <div className="flex items-center justify-center gap-2">
+                        <GoldCoinIcon className="w-9 h-9 animate-bounce" />
+                        <span className="text-3xl sm:text-4xl font-black text-amber-300 font-mono">
+                          {userTalents}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Recarga Diaria (+6 Talentos) */}
+                    <div className="bg-stone-900 p-3.5 rounded-2xl border border-stone-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-stone-300">Bendición Diaria (+6 🪙):</span>
+                        <span className="font-mono font-bold text-amber-300">
+                          {talentRefillInfo.canClaim ? '¡Lista!' : talentRefillInfo.formatted}
+                        </span>
+                      </div>
+
+                      {talentRefillInfo.canClaim && !talentRefillInfo.isCapped && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const res = checkAndApplyDailyRefill();
+                            if (res.applied) {
+                              playSound("correct");
+                              triggerHaptic("success");
+                              setUserTalents(res.newBalance);
+                              confetti({ particleCount: 50, spread: 60 });
+                            }
+                          }}
+                          className="w-full py-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-emerald-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg animate-pulse transition cursor-pointer"
+                        >
+                          🕊️ ¡Reclamar +6 Talentos!
+                        </button>
+                      )}
+                      {talentRefillInfo.isCapped && (
+                        <p className="text-[10px] text-stone-400 italic">
+                          Tope diario alcanzado. Juega para seguir acumulando.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Acciones para ganar más talentos */}
+                    <div className="grid grid-cols-2 gap-2 text-left">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowProfileModal(false);
+                          setShowOnlineModal(true);
+                          setOnlineSubTab('FRIENDS');
+                        }}
+                        className="p-3 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 cursor-pointer transition flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="text-xs font-black text-amber-300 block">Invitar Amigos</span>
+                          <span className="text-[10px] text-stone-400 font-bold">+3 Talentos 🪙</span>
+                        </div>
+                        <Users size={16} className="text-amber-400 shrink-0" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          playSound("select");
+                          const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                          const inviteUrl = generateFriendInviteUrl({
+                            name: userProfileState.name || 'Jugador Bíblico',
+                            code: myCode,
+                            avatar: userProfileState.avatar || '/avatars/david.jpg',
+                            country: userProfileState.country || 'DO',
+                            countryFlag: userProfileState.countryFlag || '🇩🇴'
+                          });
+                          const bonus = claimSocialShareBonus();
+                          if (bonus.success) {
+                            setUserTalents(bonus.newBalance);
+                            confetti({ particleCount: 50, spread: 60 });
+                          }
+                          const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                          if (res?.copied) {
+                            setFriendInviteNotification('📋 ¡Enlace copiado al portapapeles!');
+                            triggerHaptic("success");
+                          } else if (res?.shared) {
+                            setFriendInviteNotification('🕊️ ¡Invitación compartida!');
+                            triggerHaptic("success");
+                          }
+                        }}
+                        className="p-3 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 cursor-pointer transition flex items-center justify-between group active:scale-95"
+                      >
+                        <div>
+                          <span className="text-xs font-black text-emerald-300 block">Compartir</span>
+                          <span className="text-[10px] text-stone-400 font-bold">+2 Talentos 🪙</span>
+                        </div>
+                        <Share2 size={16} className="text-emerald-400 shrink-0" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 📌 VENTANA 4: ESTADÍSTICAS & COACH */}
+                {profileSection === 'STATS' && (
+                  <div className="space-y-3 text-center">
+                    {/* Cuadrícula de 4 Métricas Clave */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-stone-900 p-3 rounded-2xl border border-stone-800">
+                        <span className="text-xl block">🎯</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block mt-1">Precisión</span>
+                        <span className="text-2xl font-black text-emerald-400 font-mono">{userProfileState.accuracy}%</span>
+                      </div>
+                      <div className="bg-stone-900 p-3 rounded-2xl border border-stone-800">
+                        <span className="text-xl block">✅</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block mt-1">Aciertos</span>
+                        <span className="text-2xl font-black text-amber-300 font-mono">{userProfileState.correctAnswers}</span>
+                      </div>
+                      <div className="bg-stone-900 p-3 rounded-2xl border border-stone-800">
+                        <span className="text-xl block">📝</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block mt-1">Respondidas</span>
+                        <span className="text-2xl font-black text-stone-200 font-mono">{userProfileState.totalAnswered}</span>
+                      </div>
+                      <div className="bg-stone-900 p-3 rounded-2xl border border-stone-800">
+                        <span className="text-xl block">⚡</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block mt-1">Récord Carrera</span>
+                        <span className="text-2xl font-black text-yellow-300 font-mono">{userProfileState.bestSoloScore || 0}</span>
+                      </div>
+                    </div>
+
+                    {/* Barra de Precisión */}
+                    <div className="w-full bg-stone-800 h-2.5 rounded-full overflow-hidden border border-stone-700">
+                      <div
+                        className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-700 rounded-full"
+                        style={{ width: `${userProfileState.accuracy}%` }}
+                      />
+                    </div>
+
+                    {/* Widget Biblos Coach */}
+                    <BiblosCoachWidget userName={userProfileState?.name || 'Jugador Bíblico'} />
+                  </div>
+                )}
+
+                {/* 📌 VENTANA 5: COPA BIBLOS */}
+                {profileSection === 'COPA' && (
+                  <div className="space-y-3 text-center">
+                    {/* Vitrina de Copas */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="p-3 bg-stone-900 rounded-2xl border border-amber-400/60">
+                        <span className="text-2xl">🏆</span>
+                        <p className="text-[10px] font-bold text-amber-300 mt-1">Oro (+50 🪙)</p>
+                        <p className="text-lg font-mono font-black text-amber-100">
+                          {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'GOLD').length || 0}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-stone-900 rounded-2xl border border-slate-400/60">
+                        <span className="text-2xl">🥈</span>
+                        <p className="text-[10px] font-bold text-slate-300 mt-1">Plata (+25 🪙)</p>
+                        <p className="text-lg font-mono font-black text-slate-100">
+                          {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'SILVER').length || 0}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-stone-900 rounded-2xl border border-amber-700/60">
+                        <span className="text-2xl">🥉</span>
+                        <p className="text-[10px] font-bold text-amber-600 mt-1">Bronce (+15 🪙)</p>
+                        <p className="text-lg font-mono font-black text-amber-200">
+                          {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'BRONZE').length || 0}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Posición Histórica */}
+                    {userProfileState.copaBiblosBestRank && userProfileState.copaBiblosBestRank < 999 && (
+                      <div className="p-2.5 bg-amber-500/15 rounded-xl border border-amber-500/30 flex items-center justify-between text-xs text-amber-300 font-bold">
+                        <span>Mejor Posición: #{userProfileState.copaBiblosBestRank}</span>
+                        <span>{userProfileState.copaBiblosTitles?.length || 0} Títulos</span>
+                      </div>
+                    )}
+
+                    {/* Historial de Copas */}
+                    {userProfileState.copaBiblosTrophies && userProfileState.copaBiblosTrophies.length > 0 ? (
+                      <div className="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar text-left">
+                        {userProfileState.copaBiblosTrophies.map((ach) => (
+                          <div key={ach.id} className="p-2.5 bg-stone-900 rounded-xl border border-stone-800 flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2">
+                              <span>🏆</span>
+                              <div>
+                                <p className="font-bold text-amber-200">{ach.trophyName}</p>
+                                <p className="text-[10px] text-stone-400">{ach.tournamentDate} · {ach.accuracy}%</p>
+                              </div>
+                            </div>
+                            <span className="font-mono font-bold text-amber-400">+{ach.rewardTalents} 🪙</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-stone-400 italic py-2">
+                        Participa los domingos a las 3:00 PM (RD) para ganar tu copa.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* 📌 VENTANA 6: MIS AMIGOS & INVITACIONES */}
+                {profileSection === 'FRIENDS' && (() => {
+                  const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                  const inviteUrl = generateFriendInviteUrl({
+                    name: userProfileState.name || 'Jugador Bíblico',
+                    code: myCode,
+                    avatar: userProfileState.avatar || '/avatars/david.jpg',
+                    country: userProfileState.country || 'DO',
+                    countryFlag: userProfileState.countryFlag || '🇩🇴'
+                  });
+
+                  const filteredFriends = friendsList.filter(f =>
+                    f.name.toLowerCase().includes(friendSearchQuery.toLowerCase()) ||
+                    f.code.toLowerCase().includes(friendSearchQuery.toLowerCase())
+                  );
+
+                  return (
+                    <div className="space-y-3.5 text-left">
+                      {/* 1. Tarjeta de Tu Código de Amigo */}
+                      <div className="p-3 bg-gradient-to-r from-stone-900 via-amber-950/40 to-stone-900 rounded-2xl border border-amber-500/40 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                            Tu Código de Amigo Personal
+                          </span>
+                          <span className="text-[10px] text-amber-400 font-mono font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/30">
+                            {myCode}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              playSound('select');
+                              await navigator.clipboard.writeText(myCode);
+                              setFriendInviteNotification(`📋 Código ${myCode} copiado al portapapeles`);
+                              triggerHaptic('success');
+                            }}
+                            className="flex-1 py-2 px-3 bg-stone-800 hover:bg-stone-700 text-amber-200 border border-stone-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
+                          >
+                            <Copy size={13} />
+                            <span>Copiar Código</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              playSound('select');
+                              const bonus = claimSocialShareBonus();
+                              if (bonus.success) {
+                                setUserTalents(bonus.newBalance);
+                                confetti({ particleCount: 40, spread: 50 });
+                              }
+                              const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                              if (res?.copied) {
+                                setFriendInviteNotification('📋 ¡Enlace copiado al portapapeles!');
+                                triggerHaptic('success');
+                              } else if (res?.shared) {
+                                setFriendInviteNotification('🕊️ ¡Invitación compartida con éxito!');
+                                triggerHaptic('success');
+                              }
+                            }}
+                            className="flex-1 py-2 px-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition cursor-pointer active:scale-95"
+                          >
+                            <Share2 size={13} />
+                            <span>Compartir Enlace</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 2. Barra de Búsqueda & Agregar Rápido */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-stone-200 uppercase flex items-center gap-1.5">
+                            <Search size={13} className="text-teal-400" />
+                            Buscar o Agregar Amigos:
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setShowAddFriendModal(true)}
+                            className="text-[11px] text-teal-300 hover:text-teal-200 font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <UserPlus size={12} /> Formulario Completo
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative flex-1">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
+                            <input
+                              type="text"
+                              placeholder="Buscar amigo o escribir código (BIBLOS-...)"
+                              value={friendSearchQuery}
+                              onChange={e => setFriendSearchQuery(e.target.value)}
+                              className="w-full pl-8 pr-3 py-2 bg-stone-900 border border-stone-700 rounded-xl text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-teal-400 font-mono"
+                            />
+                            {friendSearchQuery && (
+                              <button
+                                type="button"
+                                onClick={() => setFriendSearchQuery('')}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white text-xs"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                          {friendSearchQuery.trim().length > 0 && !friendsList.some(f => f.code.toUpperCase() === friendSearchQuery.trim().toUpperCase() || f.name.toLowerCase() === friendSearchQuery.trim().toLowerCase()) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const q = friendSearchQuery.trim();
+                                const code = q.toUpperCase().startsWith('BIBLOS-') ? q.toUpperCase() : `BIB-${Math.floor(1000 + Math.random() * 9000)}`;
+                                const name = q.toUpperCase().startsWith('BIBLOS-') ? 'Hermano en la Fe' : q;
+                                addFriend(name, code);
+                                setFriendsList(getSavedFriends());
+                                setFriendSearchQuery('');
+                                playSound('correct');
+                                setFriendInviteNotification(`✅ ¡Amigo agregado a tu lista!`);
+                                triggerHaptic('success');
+                              }}
+                              className="py-2 px-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs flex items-center gap-1 shrink-0 transition cursor-pointer shadow active:scale-95"
+                            >
+                              <UserPlus size={13} />
+                              <span>Agregar</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 3. Botones de Difusión en Redes con Link de la App */}
+                      <div className="bg-stone-900/90 p-3 rounded-2xl border border-stone-800 space-y-2">
+                        <span className="text-[11px] font-bold text-amber-300 uppercase block">
+                          📲 Invitar Amigos a Jugar:
+                        </span>
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              shareInviteToSocial('whatsapp', {
+                                name: userProfileState.name || 'Jugador Bíblico',
+                                code: myCode,
+                                avatar: userProfileState.avatar || '/avatars/david.jpg',
+                                country: userProfileState.country || 'DO',
+                                countryFlag: userProfileState.countryFlag || '🇩🇴'
+                              });
+                            }}
+                            className="py-2 px-1.5 sm:px-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl text-[11px] sm:text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow active:scale-95"
+                            title="Invitar por WhatsApp"
+                          >
+                            <MessageCircle size={14} className="shrink-0" />
+                            <span>WhatsApp</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              shareInviteToSocial('instagram', {
+                                name: userProfileState.name || 'Jugador Bíblico',
+                                code: myCode,
+                                avatar: userProfileState.avatar || '/avatars/david.jpg',
+                                country: userProfileState.country || 'DO',
+                                countryFlag: userProfileState.countryFlag || '🇩🇴'
+                              });
+                              setFriendInviteNotification('📋 ¡Texto copiado! Abriendo Instagram...');
+                            }}
+                            className="py-2 px-1.5 sm:px-2 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-bold rounded-xl text-[11px] sm:text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow active:scale-95 border border-pink-400/40"
+                            title="Invitar por Instagram"
+                          >
+                            <Instagram size={14} className="shrink-0" />
+                            <span>Instagram</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              shareInviteToSocial('facebook', {
+                                name: userProfileState.name || 'Jugador Bíblico',
+                                code: myCode,
+                                avatar: userProfileState.avatar || '/avatars/david.jpg',
+                                country: userProfileState.country || 'DO',
+                                countryFlag: userProfileState.countryFlag || '🇩🇴'
+                              });
+                            }}
+                            className="py-2 px-1.5 sm:px-2 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-[11px] sm:text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow active:scale-95"
+                            title="Invitar por Facebook"
+                          >
+                            <Facebook size={14} className="shrink-0" />
+                            <span>Facebook</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 4. Lista de Amigos Guardados / Invitados */}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-stone-200 uppercase flex items-center gap-1.5">
+                            <Users size={13} className="text-amber-400" />
+                            Amigos Guardados ({filteredFriends.length}):
+                          </span>
+                        </div>
+
+                        {friendsList.length === 0 ? (
+                          <div className="p-4 rounded-2xl bg-stone-900/60 border border-dashed border-stone-700 text-center space-y-2">
+                            <span className="text-3xl block">🕊️</span>
+                            <p className="text-xs font-bold text-amber-200">Aún no tienes amigos en tu lista</p>
+                            <p className="text-[11px] text-stone-400 leading-relaxed max-w-xs mx-auto">
+                              Invita a tus hermanos en la fe o amigos compartiendo tu enlace para jugar partidas y retos bíblicos en vivo.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                playSound('select');
+                                shareInviteToSocial('whatsapp', {
+                                  name: userProfileState.name || 'Jugador Bíblico',
+                                  code: myCode,
+                                  avatar: userProfileState.avatar || '/avatars/david.jpg',
+                                  country: userProfileState.country || 'DO',
+                                  countryFlag: userProfileState.countryFlag || '🇩🇴'
+                                });
+                              }}
+                              className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs uppercase tracking-wider inline-flex items-center gap-1.5 shadow transition cursor-pointer"
+                            >
+                              <MessageCircle size={14} /> Enviar Invitación por WhatsApp
+                            </button>
+                          </div>
+                        ) : filteredFriends.length === 0 ? (
+                          <div className="p-4 rounded-xl bg-stone-900/40 border border-stone-800 text-center text-xs text-stone-400">
+                            No se encontraron amigos que coincidan con "{friendSearchQuery}".
+                          </div>
+                        ) : (
+                          <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                            {filteredFriends.map(friend => {
+                              const isPending = friend.status === 'PENDING_INCOMING';
+
+                              return (
+                                <div
+                                  key={friend.id}
+                                  className="p-3 bg-stone-900/90 rounded-2xl border border-stone-800 hover:border-amber-500/40 transition space-y-2.5 shadow-sm"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                      <div className="relative">
+                                        <img
+                                          src={friend.avatar || '/avatars/david.jpg'}
+                                          alt={friend.name}
+                                          className="w-10 h-10 rounded-full object-cover border border-amber-400/40 shadow"
+                                        />
+                                        <span className="absolute -bottom-1 -right-1 text-[11px]">
+                                          {friend.countryFlag || '🇩🇴'}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <div className="flex items-center gap-1.5">
+                                          <p className="text-xs font-black text-stone-100 leading-tight">
+                                            {friend.name}
+                                          </p>
+                                          {isPending ? (
+                                            <span className="text-[8px] bg-amber-500 text-stone-950 font-black px-1.5 py-0.2 rounded">
+                                              Pendiente
+                                            </span>
+                                          ) : (
+                                            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-950" title="En línea" />
+                                          )}
+                                        </div>
+                                        <p className="text-[10px] text-stone-400 font-mono">
+                                          Rating: <span className="text-amber-300 font-bold">{friend.rating || 1000} pts</span> · {getRankTier(friend.rating || 1000).title}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {/* Botón Eliminar amigo */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        playSound('loss');
+                                        removeFriend(friend.id);
+                                        setFriendsList(getSavedFriends());
+                                        setFriendInviteNotification(`Amigo eliminado de la lista`);
+                                      }}
+                                      className="p-1.5 text-stone-500 hover:text-red-400 transition rounded-lg hover:bg-white/5 cursor-pointer"
+                                      title="Eliminar amigo"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
+
+                                  {/* Botones de Acción para este amigo: Invitar a Jugar / Retar por WhatsApp */}
+                                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-800">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        playSound('select');
+                                        triggerHaptic('success');
+                                        setSelectedFriendsToInvite([friend.id]);
+                                        setShowProfileModal(false);
+                                        setShowOnlineModal(true);
+                                        setOnlineSubTab('FRIENDS');
+                                      }}
+                                      className="py-1.5 px-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black rounded-xl text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 shadow transition cursor-pointer active:scale-95"
+                                    >
+                                      <Swords size={12} />
+                                      <span>Invitar a Jugar</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        playSound('select');
+                                        const challengeText = getChallengeShareText(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                                        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(challengeText)}`;
+                                        window.open(waUrl, '_blank', 'noopener,noreferrer');
+                                      }}
+                                      className="py-1.5 px-2.5 bg-stone-800 hover:bg-stone-700 text-emerald-300 hover:text-white font-bold rounded-xl text-[11px] flex items-center justify-center gap-1 border border-stone-700 transition cursor-pointer active:scale-95"
+                                    >
+                                      <MessageCircle size={12} />
+                                      <span>Retar por WA</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 📌 VENTANA 7: AJUSTES Y CUENTA */}
+                {profileSection === 'SETTINGS' && (
+                  <div className="space-y-3 text-left">
+                    {/* Audio y Notificaciones Básicas */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = !isSoundOn;
+                          setIsSoundOn(next);
+                          if (next) playSound('select');
+                        }}
+                        className={`p-3 rounded-xl border flex items-center justify-between transition cursor-pointer ${
+                          isSoundOn ? 'bg-amber-500/20 border-amber-500/50 text-amber-200' : 'bg-stone-800 border-stone-700 text-stone-400'
+                        }`}
+                      >
+                        <span className="flex items-center gap-1.5 font-bold">
+                          {isSoundOn ? <Volume2 size={16} className="text-amber-400" /> : <VolumeX size={16} />} Sonido
+                        </span>
+                        <span className="text-[10px] font-black uppercase">{isSoundOn ? 'ON' : 'OFF'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = !userProfileState.copaBiblosNotificationEnabled;
+                          const updated = {
+                            ...userProfileState,
+                            copaBiblosNotificationEnabled: next,
+                            copaBiblosRegistered: next ? true : userProfileState.copaBiblosRegistered
+                          };
+                          setUserProfileState(updated);
+                          saveUserProfile(updated);
+                          if (isSoundOn) playSound('select');
+                        }}
+                        className={`p-3 rounded-xl border flex items-center justify-between transition cursor-pointer ${
+                          userProfileState.copaBiblosNotificationEnabled
+                            ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
+                            : 'bg-stone-800 border-stone-700 text-stone-400'
+                        }`}
+                      >
+                        <span className="flex items-center gap-1.5 font-bold">
+                          {userProfileState.copaBiblosNotificationEnabled ? <BellRing size={16} className="text-emerald-400" /> : <Bell size={16} />} Avisos
+                        </span>
+                        <span className="text-[10px] font-black uppercase">{userProfileState.copaBiblosNotificationEnabled ? 'ON' : 'OFF'}</span>
+                      </button>
+                    </div>
+
+                    {/* Notificaciones Inteligentes */}
+                    <div className="bg-stone-900 p-3 rounded-xl border border-stone-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                          <Bell size={14} /> Recordatorios
+                        </span>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            playSound("select");
+                            if (!notificationSettingsState.enabled) {
+                              const granted = await requestNotificationPermission();
+                              const updated = { ...notificationSettingsState, enabled: granted };
+                              setNotificationSettingsState(updated);
+                              saveNotificationSettings(updated);
+                              if (granted) checkAndTriggerSmartNotifications();
+                            } else {
+                              const updated = { ...notificationSettingsState, enabled: false };
+                              setNotificationSettingsState(updated);
+                              saveNotificationSettings(updated);
+                            }
+                          }}
+                          className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold ${
+                            notificationSettingsState.enabled ? 'bg-emerald-600 text-white' : 'bg-stone-800 text-stone-400'
+                          }`}
+                        >
+                          {notificationSettingsState.enabled ? 'Activados' : 'Activar'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1.5 text-[11px] text-stone-300">
+                        <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettingsState.dailyChallengeReminder}
+                            onChange={(e) => {
+                              const updated = { ...notificationSettingsState, dailyChallengeReminder: e.target.checked };
+                              setNotificationSettingsState(updated);
+                              saveNotificationSettings(updated);
+                            }}
+                            className="rounded accent-amber-500"
+                          />
+                          <span>📖 Desafío Diario</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettingsState.copaBiblosReminder}
+                            onChange={(e) => {
+                              const updated = { ...notificationSettingsState, copaBiblosReminder: e.target.checked };
+                              setNotificationSettingsState(updated);
+                              saveNotificationSettings(updated);
+                            }}
+                            className="rounded accent-amber-500"
+                          />
+                          <span>🏆 Copa Biblos</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Estado de Cuenta */}
+                    <div className="bg-stone-900 p-3 rounded-xl border border-stone-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-stone-300">
+                          {userProfileState.authProvider ? `Cuenta: ${userProfileState.authProvider}` : 'Modo: Invitado'}
+                        </span>
+                        <span className="text-[10px] text-stone-400">
+                          {userProfileState.authProvider ? '☁️ Sincronizado' : 'Solo Local'}
+                        </span>
+                      </div>
+
+                      {!userProfileState.authProvider ? (
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleLoginProvider('google')}
+                            className="py-2 px-2 bg-white text-stone-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Google</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleLoginProvider('facebook')}
+                            className="py-2 px-2 bg-[#1877F2] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Facebook</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="w-full py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-bold rounded-xl border border-stone-700 cursor-pointer"
+                        >
+                          Cerrar Sesión
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Botón Administrador */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowGlobalAdminPinModal(true);
+                        setGlobalAdminEnteredPin('');
+                        setGlobalAdminPinError('');
+                        if (isSoundOn) playSound('select');
+                      }}
+                      className="w-full py-2.5 px-3 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-bold rounded-xl border border-amber-500/40 flex items-center justify-between cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Database size={15} className="text-amber-400" />
+                        <span>Base de Datos de Preguntas (Admin)</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-stone-400">
+                        {BASE_QUESTIONS_COUNT + customQuestionsCount} Qs
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* BARRA DE ACCIONES INFERIOR */}
+              <div className="p-3 bg-[#1E1B17] border-t border-amber-900/40 flex items-center justify-between gap-2 shrink-0">
+                {profileSection === 'MENU' ? (
+                  <>
                     <button
                       type="button"
                       onClick={async () => {
@@ -8689,434 +9773,63 @@ const handleAnswerClick = (index: number) => {
                         const bonus = claimSocialShareBonus();
                         if (bonus.success) {
                           setUserTalents(bonus.newBalance);
-                          confetti({ particleCount: 50, spread: 60 });
+                          confetti({ particleCount: 40, spread: 50 });
                         }
-                        const res = await shareFriendInviteCard(userProfileState.name || 'Jugador Bíblico', inviteUrl);
+                        const res = await shareUserProfile(userProfileState, inviteUrl);
                         if (res?.copied) {
-                          setFriendInviteNotification('📋 ¡Enlace copiado al portapapeles! Compártelo en WhatsApp o tus redes sociales.');
+                          setFriendInviteNotification('📋 ¡Perfil bíblico copiado al portapapeles!');
                           triggerHaptic("success");
                         } else if (res?.shared) {
-                          setFriendInviteNotification('🕊️ ¡Invitación compartida con éxito!');
+                          setFriendInviteNotification('🕊️ ¡Perfil compartido con éxito!');
                           triggerHaptic("success");
                         }
                       }}
-                      className="p-2 bg-stone-900 hover:bg-stone-800 rounded-xl border border-amber-500/40 text-left cursor-pointer transition flex items-center justify-between group active:scale-95"
+                      className="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-black rounded-xl text-xs uppercase tracking-wider transition shadow flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                     >
-                      <div>
-                        <span className="text-[10px] font-black text-emerald-300 group-hover:text-emerald-200 block">Compartir Tarjeta</span>
-                        <span className="text-[8px] text-stone-400 font-bold">+2 Talentos</span>
-                      </div>
-                      <Share2 size={14} className="text-emerald-400 shrink-0" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Precisión */}
-                <div className="text-center bg-amber-950/40 p-3 rounded-2xl border border-amber-900/30">
-                  <p className="text-[11px] text-amber-400 font-bold uppercase tracking-wider">Nivel de Precisión Total</p>
-                  <p className="text-3xl font-black text-emerald-400 mt-0.5">{userProfileState.accuracy}%</p>
-                  <div className="w-full bg-stone-800 h-2 rounded-full mt-2 overflow-hidden border border-stone-700">
-                    <div
-                      className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-700 rounded-full"
-                      style={{ width: `${userProfileState.accuracy}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Estadísticas de Respuestas */}
-                <div className="grid grid-cols-2 gap-2 text-center">
-                  <div className="bg-stone-900/60 p-2.5 rounded-xl border border-stone-800">
-                    <p className="text-[9px] text-stone-400 uppercase font-bold">Respuestas Correctas</p>
-                    <p className="text-lg font-bold text-amber-200 mt-0.5">{userProfileState.correctAnswers}</p>
-                  </div>
-                  <div className="bg-stone-900/60 p-2.5 rounded-xl border border-stone-800">
-                    <p className="text-[9px] text-stone-400 uppercase font-bold">Total Respondidas</p>
-                    <p className="text-lg font-bold text-amber-200 mt-0.5">{userProfileState.totalAnswered}</p>
-                  </div>
-                </div>
-
-                {/* 🏆 TROFEOS Y LOGROS ALCANZADOS EN LA COPA BIBLOS */}
-                <div className="bg-gradient-to-b from-[#2A2012] via-[#1D160D] to-[#120E08] p-3.5 rounded-2xl border-2 border-amber-500/60 text-center space-y-2.5 shadow-xl relative overflow-hidden">
-                  <div className="flex items-center justify-between border-b border-amber-500/30 pb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5 font-serif">
-                      🏆 Logros Copa Biblos
-                    </span>
-                    <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-400/40 font-mono">
-                      Torneo de Campeones
-                    </span>
-                  </div>
-
-                  {/* Resumen de Copas Ganadas */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="p-2 bg-stone-950/80 rounded-xl border border-amber-400/50 text-center">
-                      <span className="text-xl">🏆</span>
-                      <p className="text-[9px] font-bold text-amber-300 mt-0.5 flex items-center justify-center gap-0.5">
-                        Copa de Oro
-                      </p>
-                      <p className="text-sm font-mono font-black text-amber-200">
-                        {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'GOLD').length || 0}
-                      </p>
-                      <span className="text-[8px] text-amber-400 font-mono font-semibold">+50 🪙</span>
-                    </div>
-                    <div className="p-2 bg-stone-950/80 rounded-xl border border-amber-400/30 text-center">
-                      <span className="text-xl">🏆</span>
-                      <p className="text-[9px] font-bold text-slate-300 mt-0.5 flex items-center justify-center gap-0.5">
-                        Copa de Plata
-                      </p>
-                      <p className="text-sm font-mono font-black text-slate-200">
-                        {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'SILVER').length || 0}
-                      </p>
-                      <span className="text-[8px] text-slate-400 font-mono font-semibold">+25 🪙</span>
-                    </div>
-                    <div className="p-2 bg-stone-950/80 rounded-xl border border-amber-400/30 text-center">
-                      <span className="text-xl">🏆</span>
-                      <p className="text-[9px] font-bold text-amber-600 mt-0.5 flex items-center justify-center gap-0.5">
-                        Copa de Bronce
-                      </p>
-                      <p className="text-sm font-mono font-black text-amber-600">
-                        {userProfileState.copaBiblosTrophies?.filter(t => t.trophy === 'BRONZE').length || 0}
-                      </p>
-                      <span className="text-[8px] text-amber-600/90 font-mono font-semibold">+15 🪙</span>
-                    </div>
-                  </div>
-
-                  {/* Títulos y Mejor Rango Histórico */}
-                  {userProfileState.copaBiblosBestRank && userProfileState.copaBiblosBestRank < 999 && (
-                    <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/30 text-left text-xs space-y-1">
-                      <div className="flex items-center justify-between text-[10px] text-amber-300 font-bold">
-                        <span>Mejor Posición Histórica: #{userProfileState.copaBiblosBestRank}</span>
-                        <span>{userProfileState.copaBiblosTitles?.length || 0} Títulos</span>
-                      </div>
-                      {userProfileState.copaBiblosTitles && userProfileState.copaBiblosTitles.length > 0 && (
-                        <div className="flex flex-wrap gap-1 pt-1">
-                          {userProfileState.copaBiblosTitles.map((title, idx) => (
-                            <span key={idx} className="text-[9px] bg-stone-900 text-amber-200 px-2 py-0.5 rounded-md border border-amber-500/40 font-semibold">
-                              {title}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Lista de Ediciones Jugadas */}
-                  {userProfileState.copaBiblosTrophies && userProfileState.copaBiblosTrophies.length > 0 ? (
-                    <div className="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar pt-1 text-left">
-                      {userProfileState.copaBiblosTrophies.map((ach) => (
-                        <div key={ach.id} className="p-2 bg-stone-950/70 rounded-xl border border-stone-800 flex items-center justify-between text-[11px]">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">🏆</span>
-                            <div>
-                              <p className="font-bold text-amber-200 leading-tight">{ach.trophyName}</p>
-                              <p className="text-[9px] text-stone-400">
-                                {ach.tournamentDate} · Precisión: <strong className="text-emerald-400">{ach.accuracy}%</strong>
-                              </p>
-                            </div>
-                          </div>
-                          <span className="font-mono font-bold text-amber-400 text-xs shrink-0 flex items-center gap-1">
-                            +{ach.rewardTalents} <GoldCoinIcon className="w-3.5 h-3.5 inline" />
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-stone-400 italic text-center py-1">
-                      Aún no has participado en una edición dominical de La Copa Biblos.
-                    </p>
-                  )}
-                </div>
-
-                {/* ⚙️ SECCIÓN DE AJUSTES RÁPIDOS Y BOTÓN EXCLUSIVO DE ADMINISTRADOR */}
-                <div className="bg-stone-900/90 p-3 rounded-2xl border border-amber-500/30 text-left space-y-2.5">
-                  <div className="flex items-center justify-between pb-1 border-b border-stone-800">
-                    <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                      <Settings size={14} /> Ajustes y Preferencias
-                    </span>
-                    <span className="text-[10px] text-stone-400">Configuración</span>
-                  </div>
-
-                  {/* Interruptores de Audio y Notificaciones */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = !isSoundOn;
-                        setIsSoundOn(next);
-                        if (next) playSound('select');
-                      }}
-                      className={`p-2 rounded-xl border flex items-center justify-between transition cursor-pointer ${
-                        isSoundOn ? 'bg-amber-500/20 border-amber-500/50 text-amber-200' : 'bg-stone-800 border-stone-700 text-stone-400'
-                      }`}
-                    >
-                      <span className="flex items-center gap-1 font-bold text-[11px]">
-                        {isSoundOn ? <Volume2 size={14} className="text-amber-400" /> : <VolumeX size={14} />} Sonido
-                      </span>
-                      <span className="text-[9px] font-black uppercase">{isSoundOn ? 'ON' : 'OFF'}</span>
+                      <Share2 size={14} /> Compartir
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = !userProfileState.copaBiblosNotificationEnabled;
-                        const updated = {
-                          ...userProfileState,
-                          copaBiblosNotificationEnabled: next,
-                          copaBiblosRegistered: next ? true : userProfileState.copaBiblosRegistered
-                        };
-                        setUserProfileState(updated);
-                        saveUserProfile(updated);
-                        if (isSoundOn) playSound('select');
-                      }}
-                      className={`p-2 rounded-xl border flex items-center justify-between transition cursor-pointer ${
-                        userProfileState.copaBiblosNotificationEnabled
-                          ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
-                          : 'bg-stone-800 border-stone-700 text-stone-400'
-                      }`}
-                    >
-                      <span className="flex items-center gap-1 font-bold text-[11px]">
-                        {userProfileState.copaBiblosNotificationEnabled ? <BellRing size={14} className="text-emerald-400" /> : <Bell size={14} />} Avisos
-                      </span>
-                      <span className="text-[9px] font-black uppercase">{userProfileState.copaBiblosNotificationEnabled ? 'ON' : 'OFF'}</span>
-                    </button>
-                  </div>
-
-                  {/* BOTÓN EXCLUSIVO DE ADMINISTRADOR DE PREGUNTAS */}
-                  <div className="pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowGlobalAdminPinModal(true);
-                        setGlobalAdminEnteredPin('');
-                        setGlobalAdminPinError('');
-                        if (isSoundOn) playSound('select');
-                      }}
-                      className="w-full py-2 px-3 bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 hover:from-amber-900 hover:to-stone-800 text-amber-300 text-[11px] font-bold rounded-xl border border-amber-500/40 transition flex items-center justify-between shadow-sm cursor-pointer"
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <Database size={14} className="text-amber-400" />
-                        <span>Base de Datos de Preguntas (Admin)</span>
-                      </span>
-                      <span className="text-[9px] font-mono bg-black/60 px-1.5 py-0.5 rounded text-amber-200 border border-amber-500/30">
-                        {BASE_QUESTIONS_COUNT + customQuestionsCount} preguntas
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 🔔 PANEL DE NOTIFICACIONES INTELIGENTES DE BIBLOS */}
-                <div className="bg-stone-900/90 p-3 rounded-2xl border border-amber-500/40 text-left space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                      <span>🔔</span>
-                      <span>Notificaciones Inteligentes</span>
-                    </span>
                     <button
                       type="button"
                       onClick={async () => {
                         playSound("select");
-                        if (!notificationSettingsState.enabled) {
-                          const granted = await requestNotificationPermission();
-                          const updated = { ...notificationSettingsState, enabled: granted };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
-                          if (granted) checkAndTriggerSmartNotifications();
-                        } else {
-                          const updated = { ...notificationSettingsState, enabled: false };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
+                        const success = await downloadUserProfileImage();
+                        if (success) {
+                          setFriendInviteNotification('📥 ¡Imagen de perfil descargada!');
+                          triggerHaptic("success");
                         }
                       }}
-                      className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider transition shadow cursor-pointer ${
-                        notificationSettingsState.enabled
-                          ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                          : 'bg-stone-800 hover:bg-stone-700 text-stone-400 border border-stone-700'
-                      }`}
+                      className="flex-1 py-2.5 bg-stone-800 hover:bg-stone-700 text-amber-200 border border-amber-700/30 font-bold rounded-xl text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                     >
-                      {notificationSettingsState.enabled ? '✓ Activadas' : 'Activar'}
+                      📥 Descargar
                     </button>
-                  </div>
 
-                  <p className="text-[10px] text-stone-400 leading-tight">
-                    Recibe avisos clave sin saturarte (Copa Biblos, Desafío del día y avance de nivel):
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px] text-stone-300 font-medium">
-                    <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-stone-800 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notificationSettingsState.dailyChallengeReminder}
-                        onChange={(e) => {
-                          const updated = { ...notificationSettingsState, dailyChallengeReminder: e.target.checked };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
-                        }}
-                        className="rounded accent-amber-500"
-                      />
-                      <span>📖 Desafío Diario</span>
-                    </label>
-
-                    <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-stone-800 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notificationSettingsState.copaBiblosReminder}
-                        onChange={(e) => {
-                          const updated = { ...notificationSettingsState, copaBiblosReminder: e.target.checked };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
-                        }}
-                        className="rounded accent-amber-500"
-                      />
-                      <span>🏆 Copa Biblos</span>
-                    </label>
-
-                    <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-stone-800 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notificationSettingsState.levelProgressReminder}
-                        onChange={(e) => {
-                          const updated = { ...notificationSettingsState, levelProgressReminder: e.target.checked };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
-                        }}
-                        className="rounded accent-amber-500"
-                      />
-                      <span>⭐ Próximo Nivel</span>
-                    </label>
-
-                    <label className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-stone-800 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notificationSettingsState.rankingReminder}
-                        onChange={(e) => {
-                          const updated = { ...notificationSettingsState, rankingReminder: e.target.checked };
-                          setNotificationSettingsState(updated);
-                          saveNotificationSettings(updated);
-                        }}
-                        className="rounded accent-amber-500"
-                      />
-                      <span>⚔️ Retos Ranking</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* ESTADO DE CUENTA Y VINCULACIÓN EN LA NUBE (GOOGLE / FACEBOOK / INVITADO) */}
-                <div className="bg-stone-900/90 p-3 rounded-2xl border border-amber-500/30 text-center space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-stone-200 flex items-center gap-1.5">
-                      <span className={`w-2.5 h-2.5 rounded-full ${userProfileState.authProvider ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`}></span>
-                      {userProfileState.authProvider ? (
-                        <span>Cuenta: <strong>{userProfileState.authProvider === 'google' ? 'Google' : 'Facebook'}</strong></span>
-                      ) : (
-                        <span>Jugando como <strong>Invitado</strong></span>
-                      )}
-                    </span>
-                    <span className="text-[9px] bg-stone-800 text-stone-300 px-2 py-0.5 rounded-md border border-stone-700 font-medium">
-                      {userProfileState.authProvider ? 'Nube ☁️' : 'Local'}
-                    </span>
-                  </div>
-
-                  {!userProfileState.authProvider ? (
-                    <div className="space-y-1.5 pt-0.5">
-                      <p className="text-[10px] text-stone-400 leading-tight">
-                        Inicia sesión para guardar tu rating y récord en la nube:
-                      </p>
-                      <div className="grid grid-cols-2 gap-2 pt-0.5">
-                        <button
-                          type="button"
-                          onClick={() => handleLoginProvider('google')}
-                          className="py-2 px-2.5 bg-white hover:bg-stone-100 text-stone-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md transition transform active:scale-95 border border-stone-300 cursor-pointer"
-                        >
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                          </svg>
-                          <span>Google</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleLoginProvider('facebook')}
-                          className="py-2 px-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md transition transform active:scale-95 cursor-pointer"
-                        >
-                          <Facebook className="w-3.5 h-3.5 fill-current" />
-                          <span>Facebook</span>
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between pt-1 border-t border-stone-800 text-xs">
-                      <span className="text-stone-400 text-[10px] truncate max-w-[190px]">
-                        Conectado: <strong>{userProfileState.name}</strong>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="px-2 py-0.5 bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white text-[11px] font-semibold rounded-lg border border-stone-700 transition cursor-pointer"
-                      >
-                        Cerrar Sesión
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Barra de Acciones Fija Inferior (Siempre Visible) */}
-              <div className="p-3 bg-[#1E1B17] border-t border-amber-900/40 grid grid-cols-3 gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    playSound("select");
-                    const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
-                    const inviteUrl = generateFriendInviteUrl({
-                      name: userProfileState.name || 'Jugador Bíblico',
-                      code: myCode,
-                      avatar: userProfileState.avatar || '/avatars/david.jpg',
-                      country: userProfileState.country || 'DO',
-                      countryFlag: userProfileState.countryFlag || '🇩🇴'
-                    });
-                    const bonus = claimSocialShareBonus();
-                    if (bonus.success) {
-                      setUserTalents(bonus.newBalance);
-                      confetti({ particleCount: 40, spread: 50 });
-                    }
-                    const res = await shareUserProfile(userProfileState, inviteUrl);
-                    if (res?.copied) {
-                      setFriendInviteNotification('📋 ¡Perfil bíblico copiado al portapapeles! Pégalo en WhatsApp o tus redes sociales.');
-                      triggerHaptic("success");
-                    } else if (res?.shared) {
-                      setFriendInviteNotification('🕊️ ¡Perfil compartido con éxito!');
-                      triggerHaptic("success");
-                    }
-                  }}
-                  className="py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-                >
-                  <Share2 size={13} /> Compartir
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    playSound("select");
-                    const success = await downloadUserProfileImage();
-                    if (success) {
-                      setFriendInviteNotification('📥 ¡Imagen de perfil descargada con éxito!');
-                      triggerHaptic("success");
-                    } else {
-                      setFriendInviteNotification('⚠️ Para compartir tu perfil en web, utiliza el botón Compartir.');
-                    }
-                  }}
-                  className="py-2.5 bg-stone-800 hover:bg-stone-700 text-amber-200 border border-amber-700/30 font-bold rounded-xl text-[10px] uppercase tracking-wider transition flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-                >
-                  📥 Descargar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowProfileModal(false)}
-                  className="py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition shadow-md cursor-pointer active:scale-95"
-                >
-                  Guardar / Cerrar
-                </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileModal(false)}
+                      className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-black rounded-xl text-xs uppercase tracking-wider transition shadow cursor-pointer active:scale-95"
+                    >
+                      Cerrar
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => { playSound("select"); setProfileSection('MENU'); }}
+                      className="flex-1 py-2.5 bg-stone-800 hover:bg-stone-700 text-amber-300 font-bold rounded-xl text-xs uppercase tracking-wider transition flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <ChevronLeft size={16} /> Volver al Menú
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileModal(false)}
+                      className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-black rounded-xl text-xs uppercase tracking-wider transition shadow cursor-pointer"
+                    >
+                      Cerrar
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -11671,11 +12384,12 @@ const handleAnswerClick = (index: number) => {
                               playGameSound('select');
                               triggerHaptic('light');
                               const roomCode = onlineRoom?.code || '';
-                              const shareMessage = `✨ ¡Te invito a jugar conmigo en BIBLOS GAMES! 🎲\n\n📌 Código de Sala: ${roomCode}\n\nIngresa en el Modo En Línea: ${window.location.origin}`;
+                              const appUrl = getAppPublicUrl();
+                              const shareMessage = `✨ ¡Te invito a jugar conmigo en BIBLOS GAMES! 🎲\n\n📌 Código de Sala: ${roomCode}\n\n👉 Ingresa a la partida en vivo aquí:\n${appUrl}/?roomCode=${encodeURIComponent(roomCode)}`;
                               navigator.share({
                                 title: 'Biblos Games - Sala Multijugador',
                                 text: shareMessage,
-                                url: window.location.origin
+                                url: `${appUrl}/?roomCode=${encodeURIComponent(roomCode)}`
                               }).catch(() => {});
                             }}
                             className="px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 flex items-center gap-1.5 shadow cursor-pointer"

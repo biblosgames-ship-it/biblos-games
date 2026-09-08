@@ -45,9 +45,62 @@ export function getAllGameQuestions(): Question[] {
 export const FREE_QUESTIONS_RATIO = 0.60; // 60% para modo Free, 100% para modo Premium
 
 /**
- * Obtiene el banco de preguntas adaptado según el estado del usuario (Free vs Premium/VIP)
- * - Modo Free: 60% del catálogo total disponible de forma equilibrada entre periodos y dificultades.
- * - Modo Premium: 100% de las preguntas desbloqueadas (1,000+ preguntas completas sin límite).
+ * Genera de forma determinista y balanceada el subconjunto del 60% de preguntas para usuarios Free.
+ * La selección es estratificada: toma exactamente el 60% de CADA período bíblico y distribuye 
+ * proporcionalmente la cuota entre las distintas clasificaciones temáticas (modos) y dificultades, 
+ * garantizando que NINGÚN período o temática quede excluido.
+ */
+export function getBalancedFreePool(allQuestions: Question[]): Question[] {
+  const periods = [...new Set(allQuestions.map(q => q.period))];
+  const finalPool: Question[] = [];
+
+  periods.forEach(p => {
+    const inPeriod = allQuestions.filter(q => q.period === p);
+    const targetPeriodCount = Math.round(inPeriod.length * FREE_QUESTIONS_RATIO);
+
+    // Agrupar por temática/modo principal dentro de este período
+    const modeMap = new Map<string, Question[]>();
+    inPeriod.forEach(q => {
+      const modeKey = Array.isArray(q.mode) ? q.mode[0] : (q.mode || 'HISTORIA');
+      if (!modeMap.has(modeKey)) modeMap.set(modeKey, []);
+      modeMap.get(modeKey)!.push(q);
+    });
+
+    const periodSelected: Question[] = [];
+    modeMap.forEach((modeQuestions) => {
+      const modeQuota = Math.max(1, Math.round(modeQuestions.length * FREE_QUESTIONS_RATIO));
+      // Distribuir uniformemente para capturar todas las dificultades
+      const step = modeQuestions.length / modeQuota;
+      for (let i = 0; i < modeQuota && periodSelected.length < targetPeriodCount; i++) {
+        const idx = Math.min(modeQuestions.length - 1, Math.floor(i * step));
+        const q = modeQuestions[idx];
+        if (!periodSelected.some(item => item.id === q.id)) {
+          periodSelected.push(q);
+        }
+      }
+    });
+
+    // Rellenar si el redondeo difiere ligeramente del objetivo del período
+    if (periodSelected.length < targetPeriodCount) {
+      for (const q of inPeriod) {
+        if (!periodSelected.some(item => item.id === q.id)) {
+          periodSelected.push(q);
+          if (periodSelected.length >= targetPeriodCount) break;
+        }
+      }
+    }
+
+    finalPool.push(...periodSelected.slice(0, targetPeriodCount));
+  });
+
+  return finalPool;
+}
+
+/**
+ * Obtiene el banco de preguntas adaptado según el estado del usuario (Free vs Premium/VIP):
+ * - Modo Free: 60% del catálogo total distribuido de forma equilibrada y estratificada
+ *   entre TODOS los períodos bíblicos y todas sus clasificaciones temáticas.
+ * - Modo Premium: 100% de las preguntas desbloqueadas (acceso completo sin restricciones).
  */
 export function getQuestionsForUser(isPremium: boolean = false): {
   questions: Question[];
@@ -58,20 +111,17 @@ export function getQuestionsForUser(isPremium: boolean = false): {
 } {
   const all = getAllGameQuestions();
   const total = all.length;
-  const targetFreeCount = Math.max(1, Math.round(total * FREE_QUESTIONS_RATIO));
+  const freeQuestions = getBalancedFreePool(all);
 
   if (isPremium) {
     return {
       questions: all,
       totalCount: total,
-      freeCount: targetFreeCount,
+      freeCount: freeQuestions.length,
       premiumCount: total,
       isFullAccess: true,
     };
   }
-
-  // MODO FREE: Tomar exactamente el 60% del mazo
-  const freeQuestions = all.slice(0, targetFreeCount);
 
   return {
     questions: freeQuestions,
