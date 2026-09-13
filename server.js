@@ -35,7 +35,7 @@ const httpServer = createServer((req, res) => {
       let pathname = decodeURIComponent(parsedUrl.pathname);
       if (pathname === '/api/version') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-        return res.end(JSON.stringify({ version: '1.0.3', deployedAt: new Date().toISOString(), status: 'OK' }));
+        return res.end(JSON.stringify({ version: '1.0.4', deployedAt: new Date().toISOString(), status: 'OK' }));
       }
       
       let filePath = path.join(DIST_PATH, pathname);
@@ -502,6 +502,11 @@ io.on('connection', (socket) => {
       });
     });
     socket.emit('ACTIVE_FRIEND_LOBBIES_UPDATE', list);
+  });
+
+  socket.on('ACCEPT_FRIEND_RELATION', (data) => {
+    console.log(`[AMIGOS] ${data?.myPlayerData?.name} (${data?.myPlayerData?.code || data?.myPlayerData?.friendCode}) aceptó amistad con ${data?.targetFriendCode}`);
+    socket.broadcast.emit('FRIEND_RELATION_ESTABLISHED', data);
   });
 
   socket.on('JOIN_FRIENDS_LOBBY', ({ roomCode, playerData }) => {

@@ -9,13 +9,13 @@ export interface RankTier {
 }
 
 export const RANK_TIERS: RankTier[] = [
-  { level: 1, title: 'Novato de la Palabra', icon: '📜', minRating: 0, maxRating: 1199, color: 'text-stone-300', rewardTalents: 0 },
-  { level: 2, title: 'Explorador Bíblico', icon: '📖', minRating: 1200, maxRating: 1499, color: 'text-emerald-400', rewardTalents: 30 },
-  { level: 3, title: 'Discípulo de la Fe', icon: '🕊️', minRating: 1500, maxRating: 1799, color: 'text-teal-400', rewardTalents: 40 },
-  { level: 4, title: 'Guerrero de la Palabra', icon: '⚔️', minRating: 1800, maxRating: 2199, color: 'text-blue-400', rewardTalents: 50 },
-  { level: 5, title: 'Siervo de la Verdad', icon: '🏛️', minRating: 2200, maxRating: 2599, color: 'text-indigo-400', rewardTalents: 60 },
-  { level: 6, title: 'Sabio de la Escritura', icon: '🔥', minRating: 2600, maxRating: 2999, color: 'text-amber-400', rewardTalents: 70 },
-  { level: 7, title: 'Maestro de la Biblia', icon: '👑', minRating: 3000, maxRating: 99999, color: 'text-yellow-300', rewardTalents: 80 },
+  { level: 1, title: 'Novato de la Palabra', icon: '📜', minRating: 0, maxRating: 1499, color: 'text-stone-300', rewardTalents: 0 },
+  { level: 2, title: 'Explorador Bíblico', icon: '📖', minRating: 1500, maxRating: 1999, color: 'text-emerald-400', rewardTalents: 30 },
+  { level: 3, title: 'Discípulo de la Fe', icon: '🕊️', minRating: 2000, maxRating: 2499, color: 'text-teal-400', rewardTalents: 40 },
+  { level: 4, title: 'Guerrero de la Palabra', icon: '⚔️', minRating: 2500, maxRating: 2999, color: 'text-blue-400', rewardTalents: 50 },
+  { level: 5, title: 'Siervo de la Verdad', icon: '🏛️', minRating: 3000, maxRating: 3499, color: 'text-indigo-400', rewardTalents: 60 },
+  { level: 6, title: 'Sabio de la Escritura', icon: '🔥', minRating: 3500, maxRating: 3999, color: 'text-amber-400', rewardTalents: 70 },
+  { level: 7, title: 'Maestro de la Biblia', icon: '👑', minRating: 4000, maxRating: 99999, color: 'text-yellow-300', rewardTalents: 80 },
 ];
 
 
@@ -65,8 +65,8 @@ export const getNextRankTierInfo = (rating: number): {
 /**
  * Reglas de Desbloqueo de Dificultades según Rating ELO:
  * - 0 a 1,499 pts: Solo PRINCIPIANTE (Básico).
- * - 1,500 a 2,199 pts: Se desbloquea INTERMEDIO (Medio) y el modo MIXTO.
- * - 2,200 pts en adelante: Se desbloquea AVANZADO (Pro/Erudito).
+ * - 1,500 a 2,499 pts: Se desbloquea INTERMEDIO (Medio) y el modo MIXTO.
+ * - 2,500 pts en adelante: Se desbloquea AVANZADO (Pro/Erudito).
  */
 export const getAvailableDifficulties = (rating: number = 1000): {
   canBasic: boolean;
@@ -78,7 +78,7 @@ export const getAvailableDifficulties = (rating: number = 1000): {
   const r = Math.max(0, rating);
   const canBasic = true; // Siempre disponible
   const canIntermediate = r >= 1500;
-  const canAdvanced = r >= 2200;
+  const canAdvanced = r >= 2500;
   // MIXTO se desbloquea cuando tiene al menos los 2 primeros modos activos (>= 1500 pts)
   const canMixto = canIntermediate;
 

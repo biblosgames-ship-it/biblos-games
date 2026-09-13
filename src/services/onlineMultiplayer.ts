@@ -238,11 +238,44 @@ class OnlineMultiplayerService {
   }
 
   onFriendRoomInvitation(
-    callback: (invite: { roomCode: string; hostName: string; hostAvatar: string; hostCountryFlag: string; hostFriendCode: string; hostRating: number }) => void
+    callback: (invite: { roomCode: string; hostName: string; hostAvatar: string; hostCountryFlag: string; hostFriendCode: string; hostRating: number; hostCountry?: string }) => void
   ) {
     this.socket.on('FRIEND_ROOM_INVITATION', callback);
     return () => {
       this.socket.off('FRIEND_ROOM_INVITATION', callback);
+    };
+  }
+
+  acceptFriendRelation(data: {
+    targetFriendCode: string;
+    myPlayerData: {
+      name: string;
+      code: string;
+      avatar: string;
+      country?: string;
+      countryFlag?: string;
+      rating?: number;
+    };
+  }) {
+    this.socket.emit('ACCEPT_FRIEND_RELATION', data);
+  }
+
+  onFriendRelationEstablished(
+    callback: (data: {
+      targetFriendCode: string;
+      myPlayerData: {
+        name: string;
+        code: string;
+        avatar: string;
+        country?: string;
+        countryFlag?: string;
+        rating?: number;
+      };
+    }) => void
+  ) {
+    this.socket.on('FRIEND_RELATION_ESTABLISHED', callback);
+    return () => {
+      this.socket.off('FRIEND_RELATION_ESTABLISHED', callback);
     };
   }
 

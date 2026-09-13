@@ -693,6 +693,8 @@ interface SavedBoardSession {
   soloTimeElapsed: number;
   isOnline: boolean;
   onlineRoomCode?: string;
+  isGameOver?: boolean;
+  isSurrendered?: boolean;
   timestamp: number;
 }
 
@@ -703,7 +705,7 @@ function getSavedBoardSession(): SavedBoardSession | null {
     const raw = localStorage.getItem(BOARD_SESSION_KEY);
     if (!raw) return null;
     const data: SavedBoardSession = JSON.parse(raw);
-    if (data && data.gameStarted && (Date.now() - (data.timestamp || 0) < 3 * 3600 * 1000)) {
+    if (data && data.gameStarted && !data.isGameOver && !data.isSurrendered && (Date.now() - (data.timestamp || 0) < 3 * 3600 * 1000)) {
       return data;
     }
     return null;
@@ -982,6 +984,7 @@ function BoardGameMode({
     setShowSurrenderConfirm(false);
     playGameSound('wrong');
     triggerHaptic('error');
+    clearSavedBoardSession();
 
     const me = myPlayer;
     const opponent = players.find(p => p.id !== me.id) || players.find(p => !isThisPlayerMe(p)) || players[1] || players[0];
@@ -1006,6 +1009,7 @@ function BoardGameMode({
 
   // Función robusta para finalizar partida y registrar puntuación
   const handleGameVictory = (winner?: Player, completedGoal = true, finalPlayersList?: Player[]) => {
+    clearSavedBoardSession();
     setActiveQuestion(null);
     setShowAnswer(false);
     setSelectedOption(null);
@@ -1602,13 +1606,14 @@ function BoardGameMode({
         setTurnTimeLeft(turnTimeLimit);
         setLogMessage(payload.logMessage);
       } else if (action === 'PLAYER_SURRENDER') {
+        clearSavedBoardSession();
         const winner = players.find(p => String(p.id) === String(payload.winnerId)) || players[0];
         setSurrenderInfo({
           surrenderedName: payload.surrenderedPlayerName || 'El rival',
           isMeSurrendered: false
         });
-        setGameWinner(winner);
         setIsGameOver(true);
+        setGameWinner(winner);
         if (isThisPlayerMe(winner)) {
           playCelebrationSound();
           playGameSound('projection');
@@ -1622,6 +1627,7 @@ function BoardGameMode({
           triggerHaptic('error');
         }
       } else if (action === 'GAME_OVER') {
+        clearSavedBoardSession();
         const winner = players.find(p => String(p.id) === String(payload.winnerId)) || players[0];
         setGameWinner(winner);
         setIsGameOver(true);
@@ -1709,7 +1715,7 @@ function BoardGameMode({
 
   // 💾 Guardado automático continuo del estado de la partida para protegerla ante llamadas o salidas accidentales
   useEffect(() => {
-    if (gameStarted && !isGameOver) {
+    if (gameStarted && !isGameOver && !surrenderInfo) {
       try {
         const session: SavedBoardSession = {
           gameStarted: true,
@@ -1730,18 +1736,21 @@ function BoardGameMode({
           soloTimeElapsed,
           isOnline: Boolean(isOnline),
           onlineRoomCode: onlineRoom?.code,
+          isGameOver: false,
+          isSurrendered: false,
           timestamp: Date.now()
         };
         localStorage.setItem(BOARD_SESSION_KEY, JSON.stringify(session));
       } catch (err) {
         console.error('Error auto-guardando sesión de juego:', err);
       }
-    } else if (isGameOver) {
+    } else if (isGameOver || surrenderInfo) {
       clearSavedBoardSession();
     }
   }, [
     gameStarted,
     isGameOver,
+    surrenderInfo,
     gameSubMode,
     numPlayers,
     players,
@@ -2703,9 +2712,17 @@ function BoardGameMode({
             onClick={() => {
               if (gameStarted && !isGameOver) {
                 if (window.confirm("¿Seguro que deseas abandonar la partida actual y volver al menú principal?")) {
+                  clearSavedBoardSession();
+                  if (isOnline) {
+                    onlineService.leaveRoom();
+                  }
                   onExit();
                 }
               } else {
+                clearSavedBoardSession();
+                if (isOnline) {
+                  onlineService.leaveRoom();
+                }
                 onExit();
               }
             }}
@@ -2876,9 +2893,17 @@ function BoardGameMode({
                       setShowHeaderMenu(false);
                       if (gameStarted && !isGameOver) {
                         if (window.confirm("¿Seguro que deseas abandonar la partida actual y volver al menú principal?")) {
+                          clearSavedBoardSession();
+                          if (isOnline) {
+                            onlineService.leaveRoom();
+                          }
                           onExit();
                         }
                       } else {
+                        clearSavedBoardSession();
+                        if (isOnline) {
+                          onlineService.leaveRoom();
+                        }
                         onExit();
                       }
                     }}
@@ -4366,7 +4391,13 @@ function BoardGameMode({
           setCamera({ x: 50, y: 50, zoom: 1 });
           setLogMessage("🔄 ¡Revancha iniciada! Turno del Jugador 1.");
         }}
-        onExit={() => onExit()}
+        onExit={() => {
+          clearSavedBoardSession();
+          if (isOnline) {
+            onlineService.leaveRoom();
+          }
+          onExit();
+        }}
         onOpenNewRoom={onOpenNewRoom}
       />
 
@@ -4405,6 +4436,9 @@ function BoardGameMode({
                   onClick={() => {
                     setShowExitConfirmModal(false);
                     clearSavedBoardSession();
+                    if (isOnline) {
+                      onlineService.leaveRoom();
+                    }
                     onExit();
                   }}
                   className="w-full py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition active:scale-95 cursor-pointer"
@@ -4984,6 +5018,7 @@ export default function App() {
     hostName: string;
     hostAvatar: string;
     hostCountryFlag: string;
+    hostCountry?: string;
     hostFriendCode: string;
     hostRating: number;
   } | null>(null);
@@ -5018,6 +5053,34 @@ export default function App() {
         playGameSound("correct");
       }
       triggerHaptic("success");
+    });
+    return () => unsub();
+  }, [userProfileState?.name, userProfileState?.rating, isSoundOn]);
+
+  // Escuchar cuando un amigo acepta nuestra relación de amistad en tiempo real
+  useEffect(() => {
+    const unsub = onlineService.onFriendRelationEstablished((data) => {
+      const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+      if (data.targetFriendCode === myCode && data.myPlayerData) {
+        addFriend(
+          data.myPlayerData.name,
+          data.myPlayerData.code || (data.myPlayerData as any).friendCode || 'BIBLOS-FRIEND',
+          data.myPlayerData.avatar || '/avatars/david.jpg',
+          data.myPlayerData.country || 'DO',
+          data.myPlayerData.countryFlag || '🇩🇴',
+          'code',
+          'ACCEPTED'
+        );
+        setFriendsList(getSavedFriends());
+        setFriendInviteNotification(`🎉 ¡${data.myPlayerData.name} ha aceptado tu invitación! Ya son amigos en Biblos Games.`);
+        if (isSoundOn) {
+          playGameSound("correct");
+        }
+        triggerHaptic("success");
+        setTimeout(() => {
+          setFriendInviteNotification(null);
+        }, 8000);
+      }
     });
     return () => unsub();
   }, [userProfileState?.name, userProfileState?.rating, isSoundOn]);
@@ -6277,29 +6340,50 @@ const handleAnswerClick = (index: number) => {
             </button>
           </div>
 
-          <div className="flex gap-2 pt-0.5">
+          <div className="flex flex-col sm:flex-row gap-2 pt-1">
+            {/* Opción 1: Aceptar Amigo y Jugar */}
             <button
               onClick={() => {
                 const invite = incomingFriendInvitation;
                 setIncomingFriendInvitation(null);
                 playSound("correct");
                 triggerHaptic("success");
-                setShowOnlineModal(true);
-                setOnlineSubTab('FRIENDS');
 
+                // 1. Guardar como amigo aceptado
+                addFriend(
+                  invite.hostName,
+                  invite.hostFriendCode,
+                  invite.hostAvatar,
+                  invite.hostCountry || 'DO',
+                  invite.hostCountryFlag || '🇩🇴',
+                  'code',
+                  'ACCEPTED'
+                );
+                setFriendsList(getSavedFriends());
+
+                // 2. Notificar al anfitrión por socket para que también nos agregue
                 const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
-                const pData = {
+                const myPData = {
                   name: userProfileState?.name || 'Amigo Bíblico',
+                  code: myCode,
                   avatar: userProfileState?.avatar || '/avatars/david.jpg',
                   country: userProfileState?.country || 'DO',
                   countryFlag: userProfileState?.countryFlag || '🇩🇴',
                   rating: userProfileState?.rating || 1000,
                   friendCode: myCode
                 };
+                onlineService.acceptFriendRelation({
+                  targetFriendCode: invite.hostFriendCode,
+                  myPlayerData: myPData
+                });
+
+                // 3. Unirse a la sala de juego
+                setShowOnlineModal(true);
+                setOnlineSubTab('FRIENDS');
 
                 onlineService.joinFriendsLobby(
                   invite.roomCode,
-                  pData,
+                  myPData,
                   (lobbyData) => {
                     setFriendsLobbyCode(lobbyData.code);
                     setFriendsLobbyPlayers(lobbyData.players || []);
@@ -6314,14 +6398,61 @@ const handleAnswerClick = (index: number) => {
                   }
                 );
               }}
-              className="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-emerald-950 font-black rounded-xl text-xs uppercase tracking-wider shadow active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 px-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-emerald-950 font-black rounded-xl text-xs uppercase tracking-wider shadow active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5"
             >
-              ✓ Unirme a la Sala
+              🎮 Aceptar y Jugar
             </button>
 
+            {/* Opción 2: Solo Aceptar como Amigo */}
+            <button
+              onClick={() => {
+                const invite = incomingFriendInvitation;
+                setIncomingFriendInvitation(null);
+                playSound("correct");
+                triggerHaptic("success");
+
+                // 1. Guardar como amigo aceptado
+                addFriend(
+                  invite.hostName,
+                  invite.hostFriendCode,
+                  invite.hostAvatar,
+                  invite.hostCountry || 'DO',
+                  invite.hostCountryFlag || '🇩🇴',
+                  'code',
+                  'ACCEPTED'
+                );
+                setFriendsList(getSavedFriends());
+
+                // 2. Notificar al anfitrión por socket para que también nos agregue
+                const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+                const myPData = {
+                  name: userProfileState?.name || 'Amigo Bíblico',
+                  code: myCode,
+                  avatar: userProfileState?.avatar || '/avatars/david.jpg',
+                  country: userProfileState?.country || 'DO',
+                  countryFlag: userProfileState?.countryFlag || '🇩🇴',
+                  rating: userProfileState?.rating || 1000,
+                  friendCode: myCode
+                };
+                onlineService.acceptFriendRelation({
+                  targetFriendCode: invite.hostFriendCode,
+                  myPlayerData: myPData
+                });
+
+                setFriendInviteNotification(`🤝 ¡${invite.hostName} ha sido agregado a tu lista de amigos!`);
+                setTimeout(() => {
+                  setFriendInviteNotification(null);
+                }, 6000);
+              }}
+              className="py-2.5 px-3 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold rounded-xl text-xs uppercase transition cursor-pointer border border-amber-400/40 flex items-center justify-center gap-1"
+            >
+              🤝 Aceptar Amigo
+            </button>
+
+            {/* Opción 3: Rechazar */}
             <button
               onClick={() => setIncomingFriendInvitation(null)}
-              className="py-2.5 px-3.5 bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-white font-bold rounded-xl text-xs uppercase transition cursor-pointer border border-stone-700"
+              className="py-2.5 px-3 bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-white font-bold rounded-xl text-xs uppercase transition cursor-pointer border border-stone-700"
             >
               Rechazar
             </button>
@@ -7031,7 +7162,7 @@ const handleAnswerClick = (index: number) => {
               {/* ⚡ BANNER DE PARTIDA EN CURSO (SI HAY UNA SALA ONLINE O SESIÓN GUARDADA) */}
               {(() => {
                 const activeSession = getSavedBoardSession();
-                const hasActiveGame = Boolean(onlineRoom) || Boolean(activeSession?.gameStarted);
+                const hasActiveGame = Boolean(onlineRoom && onlineRoom.status === 'PLAYING') || Boolean(activeSession?.gameStarted && !activeSession?.isGameOver && !activeSession?.isSurrendered);
                 if (!hasActiveGame) return null;
 
                 const matchTitle = onlineRoom
