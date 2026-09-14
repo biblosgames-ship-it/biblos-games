@@ -177,6 +177,7 @@ import { supabase } from '../supabaseClient';
 
 export interface UserProfile {
   id?: string;
+  friendCode?: string; // Código de amigo único, permanente e inmutable
   name: string;
   avatar: string;
   country?: string;
@@ -260,10 +261,28 @@ export const getOrCreateUserId = (): string => {
   return newId;
 };
 
+export const getUserFriendCode = (profile?: Partial<UserProfile> | null): string => {
+  if (profile?.friendCode && profile.friendCode.trim().length > 0) {
+    return profile.friendCode.trim().toUpperCase();
+  }
+  const namePart = (profile?.name || 'JUGADOR').replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase() || 'BIB';
+  const idStr = profile?.id || 'usr_biblos_guest';
+  let hash = 0;
+  for (let i = 0; i < idStr.length; i++) {
+    hash = (hash * 31 + idStr.charCodeAt(i)) % 9000;
+  }
+  const codeNum = 1000 + Math.abs(hash);
+  return `BIBLOS-${namePart}-${codeNum}`;
+};
+
 export const getDefaultProfile = (): UserProfile => {
   const autoCountry = detectUserCountry();
+  const userId = getOrCreateUserId();
+  const baseProfile: Partial<UserProfile> = { id: userId, name: 'Jugador Bíblico' };
+  const friendCode = getUserFriendCode(baseProfile);
   return {
-    id: getOrCreateUserId(),
+    id: userId,
+    friendCode,
     name: 'Jugador Bíblico',
     avatar: '/avatars/david.jpg',
     country: autoCountry.code,
@@ -291,11 +310,22 @@ export const getUserProfile = (): UserProfile => {
       const parsed = JSON.parse(data);
       const autoCountry = detectUserCountry();
       const userId = parsed.id || getOrCreateUserId();
+      const friendCode = parsed.friendCode || getUserFriendCode({ ...parsed, id: userId });
+
+      // Si no tenía friendCode guardado en localStorage, guardarlo para consistencia permanente
+      if (!parsed.friendCode) {
+        parsed.friendCode = friendCode;
+        try {
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(parsed));
+        } catch {}
+      }
+
       // Garantizar migración transparente de rating y bestSoloScore
       return {
         ...getDefaultProfile(),
         ...parsed,
         id: userId,
+        friendCode,
         isPremium: Boolean(parsed.isPremium),
         premiumUnlockedAt: parsed.premiumUnlockedAt || null,
         country: parsed.country || autoCountry.code,

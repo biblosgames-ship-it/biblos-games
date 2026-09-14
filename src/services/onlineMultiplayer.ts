@@ -52,6 +52,7 @@ class OnlineMultiplayerService {
   private currentRoom: OnlineRoom | null = null;
   private listeners: Array<(room: OnlineRoom) => void> = [];
   private actionListeners: Array<(data: { action: string; payload: any; senderId: string }) => void> = [];
+  private serverUrl: string;
 
   constructor() {
     // Detección inteligente de URL:
@@ -68,11 +69,11 @@ class OnlineMultiplayerService {
       defaultUrl = window.location.origin;
     }
 
-    const serverUrl = import.meta.env.VITE_SOCKET_SERVER_URL || defaultUrl;
+    this.serverUrl = import.meta.env.VITE_SOCKET_SERVER_URL || defaultUrl;
 
-    console.log(`[ONLINE SOCKET] Conectando a servidor: ${serverUrl}`);
+    console.log(`[ONLINE SOCKET] Conectando a servidor: ${this.serverUrl}`);
 
-    this.socket = io(serverUrl, {
+    this.socket = io(this.serverUrl, {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true,
@@ -90,7 +91,7 @@ class OnlineMultiplayerService {
     });
 
     this.socket.on('connect_error', (err) => {
-      console.warn(`[ONLINE SOCKET] Error de conexión con ${serverUrl}:`, err.message);
+      console.warn(`[ONLINE SOCKET] Error de conexión con ${this.serverUrl}:`, err.message);
     });
 
     // Escuchar actualizaciones de la sala en tiempo real desde el servidor
@@ -111,12 +112,90 @@ class OnlineMultiplayerService {
     voiceChatService.setSocket(this.socket);
   }
 
+  getServerUrl(): string {
+    return this.serverUrl;
+  }
+
   getSocket(): Socket {
     return this.socket;
   }
 
   getSocketId(): string {
     return this.socket.id || '';
+  }
+
+  // Sincronización de Amigos por Enlace (Link)
+  registerUserCode(userCode: string) {
+    if (this.socket && userCode) {
+      this.socket.emit('REGISTER_USER_CODE', userCode);
+    }
+  }
+
+  notifyFriendLinkJoined(data: {
+    inviterCode: string;
+    joinedFriend: {
+      name: string;
+      code: string;
+      avatar: string;
+      country?: string;
+      countryFlag?: string;
+      rating?: number;
+    };
+  }) {
+    if (this.socket) {
+      this.socket.emit('NOTIFY_FRIEND_LINK_JOINED', data);
+    }
+    // Fallback HTTP directo para máxima resiliencia
+    try {
+      fetch(`${this.serverUrl}/api/friend-link-joined`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).catch(() => {});
+    } catch {}
+  }
+
+  onFriendJoinedViaLink(
+    callback: (joinedFriend: {
+      name: string;
+      code: string;
+      avatar: string;
+      country?: string;
+      countryFlag?: string;
+      rating?: number;
+    }) => void
+  ) {
+    this.socket.on('FRIEND_JOINED_VIA_LINK', callback);
+    return () => {
+      this.socket.off('FRIEND_JOINED_VIA_LINK', callback);
+    };
+  }
+
+  onSyncPendingFriends(
+    callback: (pendingFriends: Array<{
+      name: string;
+      code: string;
+      avatar: string;
+      country?: string;
+      countryFlag?: string;
+      rating?: number;
+    }>) => void
+  ) {
+    this.socket.on('SYNC_PENDING_FRIENDS', callback);
+    return () => {
+      this.socket.off('SYNC_PENDING_FRIENDS', callback);
+    };
+  }
+
+  async checkPendingFriendsHttp(userCode: string): Promise<Array<any>> {
+    try {
+      const res = await fetch(`${this.serverUrl}/api/pending-friends?code=${encodeURIComponent(userCode)}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.pendingFriends || [];
+      }
+    } catch {}
+    return [];
   }
 
   // 0. Matchmaking 1 vs 1 (Cola en tiempo real)

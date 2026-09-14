@@ -42,10 +42,28 @@ export function getSavedFriends(): Friend[] {
         ...f,
         status: f.status || "ACCEPTED"
       }));
-    if (cleaned.length !== parsed.length) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+
+    // Deduplicación estricta por código y nombre para evitar repeticiones
+    const seenCodes = new Set<string>();
+    const seenNames = new Set<string>();
+    const deduplicated: Friend[] = [];
+
+    for (const friend of cleaned) {
+      const cleanCode = (friend.code || '').trim().toUpperCase();
+      const cleanName = (friend.name || '').trim().toLowerCase();
+
+      if (cleanCode && seenCodes.has(cleanCode)) continue;
+      if (cleanName && seenNames.has(cleanName)) continue;
+
+      if (cleanCode) seenCodes.add(cleanCode);
+      if (cleanName) seenNames.add(cleanName);
+      deduplicated.push(friend);
     }
-    return cleaned;
+
+    if (deduplicated.length !== parsed.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(deduplicated));
+    }
+    return deduplicated;
   } catch {
     return [];
   }
@@ -83,16 +101,42 @@ export function addFriend(
   status: FriendStatus = "ACCEPTED"
 ): Friend {
   const current = getSavedFriends();
-  const cleanCode = code.trim().toUpperCase();
+  const cleanCode = (code || '').trim().toUpperCase();
+  const cleanName = (name || '').trim().toLowerCase();
 
-  if (isUserBlocked(cleanCode)) {
+  if (cleanCode && isUserBlocked(cleanCode)) {
     throw new Error("Este usuario se encuentra en tu lista de bloqueados.");
   }
 
-  const existing = current.find(f => f.code === cleanCode);
+  // Comprobar si ya existe por código O por nombre para evitar duplicados
+  const existing = current.find(f => 
+    (cleanCode && f.code && f.code.trim().toUpperCase() === cleanCode) ||
+    (cleanName && f.name && f.name.trim().toLowerCase() === cleanName)
+  );
+
   if (existing) {
-    if (existing.status !== status) {
+    let changed = false;
+    if (existing.status !== status && status === "ACCEPTED") {
       existing.status = status;
+      changed = true;
+    }
+    if (cleanCode && existing.code !== cleanCode) {
+      existing.code = cleanCode;
+      changed = true;
+    }
+    if (avatar && existing.avatar !== avatar) {
+      existing.avatar = avatar;
+      changed = true;
+    }
+    if (country && existing.country !== country) {
+      existing.country = country;
+      changed = true;
+    }
+    if (countryFlag && existing.countryFlag !== countryFlag) {
+      existing.countryFlag = countryFlag;
+      changed = true;
+    }
+    if (changed) {
       saveFriends(current);
     }
     return existing;
@@ -102,7 +146,7 @@ export function addFriend(
     id: `fr_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
     name: name.trim() || "Amigo Bíblico",
     avatar: avatar || "/avatars/david.jpg",
-    code: cleanCode,
+    code: cleanCode || `BIB-${Math.floor(1000 + Math.random() * 9000)}`,
     country,
     countryFlag,
     rating: 1000 + Math.floor(Math.random() * 200),
@@ -112,7 +156,13 @@ export function addFriend(
     socialPlatform
   };
 
-  const updated = [newFriend, ...current.filter(f => f.code !== newFriend.code)];
+  const updated = [
+    newFriend,
+    ...current.filter(f => 
+      (cleanCode ? f.code.trim().toUpperCase() !== cleanCode : true) &&
+      (cleanName ? f.name.trim().toLowerCase() !== cleanName : true)
+    )
+  ];
   saveFriends(updated);
   return newFriend;
 }

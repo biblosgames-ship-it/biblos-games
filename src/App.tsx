@@ -156,7 +156,7 @@ import { triggerHaptic } from './services/nativeHaptics';
 import { onlineService, OnlineRoom } from './services/onlineMultiplayer';
 import { calculateFinalScore, calculateSoloScore, SoloScoreResult, getLeaderboard, fetchGlobalLeaderboardFromCloud, saveLeaderboardEntry, LeaderboardEntry } from './services/leaderboardService';
 import { downloadGameResultsImage, downloadUserProfileImage, shareGameResults, shareUserProfile, shareFriendInviteCard, downloadFriendInviteCard } from './services/shareService';
-import { BIBLE_AVATARS, isAvatarAvailableForUser, getUserProfile, getRankTier, getNextRankTierInfo, getAvailableDifficulties, checkAndClaimLevelRewards, RANK_TIERS, RankTier, recordAnswer, recordGameCompleted, saveUserProfile, updateUserRating, updateUserSoloScore, UserProfile, COUNTRIES, CountryOption, isUserPremium, unlockPremiumVersion, isThemeAvailable, FREE_AVAILABLE_THEMES, applyAbandonSanction, checkMatchmakingBanStatus } from './services/userProfile';
+import { BIBLE_AVATARS, isAvatarAvailableForUser, getUserProfile, getUserFriendCode, getRankTier, getNextRankTierInfo, getAvailableDifficulties, checkAndClaimLevelRewards, RANK_TIERS, RankTier, recordAnswer, recordGameCompleted, saveUserProfile, updateUserRating, updateUserSoloScore, UserProfile, COUNTRIES, CountryOption, isUserPremium, unlockPremiumVersion, isThemeAvailable, FREE_AVAILABLE_THEMES, applyAbandonSanction, checkMatchmakingBanStatus } from './services/userProfile';
 import { GameOverCeremonyModal } from './GameOverCeremonyModal';
 import { CopaBiblosTournamentMode } from './components/CopaBiblosTournamentMode';
 import { DailyChallengeModal } from './components/DailyChallengeModal';
@@ -4721,7 +4721,7 @@ function BoardGameMode({
                 type="button"
                 onClick={async () => {
                   playGameSound("select");
-                  const myCode = `BIBLOS-${(userProfile?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfile?.rating || 1000) % 9000)}`;
+                  const myCode = getUserFriendCode(userProfile);
                   const inviteUrl = generateFriendInviteUrl({
                     name: userProfile?.name || 'Jugador Bíblico',
                     code: myCode,
@@ -5045,7 +5045,7 @@ export default function App() {
   // Escuchar invitaciones en vivo de amigos en la red
   useEffect(() => {
     const unsub = onlineService.onFriendRoomInvitation((inv) => {
-      const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+      const myCode = getUserFriendCode(userProfileState);
       if (inv.hostFriendCode === myCode || inv.hostName === userProfileState?.name) return;
 
       setIncomingFriendInvitation(inv);
@@ -5055,12 +5055,12 @@ export default function App() {
       triggerHaptic("success");
     });
     return () => unsub();
-  }, [userProfileState?.name, userProfileState?.rating, isSoundOn]);
+  }, [userProfileState?.name, userProfileState?.friendCode, isSoundOn]);
 
   // Escuchar cuando un amigo acepta nuestra relación de amistad en tiempo real
   useEffect(() => {
     const unsub = onlineService.onFriendRelationEstablished((data) => {
-      const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+      const myCode = getUserFriendCode(userProfileState);
       if (data.targetFriendCode === myCode && data.myPlayerData) {
         addFriend(
           data.myPlayerData.name,
@@ -5083,7 +5083,89 @@ export default function App() {
       }
     });
     return () => unsub();
-  }, [userProfileState?.name, userProfileState?.rating, isSoundOn]);
+  }, [userProfileState?.name, userProfileState?.friendCode, isSoundOn]);
+
+  // Sincronización mutua en vivo y offline de amigos que se unen con nuestro enlace
+  useEffect(() => {
+    const myCode = getUserFriendCode(userProfileState);
+    if (myCode) {
+      onlineService.registerUserCode(myCode);
+
+      // Comprobar si amigos se conectaron mientras el usuario no estaba en la app
+      onlineService.checkPendingFriendsHttp(myCode).then((pending) => {
+        if (pending && pending.length > 0) {
+          pending.forEach(f => {
+            addFriend(
+              f.name,
+              f.code,
+              f.avatar || '/avatars/david.jpg',
+              f.country || 'DO',
+              f.countryFlag || '🇩🇴',
+              'link',
+              'ACCEPTED'
+            );
+          });
+          setFriendsList(getSavedFriends());
+          setFriendInviteNotification(`🎉 ¡${pending.length} nuevo(s) hermano(s) se sumaron a tu lista de amigos!`);
+          if (isSoundOn) {
+            playGameSound("correct");
+          }
+          triggerHaptic("success");
+          setTimeout(() => setFriendInviteNotification(null), 8000);
+        }
+      });
+    }
+
+    // Amigo que se une en tiempo real mediante nuestro enlace
+    const unsubLink = onlineService.onFriendJoinedViaLink((joinedFriend) => {
+      addFriend(
+        joinedFriend.name,
+        joinedFriend.code,
+        joinedFriend.avatar || '/avatars/david.jpg',
+        joinedFriend.country || 'DO',
+        joinedFriend.countryFlag || '🇩🇴',
+        'link',
+        'ACCEPTED'
+      );
+      setFriendsList(getSavedFriends());
+      setFriendInviteNotification(`🎉 ¡${joinedFriend.name} se unió con tu enlace! Ahora son amigos en Biblos Games.`);
+      if (isSoundOn) {
+        playGameSound("correct");
+      }
+      triggerHaptic("success");
+      confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
+      setTimeout(() => setFriendInviteNotification(null), 8000);
+    });
+
+    // Amigos pendientes entregados por WebSocket
+    const unsubSync = onlineService.onSyncPendingFriends((pendingList) => {
+      if (pendingList && pendingList.length > 0) {
+        pendingList.forEach(f => {
+          addFriend(
+            f.name,
+            f.code,
+            f.avatar || '/avatars/david.jpg',
+            f.country || 'DO',
+            f.countryFlag || '🇩🇴',
+            'link',
+            'ACCEPTED'
+          );
+        });
+        setFriendsList(getSavedFriends());
+        setFriendInviteNotification(`🎉 ¡${pendingList.length} amigo(s) se conectaron con tu enlace!`);
+        if (isSoundOn) {
+          playGameSound("correct");
+        }
+        triggerHaptic("success");
+        setTimeout(() => setFriendInviteNotification(null), 8000);
+      }
+    });
+
+    return () => {
+      unsubLink();
+      unsubSync();
+    };
+  }, [userProfileState?.id, userProfileState?.name, userProfileState?.friendCode, isSoundOn]);
 
   // Economía Bíblica: Talentos (Créditos, Apuestas, Recarga Diaria)
   const [userTalents, setUserTalents] = useState<number>(() => getTalentsBalance());
@@ -5144,8 +5226,24 @@ export default function App() {
       const inviterFlag = params.get('friendFlag') || '🇩🇴';
 
       if (inviterCode && inviterName) {
-        addFriend(inviterName, inviterCode, inviterAvatar, inviterCountry, inviterFlag, 'link');
+        // 1. Guardar localmente al amigo en la lista del invitado
+        addFriend(inviterName, inviterCode, inviterAvatar, inviterCountry, inviterFlag, 'link', 'ACCEPTED');
         setFriendsList(getSavedFriends());
+
+        // 2. Notificar inmediatamente al invitador para que el nuevo amigo aparezca en el perfil de quien envió el link
+        const myProfile = getUserProfile();
+        const myCode = getUserFriendCode(myProfile);
+        onlineService.notifyFriendLinkJoined({
+          inviterCode,
+          joinedFriend: {
+            name: myProfile.name || 'Hermano en la Fe',
+            code: myCode,
+            avatar: myProfile.avatar || '/avatars/david.jpg',
+            country: myProfile.country || 'DO',
+            countryFlag: myProfile.countryFlag || '🇩🇴',
+            rating: myProfile.rating || 1000
+          }
+        });
         
         // Recompensa por referido (+2 Talentos para el invitado)
         const refReward = claimReferralBonus(false, inviterName);
@@ -6362,7 +6460,7 @@ const handleAnswerClick = (index: number) => {
                 setFriendsList(getSavedFriends());
 
                 // 2. Notificar al anfitrión por socket para que también nos agregue
-                const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+                const myCode = getUserFriendCode(userProfileState);
                 const myPData = {
                   name: userProfileState?.name || 'Amigo Bíblico',
                   code: myCode,
@@ -6424,7 +6522,7 @@ const handleAnswerClick = (index: number) => {
                 setFriendsList(getSavedFriends());
 
                 // 2. Notificar al anfitrión por socket para que también nos agregue
-                const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+                const myCode = getUserFriendCode(userProfileState);
                 const myPData = {
                   name: userProfileState?.name || 'Amigo Bíblico',
                   code: myCode,
@@ -6660,7 +6758,7 @@ const handleAnswerClick = (index: number) => {
                 <button
                   onClick={async () => {
                     playSound("select");
-                    const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                    const myCode = getUserFriendCode(userProfileState);
                     const inviteUrl = generateFriendInviteUrl({
                       name: userProfileState.name || 'Jugador Bíblico',
                       code: myCode,
@@ -6815,7 +6913,7 @@ const handleAnswerClick = (index: number) => {
                 type="button"
                 onClick={async () => {
                   playSound("select");
-                  const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                  const myCode = getUserFriendCode(userProfileState);
                   const inviteUrl = generateFriendInviteUrl({
                     name: userProfileState.name || 'Jugador Bíblico',
                     code: myCode,
@@ -9252,7 +9350,7 @@ const handleAnswerClick = (index: number) => {
                         type="button"
                         onClick={async () => {
                           playSound("select");
-                          const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                          const myCode = getUserFriendCode(userProfileState);
                           const inviteUrl = generateFriendInviteUrl({
                             name: userProfileState.name || 'Jugador Bíblico',
                             code: myCode,
@@ -9388,7 +9486,7 @@ const handleAnswerClick = (index: number) => {
 
                 {/* 📌 VENTANA 6: MIS AMIGOS & INVITACIONES */}
                 {profileSection === 'FRIENDS' && (() => {
-                  const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                  const myCode = getUserFriendCode(userProfileState);
                   const inviteUrl = generateFriendInviteUrl({
                     name: userProfileState.name || 'Jugador Bíblico',
                     code: myCode,
@@ -9893,7 +9991,7 @@ const handleAnswerClick = (index: number) => {
                       type="button"
                       onClick={async () => {
                         playSound("select");
-                        const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                        const myCode = getUserFriendCode(userProfileState);
                         const inviteUrl = generateFriendInviteUrl({
                           name: userProfileState.name || 'Jugador Bíblico',
                           code: myCode,
@@ -11722,7 +11820,7 @@ const handleAnswerClick = (index: number) => {
                           {activeFriendLobbies.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
                               {activeFriendLobbies.map((lobby) => {
-                                const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+                                const myCode = getUserFriendCode(userProfileState);
                                 const isMyOwnLobby = lobby.hostFriendCode === myCode || lobby.code === friendsLobbyCode;
 
                                 return (
@@ -11842,7 +11940,7 @@ const handleAnswerClick = (index: number) => {
                                   {userProfileState.name || 'Jugador Bíblico'}
                                 </h4>
                                 <p className="text-[10px] font-mono text-amber-400/90 font-bold">
-                                  BIBLOS-{(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-{Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}
+                                  {getUserFriendCode(userProfileState)}
                                 </p>
                               </div>
 
@@ -11993,7 +12091,7 @@ const handleAnswerClick = (index: number) => {
                               <button
                                 onClick={() => {
                                   playSound("select");
-                                  const myCode = `BIBLOS-${(userProfileState?.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState?.rating || 1000) % 9000)}`;
+                                  const myCode = getUserFriendCode(userProfileState);
                                   const pData = {
                                     name: userProfileState?.name || 'Jugador Bíblico',
                                     avatar: userProfileState?.avatar || '/avatars/david.jpg',
@@ -12298,7 +12396,7 @@ const handleAnswerClick = (index: number) => {
                                         {userProfileState.name || 'Jugador Bíblico'}
                                       </h4>
                                       <span className="text-[10px] font-mono font-bold text-amber-300">
-                                        Código: BIBLOS-{(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-{Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}
+                                        Código: {getUserFriendCode(userProfileState)}
                                       </span>
                                     </div>
                                   </div>
@@ -12334,7 +12432,7 @@ const handleAnswerClick = (index: number) => {
                                 <button
                                   onClick={async () => {
                                     playSound("select");
-                                    const myCode = `BIBLOS-${(userProfileState.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (userProfileState.rating || 1000) % 9000)}`;
+                                    const myCode = getUserFriendCode(userProfileState);
                                     const inviteUrl = generateFriendInviteUrl({
                                       name: userProfileState.name || 'Jugador Bíblico',
                                       code: myCode,

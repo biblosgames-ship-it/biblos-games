@@ -1,7 +1,7 @@
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { toPng } from 'html-to-image';
-import { UserProfile, getRankTier } from './userProfile';
+import { UserProfile, getRankTier, getUserFriendCode } from './userProfile';
 import { generateFriendInviteUrl, getAppPublicUrl } from './friendsService';
 
 /**
@@ -178,7 +178,7 @@ export const shareUserProfile = async (
   profile: UserProfile,
   customInviteUrl?: string
 ): Promise<{ shared: boolean; copied: boolean }> => {
-  const myCode = `BIBLOS-${(profile.name || 'JUGADOR').substring(0, 3).toUpperCase()}-${Math.floor(1000 + (profile.rating || 1000) % 9000)}`;
+  const myCode = getUserFriendCode(profile);
   const inviteUrl = customInviteUrl || generateFriendInviteUrl({
     name: profile.name || 'Jugador Bíblico',
     code: myCode,

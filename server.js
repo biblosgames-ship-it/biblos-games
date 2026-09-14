@@ -28,6 +28,10 @@ const MIME_TYPES = {
 };
 
 const PORT = process.env.PORT || 4000;
+
+// Sincronización de amistades iniciadas desde enlace compartido (memoria resiliente)
+const pendingFriendshipsByCode = new Map();
+
 const httpServer = createServer((req, res) => {
   if (fs.existsSync(DIST_PATH)) {
     try {
@@ -35,7 +39,45 @@ const httpServer = createServer((req, res) => {
       let pathname = decodeURIComponent(parsedUrl.pathname);
       if (pathname === '/api/version') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-        return res.end(JSON.stringify({ version: '1.0.4', deployedAt: new Date().toISOString(), status: 'OK' }));
+        return res.end(JSON.stringify({ version: '1.0.5', deployedAt: new Date().toISOString(), status: 'OK' }));
+      }
+
+      // Endpoint para registrar amistad desde enlace compartido (HTTP fallback)
+      if (pathname === '/api/friend-link-joined' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', () => {
+          try {
+            const data = JSON.parse(body);
+            const inviterCode = (data.inviterCode || '').trim().toUpperCase();
+            const joinedFriend = data.joinedFriend;
+            if (inviterCode && joinedFriend) {
+              console.log(`[HTTP ENLACE] ${joinedFriend.name} se unió con el enlace de ${inviterCode}`);
+              io.to('user_' + inviterCode).emit('FRIEND_JOINED_VIA_LINK', joinedFriend);
+
+              const existing = pendingFriendshipsByCode.get(inviterCode) || [];
+              if (!existing.some(f => (f.code && f.code === joinedFriend.code) || (f.name && f.name.toLowerCase() === joinedFriend.name.toLowerCase()))) {
+                existing.push(joinedFriend);
+                pendingFriendshipsByCode.set(inviterCode, existing);
+              }
+            }
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ success: true }));
+          } catch (e) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: e.message }));
+          }
+        });
+        return;
+      }
+
+      // Endpoint para consultar amigos que se unieron por enlace mientras el usuario estuvo desconectado
+      if (pathname === '/api/pending-friends' && req.method === 'GET') {
+        const code = (parsedUrl.searchParams.get('code') || '').trim().toUpperCase();
+        const list = pendingFriendshipsByCode.get(code) || [];
+        pendingFriendshipsByCode.delete(code);
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+        return res.end(JSON.stringify({ pendingFriends: list }));
       }
       
       let filePath = path.join(DIST_PATH, pathname);
@@ -502,6 +544,37 @@ io.on('connection', (socket) => {
       });
     });
     socket.emit('ACTIVE_FRIEND_LOBBIES_UPDATE', list);
+  });
+
+  socket.on('REGISTER_USER_CODE', (userCode) => {
+    if (!userCode) return;
+    const cleanCode = userCode.trim().toUpperCase();
+    socket.join('user_' + cleanCode);
+    console.log(`[SOCKET] Usuario registrado en canal personal: user_${cleanCode}`);
+
+    // Entregar amigos pendientes acumulados mientras estuvo ausente
+    const pending = pendingFriendshipsByCode.get(cleanCode);
+    if (pending && pending.length > 0) {
+      console.log(`[SOCKET] Entregando ${pending.length} amigos pendientes a ${cleanCode}`);
+      socket.emit('SYNC_PENDING_FRIENDS', pending);
+      pendingFriendshipsByCode.delete(cleanCode);
+    }
+  });
+
+  socket.on('NOTIFY_FRIEND_LINK_JOINED', ({ inviterCode, joinedFriend }) => {
+    if (!inviterCode || !joinedFriend) return;
+    const cleanInviter = inviterCode.trim().toUpperCase();
+    console.log(`[SOCKET ENLACE] Notificando a invitador ${cleanInviter} de nuevo amigo: ${joinedFriend.name}`);
+
+    // Notificar al invitador en vivo si está conectado
+    io.to('user_' + cleanInviter).emit('FRIEND_JOINED_VIA_LINK', joinedFriend);
+
+    // Guardar en pendientes por si el invitador no está en línea en este momento
+    const existing = pendingFriendshipsByCode.get(cleanInviter) || [];
+    if (!existing.some(f => (f.code && f.code === joinedFriend.code) || (f.name && f.name.toLowerCase() === joinedFriend.name.toLowerCase()))) {
+      existing.push(joinedFriend);
+      pendingFriendshipsByCode.set(cleanInviter, existing);
+    }
   });
 
   socket.on('ACCEPT_FRIEND_RELATION', (data) => {
