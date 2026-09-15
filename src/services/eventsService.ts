@@ -155,8 +155,8 @@ export function getWeeklyEventConfig(): WeeklyEvent {
     }
     const parsed = JSON.parse(raw);
     const targetTime = parsed.nextEventDate ? new Date(parsed.nextEventDate).getTime() : 0;
-    // Si la fecha objetivo ya pasó (más allá de los 10 minutos de Check-In), recalcular para el próximo domingo
-    if (!targetTime || targetTime < Date.now() - 1000 * 60 * 10) {
+    // Si la fecha objetivo ya pasó por más de 2 horas (duración completa de la copa), recalcular para el próximo domingo
+    if (!targetTime || targetTime < Date.now() - 1000 * 60 * 60 * 2) {
       parsed.nextEventDate = getNextSundayDateISO();
       parsed.title = '🏆 LA COPA BIBLOS';
       parsed.subtitle = '“Cada domingo, el mundo se conecta para jugar la Biblia.”';

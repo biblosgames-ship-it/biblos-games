@@ -175,7 +175,7 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
   const [gracePeriodSecondsLeft, setGracePeriodSecondsLeft] = useState<number | null>(null);
   const [firstFinisherName, setFirstFinisherName] = useState<string | null>(null);
 
-  // SISTEMA EXCLUSIVO Y SECRETO DE ADMINISTRADOR (GESTO OCULTO + PIN)
+  // SISTEMA EXCLUSIVO Y SECRETO DE ADMINISTRADOR (GESTO OCULTO EN EL LOGO + PIN)
   const [adminTapCount, setAdminTapCount] = useState<number>(0);
   const [showPinModal, setShowPinModal] = useState<boolean>(false);
   const [enteredPin, setEnteredPin] = useState<string>("");
@@ -183,6 +183,12 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
   const [adminJsonInput, setAdminJsonInput] = useState<string>("");
   const [adminSaveMessage, setAdminSaveMessage] = useState<string>("");
+  const [adminActiveTab, setAdminActiveTab] = useState<"SCHEDULE" | "QUESTIONS">("SCHEDULE");
+  const [adminEventTitle, setAdminEventTitle] = useState<string>("");
+  const [adminEventSubtitle, setAdminEventSubtitle] = useState<string>("");
+  const [adminScheduleMode, setAdminScheduleMode] = useState<"TODAY" | "DATETIME" | "NOW">("TODAY");
+  const [adminTimeToday, setAdminTimeToday] = useState<string>("18:00");
+  const [adminCustomDateTime, setAdminCustomDateTime] = useState<string>("");
 
   const [players, setPlayers] = useState<CopaPlayer[]>(() => {
     const me: CopaPlayer = {
@@ -227,8 +233,8 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
       const targetDate = new Date(weeklyEvent.nextEventDate);
       const diff = targetDate.getTime() - now.getTime();
 
-      const isSundayNow = now.getUTCDay() === 0;
-      const isLiveWindow = diff <= 0 && diff > -1000 * 60 * 10 && isSundayNow;
+      // Permitir sala en vivo para cualquier día (no restringido a domingos) durante el periodo de check-in (20 minutos)
+      const isLiveWindow = diff <= 0 && diff > -1000 * 60 * 20;
 
       if (isLiveWindow) {
         setIsCheckinActive(true);
@@ -242,8 +248,14 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
         }
       } else {
         setIsCheckinActive(false);
-        if (diff <= 0) {
+        // Solo resetear si ya pasaron más de 2 horas desde el inicio programado
+        if (diff <= -1000 * 60 * 60 * 2) {
           setWeeklyEvent(getWeeklyEventConfig());
+          return;
+        }
+
+        if (diff <= 0) {
+          setEventCountdownStr("🔴 Torneo en desarrollo");
           return;
         }
 
@@ -251,7 +263,8 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const secs = Math.floor((diff % (1000 * 60)) / 1000);
-        setEventCountdownStr(`${days}d ${hours.toString().padStart(2, "0")}h ${mins.toString().padStart(2, "0")}m ${secs.toString().padStart(2, "0")}s`);
+        const dayPrefix = days > 0 ? `${days}d ` : "";
+        setEventCountdownStr(`${dayPrefix}${hours.toString().padStart(2, "0")}h ${mins.toString().padStart(2, "0")}m ${secs.toString().padStart(2, "0")}s`);
       }
     };
 
@@ -358,7 +371,7 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
 
   // MOTOR EN TIEMPO REAL CON RITMO HUMANO Y REALISTA PARA LOS BIBLOSBOTS
   useEffect(() => {
-    if (roundStatus !== "RACING" || !isPracticeMode || showGoalBanner) return;
+    if (roundStatus !== "RACING" || showGoalBanner) return;
 
     const stepInterval = setInterval(() => {
       setPlayers(prevPlayers => {
@@ -558,6 +571,48 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
     setShowGoalBanner(false);
     setGracePeriodSecondsLeft(null);
     setFirstFinisherName(null);
+
+    // Inicializar competidores si la sala no tenía aún
+    setPlayers(prev => {
+      if (prev.length > 1) return prev;
+      const me: CopaPlayer = prev[0] || {
+        id: userProfile?.name || "me",
+        name: userProfile?.name || "Jugador Bíblico",
+        avatar: userProfile?.avatar || "/avatars/david.jpg",
+        country: userProfile?.country || "DO",
+        countryFlag: userProfile?.countryFlag || "🇩🇴",
+        isMe: true,
+        score: 0,
+        roundScore: 0,
+        correctCount: 0,
+        totalAnswered: 0,
+        currentTile: 0,
+        hasAnsweredCurrent: false,
+        lastPointsEarned: 0,
+        isEliminated: false,
+        hasFinishedRace: false,
+        diceRollIndex: 0,
+        answeredQuestionTiles: [],
+        botStepsRemaining: 0,
+        isWaitingOnQuestion: false
+      };
+
+      const botsWithTile0 = BIBLOS_BOTS.map((b, i) => ({
+        ...b,
+        currentTile: 0,
+        score: 0,
+        roundScore: 0,
+        hasFinishedRace: false,
+        diceRollIndex: 0,
+        answeredQuestionTiles: [],
+        botStepsRemaining: 0,
+        isWaitingOnQuestion: false,
+        botNextRollCountdown: (i + 1) * 4
+      }));
+
+      return [me, ...botsWithTile0];
+    });
+
     setRoundStatus("RACING");
     setCamera({ x: 50, y: 50, zoom: 1 });
     if (playSound) playSound("select");
@@ -595,11 +650,26 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
         ? weeklyEvent.customQuestions
         : DEFAULT_WEEKLY_EVENT.customQuestions;
 
+      setAdminEventTitle(weeklyEvent.title || "🏆 GRAN OLIMPIADA BÍBLICA");
+      setAdminEventSubtitle(weeklyEvent.subtitle || "“Compitiendo en vivo por la gloria del saber bíblico.”");
+      
+      const eventD = new Date(weeklyEvent.nextEventDate || Date.now());
+      const hh = String(eventD.getHours()).padStart(2, "0");
+      const mm = String(eventD.getMinutes()).padStart(2, "0");
+      setAdminTimeToday(`${hh}:${mm}`);
+
+      const year = eventD.getFullYear();
+      const month = String(eventD.getMonth() + 1).padStart(2, "0");
+      const day = String(eventD.getDate()).padStart(2, "0");
+      setAdminCustomDateTime(`${year}-${month}-${day}T${hh}:${mm}`);
+
       setAdminJsonInput(JSON.stringify({
         title: weeklyEvent.title,
         theme: weeklyEvent.theme,
         customQuestions: questionsToUse
       }, null, 2));
+      setAdminActiveTab("SCHEDULE");
+      setAdminSaveMessage("");
       setShowAdminModal(true);
     } else {
       setPinError("❌ PIN de Administrador incorrecto.");
@@ -858,41 +928,114 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
     if (playSound) playSound("select");
   };
 
+  const handleQuickAddMinutes = (minutesToAdd: number) => {
+    const d = new Date(Date.now() + minutesToAdd * 60 * 1000);
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    setAdminTimeToday(`${hh}:${mm}`);
+    setAdminScheduleMode("TODAY");
+  };
+
   const handleSaveCustomTournamentConfig = () => {
     try {
-      const parsed = JSON.parse(adminJsonInput);
-      if (parsed.customQuestions && Array.isArray(parsed.customQuestions)) {
-        const updated: WeeklyEvent = {
-          ...weeklyEvent,
-          ...parsed,
-          nextEventDate: parsed.nextEventDate || weeklyEvent.nextEventDate
-        };
-        saveWeeklyEventConfig(updated);
-        setWeeklyEvent(updated);
+      let questionsToUse = weeklyEvent.customQuestions || DEFAULT_WEEKLY_EVENT.customQuestions || [];
+      
+      // Si el usuario editó o incluyó preguntas en el editor JSON
+      if (adminJsonInput.trim()) {
+        try {
+          const parsed = JSON.parse(adminJsonInput);
+          if (parsed.customQuestions && Array.isArray(parsed.customQuestions) && parsed.customQuestions.length > 0) {
+            questionsToUse = parsed.customQuestions;
 
-        // 🌟 INTEGRACIÓN AUTOMÁTICA: Guardar en el Banco General de Preguntas de la App
-        const adaptedForMainBank: Question[] = parsed.customQuestions.map((q: any, idx: number) => ({
-          id: q.id || `copa_q_${Date.now()}_${idx}`,
-          mode: q.mode || 'TABLERO',
-          period: q.period || 'El Principio',
-          difficulty: q.difficulty || 'BASIC',
-          question: q.question,
-          options: q.options,
-          correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : (q.correct ?? 0),
-          reference: q.reference || 'Biblia'
-        }));
-        saveCustomQuestions(adaptedForMainBank);
-
-        setAdminSaveMessage("✅ ¡Guardado con éxito! Las preguntas se integraron a la Copa y al Banco Oficial de la App.");
-        setTimeout(() => {
-          setShowAdminModal(false);
-          setAdminSaveMessage("");
-        }, 1800);
-      } else {
-        setAdminSaveMessage("⚠️ El JSON debe contener un array 'customQuestions'.");
+            // 🌟 INTEGRACIÓN AUTOMÁTICA: Guardar en el Banco General de Preguntas de la App
+            const adaptedForMainBank: Question[] = parsed.customQuestions.map((q: any, idx: number) => ({
+              id: q.id || `copa_q_${Date.now()}_${idx}`,
+              mode: q.mode || 'TABLERO',
+              period: q.period || 'El Principio',
+              difficulty: q.difficulty || 'BASIC',
+              question: q.question,
+              options: q.options,
+              correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : (q.correct ?? 0),
+              reference: q.reference || 'Biblia'
+            }));
+            saveCustomQuestions(adaptedForMainBank);
+          }
+        } catch (jsonErr: any) {
+          if (adminActiveTab === "QUESTIONS") {
+            setAdminSaveMessage("❌ Error en el JSON de preguntas: " + jsonErr.message);
+            return;
+          }
+        }
       }
+
+      // Calcular fecha objetivo según el modo
+      let targetDate = new Date();
+      let scheduledTimeStr = "";
+      let dayOfWeekStr = "Hoy";
+
+      if (adminScheduleMode === "NOW") {
+        // Iniciar en el pasado inmediato (5 segundos antes) para activar Check-In de inmediato
+        targetDate = new Date(Date.now() - 5000);
+        scheduledTimeStr = "🔴 Sala en Vivo Abierta";
+        dayOfWeekStr = "Hoy";
+      } else if (adminScheduleMode === "TODAY") {
+        const parts = adminTimeToday.split(":");
+        const hh = parseInt(parts[0] || "0", 10);
+        const mm = parseInt(parts[1] || "0", 10);
+        const d = new Date();
+        d.setHours(hh, mm, 0, 0);
+        targetDate = d;
+        const timeFormatted = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
+        scheduledTimeStr = `Hoy a las ${timeFormatted}`;
+        dayOfWeekStr = "Hoy";
+      } else {
+        if (adminCustomDateTime) {
+          targetDate = new Date(adminCustomDateTime);
+        } else {
+          targetDate = new Date(weeklyEvent.nextEventDate || Date.now());
+        }
+        const timeFormatted = targetDate.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
+        scheduledTimeStr = `${targetDate.toLocaleDateString([], { day: 'numeric', month: 'short' })} · ${timeFormatted}`;
+        dayOfWeekStr = targetDate.toLocaleDateString([], { weekday: 'long' });
+      }
+
+      const updated: WeeklyEvent = {
+        ...weeklyEvent,
+        title: adminEventTitle.trim() || weeklyEvent.title || "🏆 GRAN OLIMPIADA BÍBLICA",
+        subtitle: adminEventSubtitle.trim() || weeklyEvent.subtitle || "“Compitiendo en vivo por la gloria del saber bíblico.”",
+        nextEventDate: targetDate.toISOString(),
+        scheduledTime: scheduledTimeStr,
+        dayOfWeekName: dayOfWeekStr,
+        customQuestions: questionsToUse
+      };
+
+      saveWeeklyEventConfig(updated);
+      setWeeklyEvent(updated);
+
+      setAdminSaveMessage("✅ ¡Copa / Olimpiada programada y guardada con éxito!");
+      if (playSound) playSound("win");
+      if (triggerHaptic) triggerHaptic("success");
+
+      setTimeout(() => {
+        setShowAdminModal(false);
+        setAdminSaveMessage("");
+      }, 1600);
     } catch (e: any) {
-      setAdminSaveMessage("❌ Error de formato JSON: " + e.message);
+      setAdminSaveMessage("❌ Error al guardar: " + e.message);
+    }
+  };
+
+  const getFormattedScheduleLabel = () => {
+    if (!weeklyEvent.nextEventDate) return weeklyEvent.scheduledTime || "Programado";
+    try {
+      const d = new Date(weeklyEvent.nextEventDate);
+      const today = new Date();
+      const isToday = d.toDateString() === today.toDateString();
+      const timeStr = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
+      if (isToday) return `Hoy a las ${timeStr}`;
+      return `${weeklyEvent.dayOfWeekName || d.toLocaleDateString([], { weekday: "long" })} · ${timeStr}`;
+    } catch {
+      return weeklyEvent.scheduledTime || "Próximamente";
     }
   };
 
@@ -923,21 +1066,26 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
             <button
               type="button"
               onClick={handleSecretAdminTap}
-              className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 p-0.5 shadow-md shrink-0 cursor-pointer active:scale-90 transition"
-              title="La Copa Biblos"
+              className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 p-0.5 shadow-md shrink-0 cursor-pointer active:scale-90 transition relative"
+              title="Panel Maestro (Toca 5 veces para crear / programar olimpiada)"
             >
               <div className="w-full h-full rounded-full bg-stone-950 flex items-center justify-center text-amber-400">
                 <Trophy size={16} />
               </div>
+              {adminTapCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-stone-950 font-black text-[9px] flex items-center justify-center shadow animate-pulse">
+                  {adminTapCount}
+                </span>
+              )}
             </button>
             <div>
-              <h2 className="text-xs sm:text-sm font-serif font-black text-amber-300 uppercase tracking-wide leading-tight">
-                1ra Copa Biblos Semanal
+              <h2 className="text-xs sm:text-sm font-serif font-black text-amber-300 uppercase tracking-wide leading-tight line-clamp-1">
+                {weeklyEvent.title}
               </h2>
               <p className="text-[10px] font-bold text-amber-200/80 flex items-center gap-1">
-                <span>{weeklyEvent.title}</span>
+                <span className="line-clamp-1">{weeklyEvent.subtitle || weeklyEvent.theme}</span>
                 <span className="text-stone-400">•</span>
-                <span className="text-emerald-400 font-mono">Fase {currentRound}/3</span>
+                <span className="text-emerald-400 font-mono shrink-0">Fase {currentRound}/3</span>
               </p>
             </div>
           </div>
@@ -960,32 +1108,26 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
               
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
                 <Calendar size={14} className="text-amber-400" />
-                <span>Domingos 7:00 PM UTC</span>
+                <span>{getFormattedScheduleLabel()}</span>
               </div>
 
               <div className="space-y-1">
                 <h3 className="text-xl sm:text-2xl font-serif font-black text-white leading-tight">
-                  1ra Copa Biblos Semanal
+                  {weeklyEvent.title}
                 </h3>
                 <p className="text-xs text-amber-300 font-bold leading-relaxed px-2">
-                  Pon a prueba tu conocimiento bíblico compitiendo con participantes de todo el mundo y aumenta tu IQ bíblico.
+                  {weeklyEvent.subtitle || weeklyEvent.description}
                 </p>
               </div>
 
-              {/* HORARIOS CORRESPONDIENTES A 7:00 PM UTC EN EXACTAMENTE 5 PAÍSES DE MUESTRA */}
+              {/* HORARIOS SEGÚN ZONA HORARIA */}
               <div className="p-2.5 bg-stone-950/90 rounded-2xl border border-stone-800 space-y-1 text-center">
                 <span className="text-[9px] font-black uppercase text-amber-400 tracking-wider flex items-center justify-center gap-1">
-                  <Globe size={11} /> Horarios según tu país (7:00 PM UTC):
+                  <Globe size={11} /> Horario Oficial Programado:
                 </span>
-                <div className="grid grid-cols-5 gap-1 pt-0.5">
-                  {FIVE_COUNTRY_SCHEDULES.map((c, idx) => (
-                    <div key={idx} className="p-1.5 bg-stone-900 rounded-xl border border-stone-800 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs">{c.flag}</span>
-                      <span className="text-[9px] font-bold text-stone-300 truncate max-w-full leading-tight">{c.code}</span>
-                      <span className="text-[9px] font-mono font-black text-amber-300 leading-tight mt-0.5">{c.time}</span>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs font-mono font-bold text-amber-200">
+                  {getFormattedScheduleLabel()}
+                </p>
               </div>
 
               {/* ESTADO ESTRICTO DE SALA EN VIVO / CERRADA */}
@@ -995,7 +1137,7 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
                     <span className="text-emerald-400">🔴 SALA ABIERTA EN VIVO</span>
                   ) : (
                     <span className="text-amber-400 flex items-center justify-center gap-1">
-                      <Lock size={12} /> SALA OFICIAL CERRADA (7:00 PM UTC)
+                      <Lock size={12} /> SALA CERRADA · {getFormattedScheduleLabel()}
                     </span>
                   )}
                 </span>
@@ -1032,7 +1174,7 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
 
                   <p className="text-xs text-stone-300 leading-snug">
                     {isRegistered
-                      ? "¡Ya estás inscrito para este Domingo 7:00 PM UTC! Recibirás un aviso automático en tu pantalla antes de arrancar."
+                      ? `¡Ya estás inscrito para ${getFormattedScheduleLabel()}! Recibirás un aviso automático en tu pantalla antes de arrancar.`
                       : "Inscríbete ahora gratuitamente para reservar tu lugar en la carrera oficial y activar el recordatorio en tu dispositivo."}
                   </p>
 
@@ -1064,13 +1206,13 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
                 }`}
               >
                 {isCheckinActive ? <Play size={18} fill="currentColor" /> : <Lock size={18} />}
-                <span>{isCheckinActive ? "🚀 Entrar a Sala Oficial de Torneo" : "🔒 Sala Oficial Cerrada (Domingos 7:00 PM UTC)"}</span>
+                <span>{isCheckinActive ? `🚀 Entrar a ${weeklyEvent.title}` : `🔒 Sala Cerrada (${getFormattedScheduleLabel()})`}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleOpenSimulatorRoom}
-                className="w-full py-3 px-4 bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 text-amber-950 font-black text-xs sm:text-sm rounded-2xl border border-yellow-300 shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 text-amber-950 font-black text-xs sm:text-sm rounded-2xl border border-yellow-300 shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Bot size={18} />
                 <span>🎮 Entrar al Simulador (Modo Ensayo)</span>
@@ -1613,70 +1755,279 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
           </div>
         )}
 
-        {/* MODAL 2: PANEL DE EDICIÓN Y PROGRAMACIÓN DE PREGUNTAS */}
+        {/* MODAL 2: PANEL MAESTRO DE EDICIÓN, HORARIOS Y PREGUNTAS (SOLO ORGANIZADOR) */}
         {showAdminModal && (
-          <div className="fixed inset-0 z-[11000] bg-black/90 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
-            <div className="bg-[#2A2621] border-2 border-amber-500 rounded-3xl p-5 max-w-lg w-full shadow-2xl text-stone-200 space-y-3">
-              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2">
+          <div className="fixed inset-0 z-[11000] bg-black/90 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center animate-fade-in">
+            <div className="bg-[#231f1a] border-2 border-amber-500/80 rounded-3xl p-4 sm:p-5 max-w-lg w-full shadow-2xl text-stone-200 space-y-3 max-h-[92vh] flex flex-col overflow-hidden">
+              
+              {/* CABECERA DEL PANEL */}
+              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5 shrink-0">
                 <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
-                  <Settings size={18} />
-                  <span>⚙️ Panel Maestro: Programador de Copas y Preguntas</span>
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                    <Settings size={16} />
+                  </div>
+                  <div>
+                    <span className="block leading-tight font-serif">Organizador de Copa / Olimpiada</span>
+                    <span className="text-[10px] text-stone-400 font-normal">Configuración exclusiva para el anfitrión</span>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowAdminModal(false)}
-                  className="p-1 rounded-full bg-stone-800 text-stone-400 hover:text-white"
+                  className="p-1.5 rounded-full bg-stone-800 text-stone-400 hover:text-white transition cursor-pointer"
                 >
-                  <XCircle size={16} />
+                  <XCircle size={18} />
                 </button>
               </div>
 
-              <p className="text-xs text-stone-300 leading-snug">
-                Pega aquí el JSON del torneo para programar preguntas personalizadas clasificadas por nivel (<strong>PRINCIPIANTE</strong> para Fase 1, <strong>INTERMEDIO</strong> para Fase 2, <strong>AVANZADO</strong> para Fase 3) en vivo sin necesidad de actualizar el APK en Google Play Store:
-              </p>
-
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] text-amber-300/80 font-bold uppercase">Editor JSON de la Copa</span>
+              {/* SELECTOR DE PESTAÑAS */}
+              <div className="grid grid-cols-2 gap-1.5 p-1 bg-stone-950 rounded-2xl border border-stone-800 shrink-0">
                 <button
                   type="button"
-                  onClick={() => {
-                    setAdminJsonInput(JSON.stringify({
-                      title: "1ra Copa Biblos Semanal",
-                      theme: "GRAN TORNEO MUNDIAL BÍBLICO",
-                      customQuestions: DEFAULT_WEEKLY_EVENT.customQuestions
-                    }, null, 2));
-                    setAdminSaveMessage("ℹ️ Plantilla oficial con niveles cargada en el editor. Presiona 'Guardar' para aplicarla.");
-                  }}
-                  className="text-[10px] font-bold text-amber-400 bg-amber-500/20 hover:bg-amber-500/30 px-2 py-0.5 rounded-lg border border-amber-500/40 transition cursor-pointer"
+                  onClick={() => setAdminActiveTab("SCHEDULE")}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                    adminActiveTab === "SCHEDULE"
+                      ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 shadow-md font-black"
+                      : "text-stone-400 hover:text-white"
+                  }`}
                 >
-                  🔄 Cargar Plantilla con Niveles
+                  <Calendar size={14} />
+                  <span>📅 Horario y Evento</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdminActiveTab("QUESTIONS")}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                    adminActiveTab === "QUESTIONS"
+                      ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 shadow-md font-black"
+                      : "text-stone-400 hover:text-white"
+                  }`}
+                >
+                  <BookOpen size={14} />
+                  <span>❓ Preguntas por Nivel</span>
                 </button>
               </div>
 
-              <textarea
-                value={adminJsonInput}
-                onChange={e => setAdminJsonInput(e.target.value)}
-                rows={12}
-                className="w-full p-2.5 bg-stone-950 border border-stone-800 rounded-xl text-xs font-mono text-amber-200 focus:outline-none focus:border-amber-400 custom-scrollbar"
-                placeholder='{\n  "title": "Copa Bíblica Especial",\n  "theme": "ANTIGUO Y NUEVO TESTAMENTO",\n  "customQuestions": [\n    {\n      "question": "¿Quién construyó el arca?",\n      "options": ["Moisés", "Noé", "David", "Abraham"],\n      "correct": 1,\n      "difficulty": "PRINCIPIANTE",\n      "period": "El Principio",\n      "reference": "Génesis 6"\n    },\n    {\n      "question": "¿Quién fue el rey más sabio?",\n      "options": ["Saúl", "Salomón", "Roboam", "David"],\n      "correct": 1,\n      "difficulty": "INTERMEDIO",\n      "period": "Reyes, Profetas y Poetas",\n      "reference": "1 Reyes 3"\n    },\n    {\n      "question": "¿Dónde fue desterrado Juan?",\n      "options": ["Creta", "Patmos", "Roma", "Chipre"],\n      "correct": 1,\n      "difficulty": "AVANZADO",\n      "period": "Tiempos Finales",\n      "reference": "Apocalipsis 1:9"\n    }\n  ]\n}'
-              />
+              {/* CONTENIDO SCROLLABLE */}
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+                
+                {/* PESTAÑA 1: PROGRAMACIÓN DE HORARIO Y DATOS */}
+                {adminActiveTab === "SCHEDULE" && (
+                  <div className="space-y-3 text-left">
+                    {/* NOMBRE DEL EVENTO */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase text-amber-300 flex items-center gap-1">
+                        <Trophy size={12} /> Título de la Copa u Olimpiada
+                      </label>
+                      <input
+                        type="text"
+                        value={adminEventTitle}
+                        onChange={e => setAdminEventTitle(e.target.value)}
+                        placeholder="Ej: 🏆 Gran Olimpiada Bíblica 2026"
+                        className="w-full p-2.5 bg-stone-950 border border-stone-800 rounded-xl text-xs font-bold text-amber-200 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
 
+                    {/* SUBTÍTULO / LEMA */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase text-stone-400">
+                        Subtítulo o Lema del Torneo
+                      </label>
+                      <input
+                        type="text"
+                        value={adminEventSubtitle}
+                        onChange={e => setAdminEventSubtitle(e.target.value)}
+                        placeholder="Ej: 'Compitiendo en vivo por el saber bíblico'"
+                        className="w-full p-2 bg-stone-950 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+
+                    {/* SELECTOR DE MODO DE PROGRAMACIÓN */}
+                    <div className="space-y-2 pt-1 border-t border-stone-800">
+                      <label className="text-[10px] font-black uppercase text-amber-300 flex items-center gap-1">
+                        <Clock size={12} /> ¿Cuándo deseas realizar la Copa?
+                      </label>
+
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setAdminScheduleMode("TODAY")}
+                          className={`p-2 rounded-xl text-xs font-bold border transition flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                            adminScheduleMode === "TODAY"
+                              ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow"
+                              : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
+                          }`}
+                        >
+                          <Clock size={16} className={adminScheduleMode === "TODAY" ? "text-amber-400" : ""} />
+                          <span className="text-[11px] font-black">🕒 Hoy a una hora</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setAdminScheduleMode("NOW")}
+                          className={`p-2 rounded-xl text-xs font-bold border transition flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                            adminScheduleMode === "NOW"
+                              ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow"
+                              : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
+                          }`}
+                        >
+                          <Zap size={16} className={adminScheduleMode === "NOW" ? "text-emerald-400" : "text-amber-400"} />
+                          <span className="text-[11px] font-black">⚡ ¡En Vivo Ahora!</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setAdminScheduleMode("DATETIME")}
+                          className={`p-2 rounded-xl text-xs font-bold border transition flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                            adminScheduleMode === "DATETIME"
+                              ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow"
+                              : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
+                          }`}
+                        >
+                          <Calendar size={16} className={adminScheduleMode === "DATETIME" ? "text-amber-400" : ""} />
+                          <span className="text-[11px] font-black">🗓️ Otra fecha</span>
+                        </button>
+                      </div>
+
+                      {/* DETALLES DEL MODO HOY */}
+                      {adminScheduleMode === "TODAY" && (
+                        <div className="p-3 bg-stone-950/80 rounded-2xl border border-stone-800 space-y-2 animate-fade-in">
+                          <span className="text-[10px] text-stone-400 block font-bold">
+                            Selecciona la hora exacta de Hoy:
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="time"
+                              value={adminTimeToday}
+                              onChange={e => setAdminTimeToday(e.target.value)}
+                              className="flex-1 p-2 bg-stone-900 border border-amber-500/50 rounded-xl text-center font-mono text-base font-black text-amber-300 focus:outline-none focus:border-amber-400"
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between gap-1 pt-1">
+                            <span className="text-[9px] text-stone-400">Atajos rápidos:</span>
+                            <div className="flex gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAddMinutes(10)}
+                                className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg text-[10px] font-bold border border-stone-700 cursor-pointer"
+                              >
+                                +10 min
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAddMinutes(30)}
+                                className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg text-[10px] font-bold border border-stone-700 cursor-pointer"
+                              >
+                                +30 min
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAddMinutes(60)}
+                                className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg text-[10px] font-bold border border-stone-700 cursor-pointer"
+                              >
+                                +1 hora
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* DETALLES DEL MODO EN VIVO AHORA */}
+                      {adminScheduleMode === "NOW" && (
+                        <div className="p-3 bg-emerald-950/40 rounded-2xl border border-emerald-500/40 space-y-1 text-center animate-fade-in">
+                          <span className="text-xs font-black text-emerald-300 flex items-center justify-center gap-1">
+                            <Zap size={14} /> ¡Apertura Inmediata!
+                          </span>
+                          <p className="text-[11px] text-emerald-200/80 leading-snug">
+                            Al guardar, la sala se abrirá con el estado <strong>🔴 SALA ABIERTA EN VIVO</strong> al instante para que todos los participantes puedan entrar y jugar ya.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* DETALLES DEL MODO FECHA PERSONALIZADA */}
+                      {adminScheduleMode === "DATETIME" && (
+                        <div className="p-3 bg-stone-950/80 rounded-2xl border border-stone-800 space-y-2 animate-fade-in">
+                          <span className="text-[10px] text-stone-400 block font-bold">
+                            Selecciona fecha y hora completa:
+                          </span>
+                          <input
+                            type="datetime-local"
+                            value={adminCustomDateTime}
+                            onChange={e => setAdminCustomDateTime(e.target.value)}
+                            className="w-full p-2 bg-stone-900 border border-amber-500/50 rounded-xl text-center font-mono text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* PESTAÑA 2: PREGUNTAS Y NIVELES */}
+                {adminActiveTab === "QUESTIONS" && (
+                  <div className="space-y-2.5 text-left">
+                    <div className="p-2.5 bg-stone-950/90 rounded-2xl border border-stone-800 space-y-1">
+                      <span className="text-[10px] font-black uppercase text-amber-300 block">
+                        Estructura por Niveles (3 Fases):
+                      </span>
+                      <p className="text-[11px] text-stone-300 leading-snug">
+                        • <strong>PRINCIPIANTE</strong>: Fase 1 (Patriarcas y Éxodo)<br />
+                        • <strong>INTERMEDIO</strong>: Fase 2 (Reyes, Profetas y Poetas)<br />
+                        • <strong>AVANZADO</strong>: Fase 3 (Jesús, Hechos y Apocalipsis)
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-amber-300/80 font-bold uppercase">
+                        Editor JSON de Preguntas
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAdminJsonInput(JSON.stringify({
+                            title: adminEventTitle || "Gran Olimpiada Bíblica",
+                            theme: "GRAN TORNEO MUNDIAL BÍBLICO",
+                            customQuestions: DEFAULT_WEEKLY_EVENT.customQuestions
+                          }, null, 2));
+                          setAdminSaveMessage("ℹ️ Plantilla oficial con niveles cargada en el editor.");
+                        }}
+                        className="text-[10px] font-bold text-amber-400 bg-amber-500/20 hover:bg-amber-500/30 px-2 py-1 rounded-lg border border-amber-500/40 transition cursor-pointer"
+                      >
+                        🔄 Cargar Plantilla Oficial
+                      </button>
+                    </div>
+
+                    <textarea
+                      value={adminJsonInput}
+                      onChange={e => setAdminJsonInput(e.target.value)}
+                      rows={10}
+                      className="w-full p-2.5 bg-stone-950 border border-stone-800 rounded-xl text-xs font-mono text-amber-200 focus:outline-none focus:border-amber-400 custom-scrollbar"
+                      placeholder='{\n  "title": "Gran Olimpiada Bíblica",\n  "customQuestions": [\n    {\n      "question": "¿Quién construyó el arca?",\n      "options": ["Moisés", "Noé", "David", "Abraham"],\n      "correct": 1,\n      "difficulty": "PRINCIPIANTE",\n      "reference": "Génesis 6"\n    }\n  ]\n}'
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* MENSAJE DE CONFIRMACIÓN */}
               {adminSaveMessage && (
-                <p className="text-xs font-bold text-amber-300">{adminSaveMessage}</p>
+                <div className="p-2 bg-amber-500/20 border border-amber-500/40 rounded-xl text-xs font-bold text-amber-300 shrink-0 text-center animate-fade-in">
+                  {adminSaveMessage}
+                </div>
               )}
 
-              <div className="flex gap-2 pt-1">
+              {/* BOTONES DE ACCIÓN INFERIORES */}
+              <div className="flex gap-2 pt-2 border-t border-stone-800 shrink-0">
                 <button
                   type="button"
                   onClick={handleSaveCustomTournamentConfig}
-                  className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 font-black text-xs rounded-xl shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 text-amber-950 font-black text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition"
                 >
-                  <Save size={15} />
-                  <span>Guardar y Aplicar a la Copa</span>
+                  <Save size={16} />
+                  <span>Guardar y Publicar Copa</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAdminModal(false)}
-                  className="py-2.5 px-4 bg-stone-800 text-stone-300 font-bold text-xs rounded-xl border border-stone-700 cursor-pointer"
+                  className="py-3 px-4 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-xs rounded-xl border border-stone-700 cursor-pointer transition"
                 >
                   Cerrar
                 </button>
