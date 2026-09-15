@@ -39,6 +39,7 @@ import { getWeeklyEventConfig, saveWeeklyEventConfig, getCopaHistoricalQuestions
 import { GoldCoinIcon } from "./GoldCoinIcon";
 import { LiveInteractivePointerTour } from "./LiveInteractivePointerTour";
 import { isTutorialCompleted } from "../services/tutorialService";
+import { onlineService } from "../services/onlineMultiplayer";
 import boardData from "../data/boardData.json";
 import boardCoordinates from "../data/boardCoordinates.json";
 
@@ -165,8 +166,23 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
   const [isAutoZoomEnabled, setIsAutoZoomEnabled] = useState<boolean>(false);
 
   const [currentRound, setCurrentRound] = useState<1 | 2 | 3>(1);
-  const [roundStatus, setRoundStatus] = useState<"LOBBY" | "SIMULATOR_LOBBY" | "RACING" | "ROUND_SUMMARY" | "FINAL_PODIUM">("LOBBY");
+  const [roundStatus, setRoundStatus] = useState<"LOBBY" | "LIVE_WAITING_ROOM" | "SIMULATOR_LOBBY" | "RACING" | "ROUND_SUMMARY" | "FINAL_PODIUM">("LOBBY");
   
+  // ESTADO DE SALA DE ESPERA EN VIVO MULTIJUGADOR
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(() => {
+    return localStorage.getItem("biblos_copa_is_admin") === "true";
+  });
+  const [connectedLobbyPlayers, setConnectedLobbyPlayers] = useState<Array<{
+    id: string;
+    userId?: string;
+    name: string;
+    avatar: string;
+    country?: string;
+    countryFlag?: string;
+    isAdmin?: boolean;
+  }>>([]);
+  const [isStartingCountdown, setIsStartingCountdown] = useState<number | null>(null);
+
   const [isRolling, setIsRolling] = useState<boolean>(false);
   const [myDiceRollIndex, setMyDiceRollIndex] = useState<number>(0);
   const [showGoalBanner, setShowGoalBanner] = useState<boolean>(false);
@@ -566,22 +582,46 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
     if (playSound) playSound("select");
   };
 
-  const handlePrepareRaceStart = (isPractice = true) => {
+  const handlePrepareRaceStart = (isPractice = true, realParticipants?: any[]) => {
     setIsPracticeMode(isPractice);
     setShowGoalBanner(false);
     setGracePeriodSecondsLeft(null);
     setFirstFinisherName(null);
 
-    // Inicializar competidores si la sala no tenía aún
-    setPlayers(prev => {
-      if (prev.length > 1) return prev;
-      const me: CopaPlayer = prev[0] || {
-        id: userProfile?.name || "me",
-        name: userProfile?.name || "Jugador Bíblico",
-        avatar: userProfile?.avatar || "/avatars/david.jpg",
-        country: userProfile?.country || "DO",
-        countryFlag: userProfile?.countryFlag || "🇩🇴",
-        isMe: true,
+    const me: CopaPlayer = {
+      id: userProfile?.name || "me",
+      name: userProfile?.name || "Jugador Bíblico",
+      avatar: userProfile?.avatar || "/avatars/david.jpg",
+      country: userProfile?.country || "DO",
+      countryFlag: userProfile?.countryFlag || "🇩🇴",
+      isMe: true,
+      score: 0,
+      roundScore: 0,
+      correctCount: 0,
+      totalAnswered: 0,
+      currentTile: 0,
+      hasAnsweredCurrent: false,
+      lastPointsEarned: 0,
+      isEliminated: false,
+      hasFinishedRace: false,
+      diceRollIndex: 0,
+      answeredQuestionTiles: [],
+      botStepsRemaining: 0,
+      isWaitingOnQuestion: false
+    };
+
+    let competitorList: CopaPlayer[] = [];
+
+    if (realParticipants && realParticipants.length > 1) {
+      // Usar participantes reales conectados distintos de mí
+      const others = realParticipants.filter(p => p.name !== me.name);
+      competitorList = others.slice(0, 5).map((p, idx) => ({
+        id: p.id || `real_${idx}`,
+        name: p.name || `Hermano Bíblico ${idx + 1}`,
+        avatar: p.avatar || "/avatars/david.jpg",
+        country: p.country || "DO",
+        countryFlag: p.countryFlag || "🇩🇴",
+        isMe: false,
         score: 0,
         roundScore: 0,
         correctCount: 0,
@@ -594,29 +634,103 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
         diceRollIndex: 0,
         answeredQuestionTiles: [],
         botStepsRemaining: 0,
-        isWaitingOnQuestion: false
-      };
-
-      const botsWithTile0 = BIBLOS_BOTS.map((b, i) => ({
-        ...b,
-        currentTile: 0,
-        score: 0,
-        roundScore: 0,
-        hasFinishedRace: false,
-        diceRollIndex: 0,
-        answeredQuestionTiles: [],
-        botStepsRemaining: 0,
         isWaitingOnQuestion: false,
-        botNextRollCountdown: (i + 1) * 4
+        botNextRollCountdown: (idx + 1) * 3
       }));
+    }
 
-      return [me, ...botsWithTile0];
-    });
+    // Si hay menos de 5 rivales, autocompletar con BiblosBots para tener 6 competidores en la pista
+    if (competitorList.length < 5) {
+      const needed = 5 - competitorList.length;
+      const usedAvatars = new Set([me.avatar, ...competitorList.map(c => c.avatar)]);
+      const availableBots = BIBLOS_BOTS.filter(b => !usedAvatars.has(b.avatar));
+      for (let i = 0; i < needed; i++) {
+        const bot = availableBots[i % availableBots.length] || BIBLOS_BOTS[i % BIBLOS_BOTS.length];
+        competitorList.push({
+          ...bot,
+          id: `bot_comp_${i}`,
+          currentTile: 0,
+          score: 0,
+          roundScore: 0,
+          hasFinishedRace: false,
+          diceRollIndex: 0,
+          answeredQuestionTiles: [],
+          botStepsRemaining: 0,
+          isWaitingOnQuestion: false,
+          botNextRollCountdown: (competitorList.length + 1) * 3
+        });
+      }
+    }
 
+    setPlayers([me, ...competitorList]);
+    setMyDiceRollIndex(0);
+    setMyQuestionIndex(0);
+    setCurrentRound(1);
     setRoundStatus("RACING");
     setCamera({ x: 50, y: 50, zoom: 1 });
+    if (playSound) playSound("win");
+  };
+
+  const handleEnterLiveWaitingRoom = () => {
+    setRoundStatus("LIVE_WAITING_ROOM");
+    const myData = {
+      id: userProfile?.name || "me",
+      userId: userProfile?.name || "me",
+      name: userProfile?.name || "Jugador Bíblico",
+      avatar: userProfile?.avatar || "/avatars/david.jpg",
+      country: userProfile?.country || "DO",
+      countryFlag: userProfile?.countryFlag || "🇩🇴",
+      isAdmin: isAdminUser
+    };
+    onlineService.joinCopaLobby(myData);
     if (playSound) playSound("select");
   };
+
+  const handleLeaveLiveWaitingRoom = () => {
+    onlineService.leaveCopaLobby();
+    setRoundStatus("LOBBY");
+    if (playSound) playSound("select");
+  };
+
+  const handleHostStartRace = () => {
+    if (!isAdminUser) return;
+    onlineService.startCopaRace(weeklyEvent);
+    if (playSound) playSound("roll");
+  };
+
+  // SINCRONIZACIÓN DE SALA DE ESPERA Y ARRANQUE SIMULTÁNEO PARA TODOS
+  useEffect(() => {
+    const unsubUpdate = onlineService.onCopaLobbyUpdate((data) => {
+      if (data && Array.isArray(data.players)) {
+        setConnectedLobbyPlayers(data.players);
+      }
+    });
+
+    const unsubStart = onlineService.onCopaRaceStarted((data) => {
+      setIsStartingCountdown(3);
+      if (playSound) playSound("select");
+
+      setTimeout(() => {
+        setIsStartingCountdown(2);
+        if (playSound) playSound("select");
+      }, 1000);
+
+      setTimeout(() => {
+        setIsStartingCountdown(1);
+        if (playSound) playSound("select");
+      }, 2000);
+
+      setTimeout(() => {
+        setIsStartingCountdown(null);
+        handlePrepareRaceStart(false, data.players);
+      }, 3000);
+    });
+
+    return () => {
+      unsubUpdate();
+      unsubStart();
+    };
+  }, [weeklyEvent, playSound]);
 
   const handleToggleZoomView = (enableZoom: boolean) => {
     setIsAutoZoomEnabled(enableZoom);
@@ -645,6 +759,22 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
   const handleVerifyPin = () => {
     if (enteredPin === "7777" || enteredPin === "1234") {
       setShowPinModal(false);
+      setIsAdminUser(true);
+      try {
+        localStorage.setItem("biblos_copa_is_admin", "true");
+      } catch (e) {}
+
+      // Si ya estamos en la sala de espera, re-anunciar como administrador
+      onlineService.joinCopaLobby({
+        id: userProfile?.name || "me",
+        userId: userProfile?.name || "me",
+        name: userProfile?.name || "Jugador Bíblico",
+        avatar: userProfile?.avatar || "/avatars/david.jpg",
+        country: userProfile?.country || "DO",
+        countryFlag: userProfile?.countryFlag || "🇩🇴",
+        isAdmin: true
+      });
+
       const hasDifficultyInExisting = weeklyEvent.customQuestions?.some(q => !!q.difficulty);
       const questionsToUse = (hasDifficultyInExisting && weeklyEvent.customQuestions && weeklyEvent.customQuestions.length > 0)
         ? weeklyEvent.customQuestions
@@ -1198,15 +1328,15 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
               <button
                 type="button"
                 disabled={!isCheckinActive}
-                onClick={() => handlePrepareRaceStart(false)}
+                onClick={handleEnterLiveWaitingRoom}
                 className={`w-full py-3.5 px-4 font-black text-xs sm:text-sm rounded-2xl shadow-xl transition transform flex items-center justify-center gap-2 border-2 ${
                   isCheckinActive
-                    ? "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 text-amber-950 border-yellow-200 active:scale-95 cursor-pointer"
+                    ? "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 text-amber-950 border-yellow-200 active:scale-95 cursor-pointer animate-pulse"
                     : "bg-stone-900 text-stone-500 border-stone-800 opacity-60 cursor-not-allowed"
                 }`}
               >
-                {isCheckinActive ? <Play size={18} fill="currentColor" /> : <Lock size={18} />}
-                <span>{isCheckinActive ? `🚀 Entrar a ${weeklyEvent.title}` : `🔒 Sala Cerrada (${getFormattedScheduleLabel()})`}</span>
+                {isCheckinActive ? <Users size={18} /> : <Lock size={18} />}
+                <span>{isCheckinActive ? `🚀 Entrar a Sala de Espera (${weeklyEvent.title})` : `🔒 Sala Cerrada (${getFormattedScheduleLabel()})`}</span>
               </button>
 
               <button
@@ -1216,6 +1346,155 @@ export const CopaBiblosTournamentMode: React.FC<CopaBiblosTournamentModeProps> =
               >
                 <Bot size={18} />
                 <span>🎮 Entrar al Simulador (Modo Ensayo)</span>
+              </button>
+            </div>
+          </main>
+        )}
+
+        {/* 1.A. VISTA DE SALA DE ESPERA EN VIVO MULTIJUGADOR (ESPERANDO AL ADMINISTRADOR) */}
+        {roundStatus === "LIVE_WAITING_ROOM" && (
+          <main className="flex-1 overflow-y-auto p-4 flex flex-col justify-between space-y-3 custom-scrollbar text-center">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>🔴 SALA DE ESPERA EN VIVO</span>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-xl font-serif font-black text-white leading-tight">
+                  {weeklyEvent.title}
+                </h3>
+                <p className="text-xs text-stone-300 leading-snug">
+                  {isAdminUser
+                    ? "Tienes el control de la sala como Administrador. Cuando todos estén conectados, presiona Iniciar."
+                    : "¡Conectado exitosamente! Espera a que el Administrador dé la orden de salida para todos."}
+                </p>
+              </div>
+
+              {/* LISTA DE JUGADORES CONECTADOS EN TIEMPO REAL */}
+              <div className="p-3.5 bg-stone-950/90 rounded-2xl border border-amber-500/40 space-y-2.5 text-left shadow-xl">
+                <div className="flex justify-between items-center text-xs font-bold text-stone-300">
+                  <span className="flex items-center gap-1.5 text-amber-300 font-black">
+                    <Users size={15} /> Participantes en Sala ({connectedLobbyPlayers.length > 0 ? connectedLobbyPlayers.length : 1})
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                    Sincronizados ✓
+                  </span>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">
+                  {(connectedLobbyPlayers.length > 0 ? connectedLobbyPlayers : [{
+                    id: mePlayer.id,
+                    name: mePlayer.name,
+                    avatar: mePlayer.avatar,
+                    countryFlag: mePlayer.countryFlag,
+                    isAdmin: isAdminUser
+                  }]).map((p, idx) => {
+                    const isSelf = p.name === mePlayer.name;
+                    return (
+                      <div
+                        key={p.id || idx}
+                        className={`p-2 rounded-xl flex items-center justify-between border transition ${
+                          isSelf
+                            ? "bg-amber-950/40 border-amber-500/60 shadow-sm"
+                            : "bg-stone-900/90 border-stone-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className={`w-8 h-8 rounded-full overflow-hidden shrink-0 border-2 ${p.isAdmin ? "border-amber-400 ring-2 ring-amber-400/40" : "border-stone-700"}`}>
+                            <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs">{p.countryFlag || "🇩🇴"}</span>
+                              <span className="text-xs font-bold text-white truncate max-w-[140px] sm:max-w-[190px]">
+                                {p.name} {isSelf && <span className="text-amber-400 text-[10px]">(Tú)</span>}
+                              </span>
+                            </div>
+                            {p.isAdmin && (
+                              <span className="text-[9px] font-black text-amber-300 uppercase tracking-wider flex items-center gap-0.5">
+                                👑 Anfitrión
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 shrink-0">
+                          Listo ✓
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* OVERLAY DE CUENTA REGRESIVA 3, 2, 1 */}
+              {isStartingCountdown !== null && (
+                <div className="p-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 rounded-2xl text-amber-950 text-center animate-bounce shadow-2xl">
+                  <p className="text-xs font-black uppercase tracking-widest">¡ARRANCA LA OLIMPIADA EN!</p>
+                  <p className="text-5xl font-black font-mono mt-1">{isStartingCountdown}</p>
+                </div>
+              )}
+
+              {/* PANEL DEL ADMINISTRADOR (BOTÓN INICIAR EXCLUSIVO) */}
+              {isStartingCountdown === null && isAdminUser && (
+                <div className="p-3.5 bg-gradient-to-r from-amber-950/60 via-stone-900 to-amber-950/60 rounded-2xl border-2 border-amber-500 text-left space-y-2.5 shadow-xl">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-amber-300 flex items-center gap-1.5 uppercase">
+                      <Crown size={15} className="text-yellow-400" /> Control del Administrador
+                    </span>
+                    <span className="text-[9px] font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                      Solo Tú Puedes Iniciar
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-stone-300 leading-snug">
+                    Pulsa este botón cuando todos tus hermanos y participantes estén conectados. La carrera arrancará simultáneamente en las pantallas de todos.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={handleHostStartRace}
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 text-amber-950 font-black text-sm rounded-2xl shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer animate-pulse border-2 border-yellow-200"
+                  >
+                    <Play size={20} fill="currentColor" />
+                    <span>🚀 INICIAR OLIMPIADA PARA TODOS ({connectedLobbyPlayers.length > 0 ? connectedLobbyPlayers.length : 1})</span>
+                  </button>
+                </div>
+              )}
+
+              {/* PANEL DE ESPERA PARA JUGADORES NORMALES (NO ADMINISTRADOR) */}
+              {isStartingCountdown === null && !isAdminUser && (
+                <div className="p-4 bg-stone-950/90 rounded-2xl border border-amber-500/30 text-center space-y-2 shadow-inner">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+                    <Clock size={20} className="animate-spin" />
+                  </div>
+                  <h4 className="text-sm font-black text-amber-300">
+                    Esperando a que el Administrador inicie...
+                  </h4>
+                  <p className="text-xs text-stone-300 leading-relaxed">
+                    ¡Mantén esta pantalla abierta! La competencia arrancará automáticamente en tu dispositivo en cuanto el anfitrión dé la orden de salida.
+                  </p>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPinModal(true)}
+                      className="text-[11px] text-amber-400 hover:text-amber-300 underline font-bold mt-1 inline-block cursor-pointer"
+                    >
+                      🔑 ¿Eres el Administrador? Introduce tu PIN Maestro
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleLeaveLiveWaitingRoom}
+                className="w-full py-2.5 px-4 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-xs rounded-xl border border-stone-700 cursor-pointer transition"
+              >
+                Volver a la Pantalla Principal
               </button>
             </div>
           </main>

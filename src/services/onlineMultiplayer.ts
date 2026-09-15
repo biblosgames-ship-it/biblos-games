@@ -609,6 +609,39 @@ class OnlineMultiplayerService {
     this.currentRoom = null;
     this.notifyListeners();
   }
+
+  // --- COPA BIBLOS / GRAN OLIMPIADA SALA DE ESPERA Y SINCRONIZACIÓN ---
+  joinCopaLobby(player: { id?: string; userId?: string; name: string; avatar: string; country?: string; countryFlag?: string; isAdmin?: boolean }) {
+    if (this.socket) {
+      this.socket.emit('COPA_JOIN_LOBBY', player);
+    }
+  }
+
+  leaveCopaLobby() {
+    if (this.socket) {
+      this.socket.emit('COPA_LEAVE_LOBBY');
+    }
+  }
+
+  startCopaRace(eventConfig?: any) {
+    if (this.socket) {
+      this.socket.emit('COPA_START_RACE', { eventConfig });
+    }
+  }
+
+  onCopaLobbyUpdate(callback: (data: { players: any[] }) => void) {
+    this.socket.on('COPA_LOBBY_UPDATE', callback);
+    return () => {
+      this.socket.off('COPA_LOBBY_UPDATE', callback);
+    };
+  }
+
+  onCopaRaceStarted(callback: (data: { players: any[]; startedAt: number; eventConfig?: any }) => void) {
+    this.socket.on('COPA_RACE_STARTED', callback);
+    return () => {
+      this.socket.off('COPA_RACE_STARTED', callback);
+    };
+  }
 }
 
 export const onlineService = new OnlineMultiplayerService();

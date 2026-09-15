@@ -39,7 +39,7 @@ const httpServer = createServer((req, res) => {
       let pathname = decodeURIComponent(parsedUrl.pathname);
       if (pathname === '/api/version') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-        return res.end(JSON.stringify({ version: '1.0.5', deployedAt: new Date().toISOString(), status: 'OK' }));
+        return res.end(JSON.stringify({ version: '1.0.7', deployedAt: new Date().toISOString(), status: 'OK' }));
       }
 
       // Endpoint para registrar amistad desde enlace compartido (HTTP fallback)
@@ -179,6 +179,14 @@ function broadcastActiveFriendLobbies() {
     });
   });
   io.emit('ACTIVE_FRIEND_LOBBIES_UPDATE', list);
+}
+
+// Estructura de la Sala de Espera de La Copa Biblos / Gran Olimpiada
+const copaLobbyPlayers = new Map();
+
+function broadcastCopaLobby() {
+  const list = Array.from(copaLobbyPlayers.values());
+  io.emit('COPA_LOBBY_UPDATE', { players: list });
 }
 
 function broadcastGroupLobby() {
@@ -695,6 +703,41 @@ io.on('connection', (socket) => {
     }
   });
 
+  // --- EVENTOS DE LA SALA DE ESPERA DE LA COPA BIBLOS / OLIMPIADA ---
+  socket.on('COPA_JOIN_LOBBY', (playerData) => {
+    const player = {
+      id: socket.id,
+      userId: playerData?.userId || playerData?.id || socket.id,
+      name: playerData?.name || 'Jugador Bíblico',
+      avatar: playerData?.avatar || '/avatars/david.jpg',
+      country: playerData?.country || 'DO',
+      countryFlag: playerData?.countryFlag || '🇩🇴',
+      isAdmin: !!playerData?.isAdmin
+    };
+    copaLobbyPlayers.set(socket.id, player);
+    socket.join('copa_live_room');
+    console.log(`[COPA LOBBY] ${player.name} (${player.isAdmin ? '👑 ADMIN' : 'JUGADOR'}) se unió. Total en sala: ${copaLobbyPlayers.size}`);
+    broadcastCopaLobby();
+  });
+
+  socket.on('COPA_LEAVE_LOBBY', () => {
+    if (copaLobbyPlayers.has(socket.id)) {
+      copaLobbyPlayers.delete(socket.id);
+      socket.leave('copa_live_room');
+      broadcastCopaLobby();
+    }
+  });
+
+  socket.on('COPA_START_RACE', (data) => {
+    console.log(`[COPA] 🚀 ¡ADMINISTRADOR INICIÓ LA OLIMPIADA! Notificando a ${copaLobbyPlayers.size} jugadores conectados...`);
+    const list = Array.from(copaLobbyPlayers.values());
+    io.to('copa_live_room').emit('COPA_RACE_STARTED', {
+      startedAt: Date.now(),
+      players: list,
+      eventConfig: data?.eventConfig || null
+    });
+  });
+
   // 1. Crear Sala Privada o Pública
   socket.on('CREATE_ROOM', ({ isPrivate, player }) => {
     const code = isPrivate 
@@ -983,6 +1026,11 @@ io.on('connection', (socket) => {
     if (qIdx !== -1) {
       duelQueue.splice(qIdx, 1);
       console.log(`[MATCHMAKING] Cliente removido de la cola por desconexión.`);
+    }
+
+    if (copaLobbyPlayers.has(socket.id)) {
+      copaLobbyPlayers.delete(socket.id);
+      broadcastCopaLobby();
     }
 
     for (const [code, roomData] of rooms.entries()) {
